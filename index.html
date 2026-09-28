@@ -75,6 +75,7 @@
     transition:color .2s ease;
   }
   .brand:hover .name, .brand:focus-visible .name{ color:var(--accent); }
+  .brand .name .scr, .card h3 .scr, .case-title .scr{ color:var(--accent); opacity:.75; }
   .brand .role{
     font-family:'Geist Mono', monospace;
     font-size:12px; letter-spacing:.06em; color:var(--text-muted);
@@ -795,6 +796,7 @@
       researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml;
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
+    decryptTitle(caseView.querySelector('.case-title'));
   }
 
   // Images in a case study open full size when clicked.
@@ -847,6 +849,55 @@
     if(location.hash){ location.hash = ''; }
     else { window.scrollTo({ top:0, behavior:'smooth' }); }
   });
+
+  // "Decrypt" effect: each letter cycles through random glyphs, then locks
+  // in from left to right. Used on the name in the header (quick) and on
+  // project titles (longer and slower).
+  var decryptOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function decrypt(el, frames, speed, glyphs){
+    if(!decryptOk || !el) return;
+    var text = el.dataset.text || (el.dataset.text = el.textContent);
+    clearInterval(el._decrypt);
+    var frame = 0;
+    el._decrypt = setInterval(function(){
+      frame++;
+      var out = '';
+      for(var i = 0; i < text.length; i++){
+        var c = text[i];
+        var lockAt = frames * (0.3 + 0.7 * i / text.length);
+        out += (c === ' ' || frame >= lockAt) ? c :
+          '<span class="scr">' + glyphs[Math.floor(Math.random() * glyphs.length)] + '</span>';
+      }
+      el.innerHTML = out;
+      if(frame >= frames){ clearInterval(el._decrypt); el.textContent = text; }
+    }, speed);
+  }
+  var NAME_GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%*+=/?';
+  var TITLE_GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%*+=/?';
+  function decryptName(el){ decrypt(el, 20, 40, NAME_GLYPHS); }
+  function decryptTitle(el){ decrypt(el, 42, 50, TITLE_GLYPHS); }
+
+  // a project opened directly by URL rendered before this was set up
+  if(caseView.classList.contains('active')) decryptTitle(caseView.querySelector('.case-title'));
+
+  var brandName = document.querySelector('.brand .name');
+  setTimeout(function(){ decryptName(brandName); }, 250);
+  document.getElementById('homeLink').addEventListener('mouseenter', function(){ decryptName(brandName); });
+
+  // Project card titles decode the first time they scroll into view, and
+  // again whenever their card is hovered.
+  Array.prototype.forEach.call(document.querySelectorAll('#workGrid .card'), function(card){
+    var title = card.querySelector('h3');
+    card.addEventListener('mouseenter', function(){ decryptTitle(title); });
+  });
+  if('IntersectionObserver' in window){
+    var titleObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ decryptTitle(entry.target); titleObserver.unobserve(entry.target); }
+      });
+    }, { threshold:0.6 });
+    Array.prototype.forEach.call(document.querySelectorAll('#workGrid .card h3'), function(h){ titleObserver.observe(h); });
+  }
 
   // Local time in New York, kept current while the page is open.
   var nycTime = document.getElementById('nycTime');
