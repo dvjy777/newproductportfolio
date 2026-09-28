@@ -455,6 +455,17 @@
     .overlay a{ font-size:30px; padding:4px 0; }
   }
 
+  /* section clip: text and small screenshots beside a short phone recording */
+  .clip-split .thumbs{ margin:20px 0 0; }
+  @media(min-width:860px){ .case-split.clip-split{ align-items:start; } .clip-split > div{ padding-top:24px; } }
+  .thumb-row{ display:flex; gap:10px; }
+  .thumb-row img{ width:76px; height:auto; aspect-ratio:780/1650; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#000; transition:transform .2s ease; }
+  .thumb-row img:hover{ transform:translateY(-3px); }
+  .clip-phone{ margin:0; }
+  .clip-phone .phone-mock{ width:min(230px, 70vw); border-radius:40px; padding:8px; }
+  .clip-phone .phone-mock .screen{ border-radius:32px; }
+  .clip-phone .phone-mock::before{ top:16px; height:19px; }
+
   .lightbox{
     position:fixed; inset:0; z-index:80; display:none;
     align-items:center; justify-content:center; padding:4vh 4vw;
@@ -628,6 +639,7 @@
     {
       slug:'inyun', company:'INYUN', tagline:'PRODUCT DESIGN · 2026',
       title:'A matching experience built on real-time collaboration', word:'INYUN',
+      heroPhone:{src:'images/inyun/inyun-demo.mp4', poster:'images/inyun/inyun-demo-poster.jpg', statusBg:'#050505', alt:'Screen recording of INYUN on a phone: setting the mediation triangle, answering three questions, entering the field, pairing with Rin and sketching together'},
       gradient:'linear-gradient(135deg,#12213f,#1d5fff 55%,#9db8ff)',
       role:'Product designer', timeline:'8 weeks', team:'Supervised by Carla Gannis',
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
@@ -641,13 +653,15 @@
       journey:[
         {media:[{youtube:'iJZ1TIdbeYM', alt:'INYUN first iteration demo'}, {youtube:'WvkPaeggxVY', alt:'INYUN second iteration demo'}], caption:'Iteration 1 and iteration 2'},
         '<strong>Onboarding.</strong> Onboarding was a critical design challenge. Instead of asking for everything on one screen, which feels like filling out a form, I wanted it to be a seamless transition into the experience, so I broke it down into three questions: What brought you here today? What are you carrying with you? What do you want to leave behind? Based on the answers, each user\'s unique Identity Signifier, or blob, is created, and they are taken to the lobby.',
-        {media:[{src:'images/inyun/onboarding-2.jpg', alt:'Onboarding question: what brought you here today?'}, {src:'images/inyun/onboarding-3.jpg', alt:'Onboarding question: what are you carrying with you?'}, {src:'images/inyun/onboarding-4.jpg', alt:'Onboarding question: what do you want to leave behind?'}], caption:'Three onboarding questions', cols:3},
+        {clip:{src:'images/inyun/inyun-onboarding.mp4', poster:'images/inyun/inyun-onboarding-poster.jpg', statusBg:'#050505', alt:'Answering the three onboarding questions and choosing a session length'}, thumbs:[{src:'images/inyun/onboarding-2.jpg', alt:'Onboarding question: what brought you here today?'}, {src:'images/inyun/onboarding-3.jpg', alt:'Onboarding question: what are you carrying with you?'}, {src:'images/inyun/onboarding-4.jpg', alt:'Onboarding question: what do you want to leave behind?'}], caption:'Three onboarding questions'},
         '<strong>The mediation triangle.</strong> Users decide how much of a role each of three components plays in choosing a match: AI, the artist, and the user themselves. The lobby is displayed differently depending on this weighting.',
-        {media:[{src:'images/inyun/onboarding-1.jpg', alt:'Mediation triangle: where do you stand between AI, artist and yourself?'}, {src:'images/inyun/onboarding-5.jpg', alt:'Bring something with you'}, {src:'images/inyun/lobby-1.jpg', alt:'The user\'s newly created Identity Signifier'}], caption:'Setting the mediation, and the Identity Signifier taking shape', cols:3},
+        {clip:{src:'images/inyun/inyun-mediation.mp4', poster:'images/inyun/inyun-mediation-poster.jpg', statusBg:'#050505', alt:'Dragging the mediation triangle toward You, then holding to create the Identity Signifier'}, thumbs:[{src:'images/inyun/onboarding-1.jpg', alt:'Mediation triangle: where do you stand between AI, artist and yourself?'}, {src:'images/inyun/onboarding-5.jpg', alt:'Bring something with you'}, {src:'images/inyun/lobby-1.jpg', alt:'The user\'s newly created Identity Signifier'}], caption:'Setting the mediation, and the Identity Signifier taking shape'},
         '<strong>Lobby and pairing.</strong> Each user\'s mediation settings decide how much of other users\' information they can see. With high autonomy (high user mediation), a user can see details such as minutes in the field and compatibility, and can request to pair directly with a specific person. With low autonomy (leaning on AI or the artist), the user lets the system form a match or group for them.',
-        {media:[{src:'images/inyun/lobby-2.jpg', alt:'Lobby with other users\' blobs'}, {src:'images/inyun/lobby-3.jpg', alt:'Profile details for a user named Sol'}, {src:'images/inyun/lobby-5.jpg', alt:'Profile for a user named Rin with a pair request'}], caption:'Lobby view', cols:3},
-        '<strong>Collaboration.</strong> Before collaborating, a prompt screen shows the grouped users with a match summary of their commonalities and differences. The main prompt at the top is intentionally abstract. The sketch screen is optimized for drawing: tools sit on the left, a bar at the bottom opens the prompt details, a timer at the top shows the remaining time, and users confirm their sketch when they are done.',
-        {media:[{src:'images/inyun/collab-1.jpg', alt:'Prompt screen: something between a threshold and a shelter'}, {src:'images/inyun/collab-2.jpg', alt:'Sketching together on the canvas'}, {src:'images/inyun/collab-4.jpg', alt:'Finished shared sketch ready to confirm'}], caption:'Prompt and collaborative sketch', cols:3},
+        {clip:{src:'images/inyun/inyun-lobby.mp4', poster:'images/inyun/inyun-lobby-poster.jpg', statusBg:'#050505', alt:'Tapping Rin in the lobby, requesting to pair, and being accepted'}, thumbs:[{src:'images/inyun/lobby-2.jpg', alt:'Lobby with other users\' blobs'}, {src:'images/inyun/lobby-3.jpg', alt:'Profile details for a user named Sol'}, {src:'images/inyun/lobby-5.jpg', alt:'Profile for a user named Rin with a pair request'}], caption:'Lobby view'},
+        '<strong>Collaboration.</strong> Before collaborating, a prompt screen shows the grouped users with a match summary of their commonalities and differences. The main prompt sits at the top. The sketch screen is optimized for drawing: tools sit on the left, a bar at the bottom opens the prompt details, a timer at the top shows the remaining time, and users confirm their sketch when they are done.',
+        {clip:{src:'images/inyun/inyun-collab.mp4', poster:'images/inyun/inyun-collab-poster.jpg', statusBg:'#050505', alt:'Reading the prompt, then drawing a small shelter in the rain together'}, thumbs:[{src:'images/inyun/collab-1.jpg', alt:'Prompt screen: something between a threshold and a shelter'}, {src:'images/inyun/collab-2.jpg', alt:'Sketching together on the canvas'}, {src:'images/inyun/collab-4.jpg', alt:'Finished shared sketch ready to confirm'}], caption:'Prompt and collaborative sketch'},
+        '<strong>Why the prompt matters.</strong> The prompt is the only thing a group gets to start with, so it carries a lot. It has to be open enough that nobody can get it wrong, but concrete enough that you can make the first mark without overthinking it. It also shifts the attention away from judging each other\'s profiles and toward making something together. How someone responds to a prompt says more about them than a bio would.',
+        '<strong>How it\'s chosen.</strong> Where the prompt comes from depends on the group\'s mediation settings. When the artist\'s weight is high, it comes from a pool of prompts I wrote myself. When AI\'s weight is high, the plan is for AI to write one from the group\'s onboarding answers, and in between, the two get mixed. In this version, the AI route still falls back to my written pool, so that part is next on the list. The sketch timer is shared too: it averages how much time each person said they were willing to give. For the demo I used a more concrete prompt, "Draw a place where the three of you could wait out the rain", which gives people an easier first mark while leaving plenty of room for interpretation.',
         '<strong>User flow.</strong> The lobby is the heart of the experience, with onboarding and offboarding at either end. Users can go through multiple sessions, depending on how much time they want to commit. Based on user testing, I also made it possible to adjust mediation settings directly from the lobby.',
         {media:[{src:'images/inyun/user-flow.jpg', alt:'INYUN user flow diagram'}], caption:'User flow'}
       ],
@@ -890,10 +904,19 @@
     // A paragraph followed by a row of phone screens sits beside it on wide
     // screens; everything else (videos, slides, pairs) keeps the full width.
     function sideBySide(t){ return t && typeof t !== 'string' && !!t.media && (t.cols === 3 || !!t.media[0].phone); }
+    function clipPhone(c){ return '<figure class="case-fig clip-phone">' + mediaHtml({phone:c.src, poster:c.poster, alt:c.alt, statusBg:c.statusBg, statusInk:c.statusInk}) + '</figure>'; }
+    function thumbsHtml(t){
+      return '<figure class="case-fig thumbs"><div class="thumb-row">' +
+        t.thumbs.map(function(m){ return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">'; }).join('') + '</div>' +
+        (t.caption ? '<figcaption>'+t.caption+' · tap to enlarge</figcaption>' : '') + '</figure>';
+    }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
-        if(typeof list[i] === 'string' && sideBySide(list[i+1])){
+        if(typeof list[i] === 'string' && list[i+1] && list[i+1].clip){
+          html += '<div class="case-split clip-split"><div>' + entryHtml(list[i]) + thumbsHtml(list[i+1]) + '</div>' + clipPhone(list[i+1].clip) + '</div>';
+          i++;
+        } else if(typeof list[i] === 'string' && sideBySide(list[i+1])){
           html += '<div class="case-split">' + entryHtml(list[i]) + entryHtml(list[i+1]) + '</div>';
           i++;
         } else {
@@ -939,12 +962,18 @@
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     decryptTitle(caseView.querySelector('.case-title'));
     if(p.heroPhone && p.heroPhone.glow) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
-    // autoplay isn't reliable for videos inserted as HTML; start them explicitly
-    caseView.querySelectorAll('video[autoplay]').forEach(function(v){
-      v.muted = true;
-      var p = v.play();
-      if(p && p.catch) p.catch(function(){});
-    });
+    // Videos play only while on screen (saves battery and data on phones).
+    // Autoplay isn't reliable for videos inserted as HTML, so start them explicitly.
+    var vids = caseView.querySelectorAll('video[autoplay]');
+    function play(v){ v.muted = true; var pr = v.play(); if(pr && pr.catch) pr.catch(function(){}); }
+    if('IntersectionObserver' in window){
+      var vo = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting) play(en.target); else en.target.pause(); });
+      }, { threshold:0.2 });
+      vids.forEach(function(v){ v.muted = true; vo.observe(v); });
+    } else {
+      vids.forEach(play);
+    }
   }
 
   // Colours the hero's light to match what is happening in its video.
