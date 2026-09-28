@@ -398,8 +398,11 @@
     content:''; position:absolute; z-index:1; top:19px; left:50%; transform:translateX(-50%);
     width:30%; height:22px; border-radius:12px; background:#000;
   }
-  .case-fig .phone-mock video{ width:100%; height:100%; object-fit:cover; border:0; border-radius:37px; background:#000; }
+  .phone-mock video{ width:100%; height:100%; object-fit:cover; border:0; border-radius:37px; background:#000; }
   .case-fig.single:has(.phone-mock) figcaption{ text-align:center; }
+  /* a product recording as the opening image of a case study */
+  .case-hero.has-phone{ aspect-ratio:auto; padding:clamp(28px,5vw,56px) 20px; }
+  .case-hero.has-phone .phone-mock{ width:min(280px, 72%); }
   .case-fig.phones img{ border-radius:14px; }
   .case-fig img{ cursor:zoom-in; }
 
@@ -620,6 +623,7 @@
     {
       slug:'ekpyrosis', company:'Ekpyrosis', tagline:'IMMERSIVE INSTALLATION · 2026',
       title:'An installation where emotions become light and space', word:'Ekpyrosis',
+      heroPhone:{src:'images/ekpyrosis/ekpyrosis-demo.mp4', poster:'images/ekpyrosis/ekpyrosis-demo-poster.jpg', alt:'Screen recording of the Ekpyrosis phone app: choosing exhaustion, letting go, arriving at peace'},
       gradient:'linear-gradient(135deg,#1f3a63,#4d78e6 55%,#c3d3ff)',
       role:'Designer', timeline:'4 weeks, May 2026', team:'Supervised by Carla Gannis',
       tools:'Supabase, Claude, Vercel, TouchDesigner, Adobe Suite',
@@ -639,7 +643,6 @@
       ],
       journey:[
         '<strong>The visitor\'s journey.</strong> On their phone, each visitor names what they feel, chooses an intention and picks the state they want to arrive at, pausing for a short reflection between zones before stepping into the darkroom for the transformation.',
-        {media:[{phone:'images/ekpyrosis/ekpyrosis-demo.mp4', poster:'images/ekpyrosis/ekpyrosis-demo-poster.jpg', alt:'Screen recording of the Ekpyrosis phone app: choosing exhaustion, letting go, arriving at peace'}], caption:'The full journey on the phone, from exhaustion to peace'},
         '<strong>Pipeline.</strong> Scanning a QR code opens the web app\'s onboarding screen. WebSockets let multiple visitors enter at once, with a separately built queue system. Session data is stored in the database, and the projection, built in TouchDesigner, is networked with the backend so it reacts to each visitor\'s input in real time.',
         {media:[{src:'images/ekpyrosis/slide-09.jpg', alt:'System overview: phone, relay, database, TouchDesigner'}, {src:'images/ekpyrosis/slide-10.jpg', alt:'Design system: colors, orbs and type'}], caption:'System overview and design system'},
         '<strong>Onboarding and the queue.</strong> The first screen shows a single button over a background animation. Once it begins, it transitions into registering the visitor\'s current emotional state. The system was first designed for instant input, but I added a queue later for crowd control during the exhibition. While waiting, visitors immerse in their current state with a matching visualization for about 10 seconds. That pause became a feature: deliberate friction interrupts automatic, mindless interaction and invites a moment of reflection [[6]].',
@@ -866,8 +869,9 @@
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
-      '<div class="case-hero" style="background:'+(p.coverBg || p.gradient)+'">'+
-        (p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
+      '<div class="case-hero'+(p.heroPhone ? ' has-phone' : '')+'" style="background:'+(p.coverBg || p.gradient)+'">'+
+        (p.heroPhone ? mediaHtml({phone:p.heroPhone.src, poster:p.heroPhone.poster, alt:p.heroPhone.alt}) :
+         p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
       metaHtml + linksHtml +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
       researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml;
