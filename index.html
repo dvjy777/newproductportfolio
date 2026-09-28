@@ -463,6 +463,15 @@
   .lightbox.open{ display:flex; }
   .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; box-shadow:0 20px 60px rgba(0,0,0,.4); }
 
+  .case-table{ max-width:900px; }
+  .table-scroll{ overflow-x:auto; border:1px solid var(--border); }
+  .case-table table{ width:100%; min-width:560px; border-collapse:collapse; font-size:14px; line-height:1.5; }
+  .case-table th, .case-table td{ text-align:left; vertical-align:top; padding:12px 14px; border-bottom:1px solid var(--border); }
+  .case-table tbody tr:last-child th, .case-table tbody tr:last-child td{ border-bottom:none; }
+  .case-table thead th{ font-family:'Geist Mono',monospace; font-size:11.5px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); background:var(--accent-soft); }
+  .case-table tbody th{ font-weight:600; white-space:nowrap; width:1%; }
+  .case-table td{ color:var(--text-muted); }
+  .case-table td:last-child{ color:var(--text); }
   .case-fig figcaption{ font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--text-muted); margin-top:10px; }
   .meta-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:760px;
@@ -722,6 +731,17 @@
       research:[
         'Headspace was my main reference. Its minimal graphics, contrasting colors and intuitive onboarding make meditation feel approachable and refreshing. I wanted to create something similar but more immersive, replacing flat visual cues with 3D animation overlaid on the real world.',
         {media:[{src:'images/animi/headspace.jpg', alt:'Screens from the Headspace app'}], caption:'Case study: Headspace'},
+        '<strong>Competitive analysis.</strong> Headspace showed me that a single, well-designed breath can carry an entire first impression: its onboarding opens with nothing more than breathe in, breathe out. Immersive platforms like Tripp and Healium go much further, but they ask people to put on a headset. ANIMI sits between the two: an immersive breathing ritual that runs in any browser, with no extra hardware.',
+        {table:{head:['', 'Headspace', 'ANIMI'], rows:[
+          ['Breathing guide', 'A simple shape expands and contracts to pace each breath', 'A 3D glass lotus opens, hovers and closes with the breath'],
+          ['Visual language', 'Warm orange and yellow, soft flat illustration', 'Teal glass and fluid droplet forms, chosen for tranquility'],
+          ['Immersion', 'Flat screen', 'An AR mask that follows the face, right in the browser'],
+          ['Sessions', 'Set lengths with a clear ending', 'Three breathing rhythms, but no set length yet'],
+          ['Guidance', 'Voice led', 'Music and on-screen cues'],
+          ['Connection', 'Buddies share progress with friends', 'Planned: meditating together in multi user sessions'],
+          ['Habit', 'Streaks and total minutes meditated', 'A breath count within each session']
+        ]}, caption:'What I took from Headspace, what I changed, and what is still missing'},
+        '<strong>What the comparison showed me.</strong> ANIMI\'s strength is embodiment: the breath becomes something you can see around you, not just a shape on a screen. Its gaps are just as clear. People should be able to start breathing before being asked for their camera, each session needs a three minute arc with a closing moment, voice guidance would make it easier to follow, and the sharing that the concept promises still has to be built.',
         {media:[{src:'images/animi/who-its-for.png', alt:'Who it is for: corporate workers from age 18 and up, and anyone who wants to meditate in a fun, interactive way'}, {src:'images/animi/cognitive-overload.png', alt:'Why: addressing cognitive overload in immersive XR environments'}], caption:'Who it\'s for, and why'},
         'Before shaping the interaction model, I looked into why screen based work and social platforms leave people so drained. Stanford researcher Jeremy Bailenson argues that an unnatural volume of close up eye contact is a leading cause of what is now called Zoom fatigue, since every participant on a video call appears to be looking directly at every other participant for the full length of the call, with constant self view and reduced physical movement compounding the effect [[1]]. ANIMI is built around that argument. Rather than adding another screen based habit, it interrupts screen time at intervals with a short augmented reality meditation, working against the exact conditions the research points to as the cause of the fatigue.',
         'The mask is the most visible part of ANIMI, and I wanted its role to go beyond aesthetics. A 2023 study found that wearing a mask can increase the sense of ease felt by the person wearing it, reducing negative feelings caused by social pressure, separate from how the mask changes the way others read their expressions [[2]]. That distinction shaped the design directly. Since the meditation moment in ANIMI is private and self facing, the mask was never meant to change how the user is perceived by anyone else. It was meant to give the wearer a felt sense of stepping outside their working identity for the length of the session, so the pause reads less like another task and more like a brief, deliberate exit from work.'
@@ -858,6 +878,10 @@
     }
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
+      if(t.table) return '<figure class="case-fig case-table"><div class="table-scroll"><table><thead><tr>' +
+        t.table.head.map(function(h){ return '<th scope="col">'+h+'</th>'; }).join('') + '</tr></thead><tbody>' +
+        t.table.rows.map(function(r){ return '<tr>' + r.map(function(c, i){ return i === 0 ? '<th scope="row">'+c+'</th>' : '<td>'+c+'</td>'; }).join('') + '</tr>'; }).join('') +
+        '</tbody></table></div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       var kind = t.cols === 3 ? ' phones' : t.media.length === 1 ? ' single' : ' pair';
       return '<figure class="case-fig'+kind+'"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
         t.media.map(mediaHtml).join('') + '</div>' +
@@ -865,7 +889,7 @@
     }
     // A paragraph followed by a row of phone screens sits beside it on wide
     // screens; everything else (videos, slides, pairs) keeps the full width.
-    function sideBySide(t){ return t && typeof t !== 'string' && (t.cols === 3 || !!t.media[0].phone); }
+    function sideBySide(t){ return t && typeof t !== 'string' && !!t.media && (t.cols === 3 || !!t.media[0].phone); }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
