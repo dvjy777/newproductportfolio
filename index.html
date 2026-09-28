@@ -389,7 +389,7 @@
   .case-fig.phones{ max-width:620px; }
   /* a phone frame around a looping product recording */
   .phone-mock{
-    position:relative; width:min(300px, 100%); margin:0 auto; aspect-ratio:390/844;
+    position:relative; width:min(300px, 100%); margin:0 auto;
     padding:9px; border-radius:46px; background:#0c0e13;
     box-shadow:inset 0 0 0 1.5px #2b303b, inset 0 0 0 4px #0c0e13, inset 0 0 0 5px #1b1f27,
       0 30px 60px rgba(10,20,50,.22), 0 8px 18px rgba(10,20,50,.14);
@@ -398,11 +398,37 @@
     content:''; position:absolute; z-index:1; top:19px; left:50%; transform:translateX(-50%);
     width:30%; height:22px; border-radius:12px; background:#000;
   }
-  .phone-mock video{ width:100%; height:100%; object-fit:cover; border:0; border-radius:37px; background:#000; }
+  .phone-mock .screen{ border-radius:37px; overflow:hidden; background:#000; }
+  .phone-mock .status{
+    aspect-ratio:390/54; display:flex; align-items:center; justify-content:space-between;
+    padding:0 9% 0 11%; color:#fff; font:600 11.5px/1 -apple-system, 'Geist', sans-serif;
+  }
+  .phone-mock .status.ink-dark{ color:#0b2b30; }
+  .case-hero .phone-mock .status span{ font:inherit; color:inherit; font-style:normal; }
+  .phone-mock .status svg{ width:23%; height:auto; }
+  .phone-mock video{ display:block; width:100%; height:auto; aspect-ratio:390/844; object-fit:cover; border:0; border-radius:0; background:#000; }
   .case-fig.single:has(.phone-mock) figcaption{ text-align:center; }
   /* a product recording as the opening image of a case study */
   .case-hero.has-phone{ aspect-ratio:auto; padding:clamp(28px,5vw,56px) 20px; }
   .case-hero.has-phone .phone-mock{ width:min(280px, 72%); }
+  /* Ekpyrosis: a dark room where the light behind the phone takes on the
+     colour the visitor chooses, like the installation's projections */
+  .case-hero.has-glow{
+    --g:154,163,173; --ga:.25; position:relative;
+    background:
+      radial-gradient(ellipse 46% 62% at 50% 48%, rgba(var(--g), var(--ga)) 0%, rgba(var(--g), calc(var(--ga) * .35)) 42%, rgba(var(--g), 0) 74%),
+      radial-gradient(ellipse 70% 22% at 50% 100%, rgba(var(--g), calc(var(--ga) * .45)), rgba(var(--g), 0) 70%),
+      #07080b;
+  }
+  .case-hero.has-glow .phone-mock{
+    box-shadow:inset 0 0 0 1.5px #2b303b, inset 0 0 0 4px #0c0e13, inset 0 0 0 5px #1b1f27,
+      0 0 90px rgba(var(--g), calc(var(--ga) * .7)), 0 30px 60px rgba(0,0,0,.5);
+  }
+  .hero-note{
+    position:absolute; left:18px; bottom:14px; right:18px;
+    font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    color:rgba(255,255,255,.55);
+  }
   .case-fig.phones img{ border-radius:14px; }
   .case-fig img{ cursor:zoom-in; }
 
@@ -623,7 +649,10 @@
     {
       slug:'ekpyrosis', company:'Ekpyrosis', tagline:'IMMERSIVE INSTALLATION · 2026',
       title:'An installation where emotions become light and space', word:'Ekpyrosis',
-      heroPhone:{src:'images/ekpyrosis/ekpyrosis-demo.mp4', poster:'images/ekpyrosis/ekpyrosis-demo-poster.jpg', alt:'Screen recording of the Ekpyrosis phone app: choosing exhaustion, letting go, arriving at peace'},
+      heroPhone:{src:'images/ekpyrosis/ekpyrosis-demo.mp4', poster:'images/ekpyrosis/ekpyrosis-demo-poster.jpg', alt:'Screen recording of the Ekpyrosis phone app: choosing exhaustion, letting go, arriving at peace', statusBg:'#0a0a0a',
+        note:'The projected light follows the visitor\'s choice',
+        // [seconds into the recording, colour, brightness, seconds to fade in]
+        glow:[[0,'#9aa3ad',.22,.8],[7.4,'#78909C',.6,.8],[20.9,'#69FF47',.5,.8],[34.3,'#00E5FF',.55,.8],[39.7,'#78909C',.32,1.2],[50.2,'#00E5FF',.75,7]]},
       gradient:'linear-gradient(135deg,#1f3a63,#4d78e6 55%,#c3d3ff)',
       role:'Designer', timeline:'4 weeks, May 2026', team:'Supervised by Carla Gannis',
       tools:'Supabase, Claude, Vercel, TouchDesigner, Adobe Suite',
@@ -680,7 +709,7 @@
     {
       slug:'animi', company:'ANIMI', tagline:'AR EXPERIENCE · 2025',
       title:'An AR guided meditation experience', word:'ANIMI',
-      heroPhone:{src:'images/animi/animi-demo.mp4', poster:'images/animi/animi-demo-poster.jpg', alt:'Screen recording of ANIMI on a phone: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
+      heroPhone:{statusBg:'#c6f0f4', statusInk:'dark', src:'images/animi/animi-demo.mp4', poster:'images/animi/animi-demo-poster.jpg', alt:'Screen recording of ANIMI on a phone: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
       gradient:'linear-gradient(135deg,#0c1a33,#2848a8 55%,#7fa0f2)',
       role:'AI workflow and interface designer', timeline:'6 weeks',
       tools:'Google MediaPipe, Three.js, CodePen, Claude, ChatGPT, Gemini, Meshy AI',
@@ -812,7 +841,12 @@
     // {media:[{src,alt} | {video,poster} | {youtube}], caption}
     function mediaHtml(m){
       if(m.youtube) return '<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/'+m.youtube+'" title="'+(m.alt||'Video')+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>';
-      if(m.phone) return '<div class="phone-mock"><video src="'+m.phone+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video></div>';
+      if(m.phone) return '<div class="phone-mock"><div class="screen">'+
+        '<div class="status'+(m.statusInk === 'dark' ? ' ink-dark' : '')+'" style="background:'+(m.statusBg||'#000')+'" aria-hidden="true">'+
+          '<span>9:41</span><svg viewBox="0 0 68 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/>'+
+          '<path d="M30 3.2a9 9 0 0 1 11.4 0l-1.3 1.5a7 7 0 0 0-8.8 0zM32.3 5.9a5.4 5.4 0 0 1 6.8 0l-1.3 1.5a3.4 3.4 0 0 0-4.2 0zM34.6 8.6a1.8 1.8 0 0 1 2.2 0L35.7 10z"/>'+
+          '<rect x="47.5" y="1.5" width="17" height="9" rx="2.5" fill="none" stroke="currentColor" stroke-opacity=".45"/><rect x="49" y="3" width="12" height="6" rx="1.2"/><rect x="65.5" y="4.5" width="1.5" height="3" rx=".7" opacity=".45"/></svg></div>'+
+        '<video src="'+m.phone+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video></div></div>';
       if(m.video) return '<video src="'+m.video+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video>';
       return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">';
     }
@@ -870,8 +904,9 @@
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
-      '<div class="case-hero'+(p.heroPhone ? ' has-phone' : '')+'" style="background:'+(p.coverBg || p.gradient)+'">'+
-        (p.heroPhone ? mediaHtml({phone:p.heroPhone.src, poster:p.heroPhone.poster, alt:p.heroPhone.alt}) :
+      '<div class="case-hero'+(p.heroPhone ? ' has-phone' : '')+(p.heroPhone && p.heroPhone.glow ? ' has-glow' : '')+'" style="background:'+(p.heroPhone && p.heroPhone.glow ? '' : (p.coverBg || p.gradient))+'">'+
+        (p.heroPhone ? mediaHtml({phone:p.heroPhone.src, poster:p.heroPhone.poster, alt:p.heroPhone.alt, statusBg:p.heroPhone.statusBg, statusInk:p.heroPhone.statusInk}) +
+          (p.heroPhone.note ? '<div class="hero-note">'+p.heroPhone.note+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
       metaHtml + linksHtml +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
@@ -879,12 +914,34 @@
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     decryptTitle(caseView.querySelector('.case-title'));
+    if(p.heroPhone && p.heroPhone.glow) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
     // autoplay isn't reliable for videos inserted as HTML; start them explicitly
     caseView.querySelectorAll('video[autoplay]').forEach(function(v){
       v.muted = true;
       var p = v.play();
       if(p && p.catch) p.catch(function(){});
     });
+  }
+
+  // Colours the hero's light to match what is happening in its video.
+  // keys: [time, hex, brightness, fadeSeconds]; each key fades in from the one before.
+  function glowWithVideo(hero, keys){
+    var video = hero && hero.querySelector('video');
+    if(!video) return;
+    function rgb(hex){ var n = parseInt(hex.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+    var ks = keys.map(function(k){ return { t:k[0], c:rgb(k[1]), a:k[2], fade:k[3] }; });
+    function frame(){
+      if(!document.body.contains(hero)) return;          // project page was left
+      var t = video.currentTime, i = 0;
+      while(i + 1 < ks.length && ks[i + 1].t <= t) i++;
+      var k = ks[i], prev = ks[i - 1] || k;
+      var f = Math.min(1, (t - k.t) / k.fade);
+      var c = k.c.map(function(v, j){ return Math.round(prev.c[j] + (v - prev.c[j]) * f); });
+      hero.style.setProperty('--g', c.join(','));
+      hero.style.setProperty('--ga', (prev.a + (k.a - prev.a) * f).toFixed(3));
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   }
 
   // Citation markers jump to their reference (without touching the URL hash,
