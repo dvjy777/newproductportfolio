@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>David Jinho Yang</title>
 <style>
   /* Geist + Geist Mono, self-hosted (SIL Open Font License 1.1) — the same
@@ -360,12 +361,35 @@
     display:flex; align-items:center; justify-content:center;
   }
   .case-hero span{ font-family:'General Sans',sans-serif; font-weight:500; font-style:italic; font-size:clamp(28px,6vw,52px); color:#ffffff; }
+  .case-hero{ overflow:hidden; }
+  .case-hero img{ height:100%; width:auto; max-width:100%; object-fit:contain; display:block; }
+  .thumb .thumb-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+  .thumb .tag{ z-index:1; }
+  .thumb.has-cover .tag{ color:var(--text); }
+  .thumb.has-cover.dark .tag{ color:#fff; }
+
+  /* images and video inside a case study */
+  .case-fig{ margin:26px 0 32px; }
+  .case-fig .fig-grid{ display:grid; gap:12px; }
+  @media(min-width:560px){ .case-fig .fig-grid.cols-2{ grid-template-columns:1fr 1fr; } }
+  .case-fig .fig-grid.cols-3{ grid-template-columns:repeat(3,1fr); }
+  .case-fig img, .case-fig video{ width:100%; height:auto; display:block; border:1px solid var(--border); background:var(--accent-soft); }
+  .case-fig .embed{ position:relative; aspect-ratio:16/9; border:1px solid var(--border); background:#000; }
+  .case-fig .embed iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .case-fig figcaption{ font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--text-muted); margin-top:10px; }
   .meta-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:760px;
     padding:26px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
   }
   @media(min-width:560px){ .meta-grid{ grid-template-columns:repeat(4,1fr); } }
   .meta-grid .label{ margin-bottom:8px; }
+  .case-links{ display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+  .case-links a{
+    font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    text-decoration:none; color:var(--accent); border:1px solid var(--accent); padding:9px 14px;
+    transition:background .2s ease, color .2s ease;
+  }
+  .case-links a:hover{ background:var(--accent); color:var(--accent-ink); }
   .meta-grid div p{ margin:0 0 3px; font-size:14px; }
   .case-block{ padding:34px 0; border-bottom:1px solid var(--border); }
   .case-block:last-of-type{ border-bottom:none; }
@@ -494,29 +518,128 @@
       gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)'
     },
     {
-      slug:'inyun', company:'INYUN', tagline:'CASE STUDY IN PROGRESS',
-      title:'Full write-up coming soon', word:'INYUN',
+      slug:'inyun', company:'INYUN', tagline:'PRODUCT DESIGN · 2026',
+      title:'A matching experience built on real-time collaboration', word:'INYUN',
       gradient:'linear-gradient(135deg,#12213f,#1d5fff 55%,#9db8ff)',
-      overview:'The full case study for this project is still being written. Message me directly if you would like a walkthrough in the meantime.'
+      role:'Product designer', timeline:'8 weeks', team:'Supervised by Carla Gannis',
+      tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
+      overview:'INYUN (인연) means fate, or providence, in Korean. It is an exploration of a matching experience built around real-time collaboration. By bringing vibe coding (AI) into both the product pipeline and the product itself, I set out to make a speculative experience that questions how AI can shape the way people meet and connect, rather than simply automating it.',
+      research:[
+        '<strong>Inspiration.</strong> I was interested in the ephemerality of digital experiences and how it could translate to modern dating apps. There are countless dating apps, but most simply match users based on their profile inputs, and one study found that fewer than 30% of matches actually lead to an in-person date. Having experienced that difficulty firsthand, I came up with the idea of adding real-time collaboration that focuses on vulnerability and anonymity.',
+        '<strong>The Identity Signifier.</strong> Instead of photos and headshots, each user is introduced by a digital avatar. Apps like Bumble, Tinder and Hinge offer optional verification so users can choose to match only with verified people. It isn\'t required, but it is an important way of building trust. INYUN takes a different route to trust: anonymity by default, and an avatar shaped by what you choose to share. Its form was inspired by blob interfaces in TouchDesigner references.',
+        {media:[{youtube:'JLoOt9YTscU', alt:'INYUN teaser video'}], caption:'Teaser video'},
+        '<em>INYUN is an experiment in how strangers meet, shape each other, and make something together. What you share here is anonymous. It will be held. Be as open as you want to be. More honestly makes the encounter richer. Welcome to INYUN.</em>'
+      ],
+      journey:[
+        {media:[{youtube:'iJZ1TIdbeYM', alt:'INYUN first iteration demo'}, {youtube:'WvkPaeggxVY', alt:'INYUN second iteration demo'}], caption:'Iteration 1 and iteration 2'},
+        '<strong>Onboarding.</strong> Onboarding was a critical design challenge. Instead of asking for everything on one screen, which feels like filling out a form, I wanted it to be a seamless transition into the experience, so I broke it down into three questions: What brought you here today? What are you carrying with you? What do you want to leave behind? Based on the answers, each user\'s unique Identity Signifier, or blob, is created, and they are taken to the lobby.',
+        {media:[{src:'images/inyun/onboarding-2.jpg', alt:'Onboarding question: what brought you here today?'}, {src:'images/inyun/onboarding-3.jpg', alt:'Onboarding question: what are you carrying with you?'}, {src:'images/inyun/onboarding-4.jpg', alt:'Onboarding question: what do you want to leave behind?'}], caption:'Three onboarding questions', cols:3},
+        '<strong>The mediation triangle.</strong> Users decide how much of a role each of three components plays in choosing a match: AI, the artist, and the user themselves. The lobby is displayed differently depending on this weighting.',
+        {media:[{src:'images/inyun/onboarding-1.jpg', alt:'Mediation triangle: where do you stand between AI, artist and yourself?'}, {src:'images/inyun/onboarding-5.jpg', alt:'Bring something with you'}, {src:'images/inyun/lobby-1.jpg', alt:'The user\'s newly created Identity Signifier'}], caption:'Setting the mediation, and the Identity Signifier taking shape', cols:3},
+        '<strong>Lobby and pairing.</strong> Each user\'s mediation settings decide how much of other users\' information they can see. With high autonomy (high user mediation), a user can see details such as minutes in the field and compatibility, and can request to pair directly with a specific person. With low autonomy (leaning on AI or the artist), the user lets the system form a match or group for them.',
+        {media:[{src:'images/inyun/lobby-2.jpg', alt:'Lobby with other users\' blobs'}, {src:'images/inyun/lobby-3.jpg', alt:'Profile details for a user named Sol'}, {src:'images/inyun/lobby-5.jpg', alt:'Profile for a user named Rin with a pair request'}], caption:'Lobby view', cols:3},
+        '<strong>Collaboration.</strong> Before collaborating, a prompt screen shows the grouped users with a match summary of their commonalities and differences. The main prompt at the top is intentionally abstract. The sketch screen is optimized for drawing: tools sit on the left, a bar at the bottom opens the prompt details, a timer at the top shows the remaining time, and users confirm their sketch when they are done.',
+        {media:[{src:'images/inyun/collab-1.jpg', alt:'Prompt screen: something between a threshold and a shelter'}, {src:'images/inyun/collab-2.jpg', alt:'Sketching together on the canvas'}, {src:'images/inyun/collab-4.jpg', alt:'Finished shared sketch ready to confirm'}], caption:'Prompt and collaborative sketch', cols:3},
+        '<strong>User flow.</strong> The lobby is the heart of the experience, with onboarding and offboarding at either end. Users can go through multiple sessions, depending on how much time they want to commit. Based on user testing, I also made it possible to adjust mediation settings directly from the lobby.',
+        {media:[{src:'images/inyun/user-flow.jpg', alt:'INYUN user flow diagram'}], caption:'User flow'}
+      ]
     },
     {
-      slug:'ekpyrosis', company:'Ekpyrosis', tagline:'CASE STUDY IN PROGRESS',
-      title:'Full write-up coming soon', word:'Ekpyrosis',
+      slug:'ekpyrosis', company:'Ekpyrosis', tagline:'IMMERSIVE INSTALLATION',
+      title:'An installation where emotions become light and space', word:'Ekpyrosis',
       gradient:'linear-gradient(135deg,#1f3a63,#4d78e6 55%,#c3d3ff)',
-      overview:'The full case study for this project is still being written. Message me directly if you would like a walkthrough in the meantime.'
+      role:'Designer and developer', timeline:'4 weeks', team:'Supervised by Carla Gannis',
+      tools:'Supabase, Claude, Vercel, TouchDesigner, Adobe Suite',
+      overview:'Ekpyrosis (ἐκπύρωσις) means conflagration: renewal through destruction. It is an experimental exhibition that asks what happens when human sentiment merges with spatial awareness. By displaying each visitor\'s emotions in a systematic spatial form, I wanted to make feelings visible while helping visitors understand and move them toward a state they choose. Our motto: feel, transform.',
+      outcomes:[
+        {num:'50–60', cap:'participants at the exhibition'},
+        {num:'26', cap:'emotions, grouped as light, in between and heavy'},
+        {num:'6', cap:'intentions to choose from'}
+      ],
+      research:[
+        '<strong>Three stages, organized in space.</strong> Visitors move through physical zones. <strong>Reflection:</strong> they register their current emotion. <strong>Intention:</strong> they choose what they want to do with it. <strong>Transformation:</strong> they go through a purge and renewal toward the state they want.',
+        {media:[{src:'images/ekpyrosis/slide-02.jpg', alt:'What is Ekpyrosis: an immersive visual installation'}, {src:'images/ekpyrosis/slide-05.jpg', alt:'The three zones: reflection, intention, transformation'}], caption:'The concept'},
+        {media:[{src:'images/ekpyrosis/slide-06.jpg', alt:'The ritual: phone, zones, projection, darkroom, memory'}, {src:'images/ekpyrosis/slide-07.jpg', alt:'Spatial journey: reflection, intention, transformation'}], caption:'The ritual and the spatial journey'},
+        {media:[{src:'images/ekpyrosis/slide-03.jpg', alt:'Graphic posters for Ekpyrosis'}, {src:'images/ekpyrosis/slide-04.jpg', alt:'Zone posters with glowing orbs'}], caption:'Graphic and zone posters'}
+      ],
+      journey:[
+        '<strong>Pipeline.</strong> Scanning a QR code opens the web app\'s onboarding screen. WebSockets let multiple visitors enter at once, with a separately built queue system. Session data is stored in the database, and the projection, built in TouchDesigner, is networked with the backend so it reacts to each visitor\'s input in real time.',
+        {media:[{src:'images/ekpyrosis/slide-09.jpg', alt:'System overview: phone, relay, database, TouchDesigner'}, {src:'images/ekpyrosis/slide-10.jpg', alt:'Design system: colors, orbs and type'}], caption:'System overview and design system'},
+        '<strong>Onboarding and the queue.</strong> The first screen shows a single button over a background animation. Once it begins, it transitions into registering the visitor\'s current emotional state. The system was first designed for instant input, but I added a queue later for crowd control during the exhibition. While waiting, visitors immerse in their current state with a matching visualization for about 10 seconds.',
+        {media:[{src:'images/ekpyrosis/slide-11.jpg', alt:'Mobile web onboarding: feel, transform'}, {src:'images/ekpyrosis/slide-12.jpg', alt:'Mobile web: choosing how you feel'}], caption:'Mobile web onboarding'},
+        '<strong>Choosing an emotion.</strong> I chose 26 distinct emotions in three categories (light, in between and heavy) so visitors can find their state more easily. Each emotion is color coded: lighter emotions have lighter hues, heavier ones darker hues. The first version only offered heavy emotions, since the goal was to purge negative feelings. User testing showed it should also welcome people feeling excitement or curiosity, so I added an in between category for visitors who aren\'t sure, so nobody has to default to a negative emotion.',
+        {media:[{src:'images/ekpyrosis/slide-08.jpg', alt:'The emotional states grouped as light, in between and heavy'}], caption:'Emotional states'},
+        '<strong>Setting an intention.</strong> There are six choices: to let go, to sit with it, to transform it, to express it, to understand it, and to offer it. The choice is color coded and visualized both on the queue screen and in the physical projection. The queue screen stays simple: a 10 second timer and a gentle orb whose hue matches the projection. Finally, visitors choose their desired state and see all their inputs on one confirmation screen, with a back button at every step so they can reconsider before committing.',
+        {media:[{src:'images/ekpyrosis/slide-13.jpg', alt:'Mobile web: choosing an intention'}, {src:'images/ekpyrosis/slide-14.jpg', alt:'Mobile web: confirming a desired state such as peace and hope'}], caption:'Intention and confirmation'},
+        '<strong>Building the space.</strong> The setup took multiple attempts to land on its final form. I pictured something like a meditation room with a creative twist reminiscent of a fashion runway. The transformation room was a white cloth over a tent structure, to maximize immersion and give visitors a place to stand, sit and process their emotions without distraction. Each zone had a dedicated projector reacting to the emotion registered on the visitor\'s phone, driven by two computers running TouchDesigner and networked to the backend.',
+        {media:[{src:'images/ekpyrosis/slide-16.jpg', alt:'Test setup at Mediacommons'}, {src:'images/ekpyrosis/slide-17.jpg', alt:'Test setup of tent structures'}], caption:'Test setups'},
+        {media:[{src:'images/ekpyrosis/slide-18.jpg', alt:'Zone and projection setup'}, {src:'images/ekpyrosis/slide-19.jpg', alt:'Final setup of the room'}], caption:'Zone, projection and final setup'},
+        '<strong>The room.</strong> To make the experience fully immersive, I chose the room months in advance: low light with mechanical curtains to block sunlight, a sound system, and a spacious floor plan. The final setup took hours of troubleshooting, from network issues to redesigning the mobile views for both Android and iOS, but everything was resolved in time.',
+        {media:[{src:'images/ekpyrosis/slide-20.jpg', alt:'Exhibition photos'}, {src:'images/ekpyrosis/slide-21.jpg', alt:'Visitors at the exhibition'}], caption:'The exhibition'}
+      ],
+      wins:[
+        {t:'An exhibition that landed', d:'Around 50 to 60 participants experienced the installation reacting to their input. Many described it as relaxing, meditative, or even transformative.'},
+        {t:'A record of feelings', d:'Every input was stored anonymously in real time, building a dataset for future artistic work.'}
+      ],
+      lessons:[
+        {t:'Guidance matters', d:'Some visitors were unsure how to move from one step to the next. Clearer cues between zones would help everyone reach the transformation.'},
+        {t:'Design for every feeling', d:'Testing showed that a space built only for heavy emotions left people out. Adding an in between category made the experience open to anyone, whatever they walked in with.'}
+      ],
+      future:[
+        'This project was experimental and speculative, but the idea has many possible uses. Music streaming apps like Spotify and Apple Music could use it to power recommendations or generate playlists from a listener\'s emotion. Picture building a playlist for an event that starts low-key and chill, then builds into something high energy.'
+      ]
     },
     {
       slug:'animi', company:'ANIMI', tagline:'AR EXPERIENCE · 2025',
       title:'An AR social media and meditation experience', word:'ANIMI',
       gradient:'linear-gradient(135deg,#0c1a33,#2848a8 55%,#7fa0f2)',
-      role:'AI workflow and interface designer', timeline:'Sep to Dec 2025',
-      skills:['AI assisted workflows','Mobile AR interface design','Stakeholder presentations'],
-      overview:'ANIMI is an augmented reality experience that blends social media and meditation. I designed and implemented an AI assisted workflow that combined multiple AI tools, then used it to design and iterate on interface concepts for the mobile AR application.',
+      role:'AI workflow and interface designer', timeline:'6 weeks, fall 2025',
+      tools:'Google MediaPipe, Three.js, CodePen, Claude, ChatGPT, Gemini, Meshy AI',
+      skills:['AI assisted workflows','Web AR prototyping','Mobile AR interface design','Stakeholder presentations'],
+      links:[
+        {label:'Try ANIMI &#8599;', url:'https://jinho72.github.io/Animi4/'},
+        {label:'GitHub &#8599;', url:'https://github.com/jinho72/Animi4'}
+      ],
+      overview:'ANIMI is an AR guided meditation and breathing experience that helps people connect with others through inner connection. Take three minutes a day to de-stress and refocus, then share your progress with friends and family. I designed it for corporate employees, as a short pause between tasks to help them unwind and focus. The goal was to build a complete AR experience on machine learning frameworks, powered by a streamlined AI workflow from concept to code. Our motto: bring minds, change minds.',
       research:[
+        'Headspace was my main reference. Its minimal graphics, contrasting colors and intuitive onboarding make meditation feel approachable and refreshing. I wanted to create something similar but more immersive, replacing flat visual cues with 3D animation overlaid on the real world.',
+        {media:[{src:'images/animi/headspace.jpg', alt:'Screens from the Headspace app'}], caption:'Case study: Headspace'},
+        {media:[{src:'images/animi/who-its-for.png', alt:'Who it is for: corporate workers from age 18 and up, and anyone who wants to meditate in a fun, interactive way'}, {src:'images/animi/cognitive-overload.png', alt:'Why: addressing cognitive overload in immersive XR environments'}], caption:'Who it\'s for, and why'},
         'Before shaping the interaction model, I looked into why screen based work and social platforms leave people so drained. A Stanford study led by Jeremy Bailenson identified an unnatural volume of close up eye contact as a leading cause of what researchers call Zoom fatigue, since every participant on a video call appears to be looking directly at every other participant for the full length of the call. Constant self view and reduced physical movement compounded the effect. ANIMI is built around that finding. Rather than adding another screen based habit, it interrupts screen time at intervals with a short augmented reality meditation, working against the exact conditions the research points to as the cause of the fatigue.',
         'The mask is the most visible part of ANIMI, and I wanted its role to go beyond aesthetics. A 2023 study in Royal Society Open Science, titled Mask wearing provides psychological ease but does not affect facial expression intensity estimation, found that wearing a mask can increase the sense of ease felt by the person wearing it, separate from how the mask changes the way others read their expressions. That distinction shaped the design directly. Since the meditation moment in ANIMI is private and self facing, the mask was never meant to change how the user is perceived by anyone else. It was meant to give the wearer a felt sense of stepping outside their working identity for the length of the session, so the pause reads less like another task and more like a brief, deliberate exit from work.'
       ],
-      wins:[ {t:'Presented to CNET and NYU', d:'Shared interface concepts with editorial teams at CNET and researchers at the NYU Mobile Augmented Reality Studio.'} ]
+      journey:[
+        '<strong>Choosing a platform.</strong> I tested Unity and 8th Wall before settling on native web AR. With a six week timeline and an AI heavy workflow, it was the fastest route from idea to working prototype, and building in CodePen gave me instant visual feedback on every iteration.',
+        {media:[{src:'images/animi/workflow.png', alt:'Workflow diagram: MediaPipe and Three.js, AI tools (ChatGPT, Gemini, Claude), CodePen, then GitHub Pages'}], caption:'Workflow: frameworks, AI tools, CodePen, GitHub Pages'},
+        '<strong>Look and feel.</strong> Because the interface sets the user\'s mood, the visual direction mattered as much as the functionality. My moodboard centered on droplet like forms and textures, fluid motion, and iridescent gradients, aiming for an experience that felt borderless and futuristic.',
+        {media:[{src:'images/animi/look-and-feel.jpg', alt:'UI moodboard of iridescent droplet forms, chrome masks and gradient textures'}], caption:'UI moodboard'},
+        '<strong>A new design workflow.</strong> On a typical UX project I would start with wireframes in Figma. For ANIMI I skipped that step, went straight to AI tools, and implemented changes live in CodePen, iterating directly in code.',
+        '<strong>First prototype.</strong> Google MediaPipe face detection guided a petal animation that hovered above the user\'s head. Users could turn sound and camera on or off, and subtitles changed throughout the session to help them follow along and stay relaxed.',
+        {media:[{src:'images/animi/first-prototype.png', alt:'First prototype screen with key features: face detection, background music, three modes, petal animation, simple subtitles, AR and visual modes'}, {src:'images/animi/prototype-screen.jpg', alt:'First prototype running in the browser'}], caption:'First prototype and its key features'},
+        '<strong>Feedback and iteration.</strong> Testers worried that watching their own face for the whole session could be tiring, and suggested a more static experience would be more immersive. Later iterations addressed that and refined the interface, including a series of mask designs exploring how each one changed the mood of the session.',
+        {media:[{video:'images/animi/mask-iteration-1.mp4', poster:'images/animi/mask-iteration-1-poster.jpg', alt:'Mask iteration with petals circling the face'}, {video:'images/animi/mask-iteration-2.mp4', poster:'images/animi/mask-iteration-2-poster.jpg', alt:'Mask iteration with petals spreading outward'}], caption:'Mask iterations'},
+        '<strong>Latest iteration.</strong> Design never ends. The latest version refines the visuals and brand identity, with teal as the primary color because it represents tranquility, balance and emotional healing, which is exactly what ANIMI sets out to offer.',
+        {media:[{src:'images/animi/desktop-still-1.jpg', alt:'ANIMI in teal, guiding the user to breathe out'}, {src:'images/animi/desktop-still-2.jpg', alt:'ANIMI in teal, guiding the user to breathe in'}], caption:'Stills from the desktop experience'},
+        {media:[{youtube:'WAlkEDWP8x0', alt:'ANIMI demo video'}], caption:'Demo video'}
+      ],
+      wins:[
+        {t:'Presented to CNET and NYU', d:'Shared interface concepts with editorial teams at CNET and researchers at the NYU Mobile Augmented Reality Studio.'},
+        {t:'One coherent AI workflow', d:'Combined Gemini for the overall blueprint and UI direction, ChatGPT for detailed code troubleshooting, and Claude as a conversational partner when the information got overwhelming.'}
+      ],
+      lessons:[
+        {t:'Slot machine vs playing with uncertainty', d:'Vibe coding turned out not to be outsourcing intelligence. It was an interplay between me and the machine, and a process of learning how it understands my language. Sometimes the tools delivered exactly what I asked for, sometimes they didn\'t, and sometimes I leaned on them to interpret a vague idea. Either way, I learned to embrace the output. Ideas I was sure about became one option among many, and over time my anxious prompting turned into trust.'},
+        {t:'Tools need foundations', d:'AI works best alongside real understanding. To build an app, you still need a grasp of the frameworks, the language and the workflow, and can then let AI handle the detailed technicalities. As a designer, even a rough moodboard or clear vision is what makes a prompt accurate.'},
+        {t:'Balancing art and UX', d:'The project pushed me to balance artistic expression with UX design. I started from a standard UX pattern, and it gradually morphed into a more artistic approach.'}
+      ],
+      future:[
+        'At the core, I want the technology to feel almost invisible, asking fewer decisions of the user and leaving more room for storytelling. Next steps I\'d like to explore:',
+        '<strong>Personalized sessions.</strong> AI generated feedback after each session, with customized narration and session improvements.',
+        '<strong>Meditating together.</strong> A backend for multi user sessions, central to ANIMI\'s mission of connecting with others through inner connection.',
+        '<strong>More to see and hear.</strong> Collaborations with sound designers on new soundscapes, and themed overlays for holidays and pop culture.',
+        '<strong>Custom 3D assets.</strong> Early tests pairing Claude image generation with Meshy AI\'s image to 3D model generation, to bring exported GLB models into the web experience.',
+        {media:[{src:'images/animi/meshy-masks.jpg', alt:'Chrome mask generated as an image'}, {src:'images/animi/meshy-model.jpg', alt:'Mask turned into 3D models with Meshy AI'}], caption:'Image to image with Claude, then image to 3D model with Meshy AI'},
+        {media:[{src:'images/animi/future.png', alt:'Opportunities: better storytelling, backend development, AI integration, brand identity'}], caption:'Moving forward: opportunities'}
+      ]
     }
   ];
 
@@ -560,7 +683,7 @@
       d.setAttribute('aria-disabled', 'true');
       d.title = 'Coming soon';
       d.innerHTML =
-        '<div class="thumb" style="background:'+p.gradient+'">'+
+        '<div class="thumb" style="background:'+(p.coverBg || p.gradient)+'">'+
           '<span class="tag">'+p.company+'</span>'+
           '<span class="soon-badge">Coming soon</span>'+
         '</div>'+
@@ -572,7 +695,9 @@
     var a = document.createElement('a');
     a.className = 'card'; a.href = '#work/'+p.slug;
     a.innerHTML =
-      '<div class="thumb" style="background:'+p.gradient+'"><span class="tag">'+p.company+'</span></div>'+
+      '<div class="thumb'+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+'" style="background:'+(p.coverBg || p.gradient)+'">'+
+        (p.cover ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
+        '<span class="tag">'+p.company+'</span></div>'+
       '<h3>'+p.title+'</h3>'+
       '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
     grid.appendChild(a);
@@ -583,34 +708,54 @@
 
   function renderCase(p){
     var metaFields = [
-      ['Role', p.role], ['Timeline', p.timeline], ['Team', p.team],
+      ['Role', p.role], ['Timeline', p.timeline], ['Team', p.team], ['Tools', p.tools],
       ['Skills', p.skills && p.skills.length ? p.skills.join(', ') : '']
     ].filter(function(f){ return f[1]; });
     var metaHtml = metaFields.length ? ('<div class="meta-grid">' +
       metaFields.map(function(f){ return '<div><div class="label">'+f[0]+'</div><p>'+f[1]+'</p></div>'; }).join('') +
       '</div>') : '';
 
+    // Section entries are either a paragraph (string) or a figure:
+    // {media:[{src,alt} | {video,poster} | {youtube}], caption}
+    function mediaHtml(m){
+      if(m.youtube) return '<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/'+m.youtube+'" title="'+(m.alt||'Video')+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';
+      if(m.video) return '<video src="'+m.video+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video>';
+      return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">';
+    }
+    function entryHtml(t){
+      if(typeof t === 'string') return '<p class="body-text">'+t+'</p>';
+      return '<figure class="case-fig"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
+        t.media.map(mediaHtml).join('') + '</div>' +
+        (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+    }
+
     var research = p.research || [], outcomes = p.outcomes || [], journey = p.journey || [], wins = p.wins || [], lessons = p.lessons || [];
     var researchHtml = research.length ? ('<div class="case-block"><h4 class="label">Research</h4>' +
-      research.map(function(t){ return '<p class="body-text">'+t+'</p>'; }).join('') + '</div>') : '';
+      research.map(entryHtml).join('') + '</div>') : '';
     var outcomesHtml = outcomes.length ? ('<div class="case-block"><h4 class="label">Outcomes</h4><div class="outcomes">' +
       outcomes.map(function(o){ return '<div class="outcome"><div class="num mono">'+o.num+'</div><div class="cap">'+o.cap+'</div></div>'; }).join('') +
       '</div></div>') : '';
     var journeyHtml = journey.length ? ('<div class="case-block"><h4 class="label">The journey</h4>' +
-      journey.map(function(t){ return '<p class="body-text">'+t+'</p>'; }).join('') + '</div>') : '';
+      journey.map(entryHtml).join('') + '</div>') : '';
     var winsHtml = wins.length ? ('<div class="case-block"><h4 class="label">Wins</h4>' +
       wins.map(function(w){ return '<div class="win"><h5>'+w.t+'</h5><p>'+w.d+'</p></div>'; }).join('') + '</div>') : '';
     var lessonsHtml = lessons.length ? ('<div class="case-block"><h4 class="label">Reflection</h4>' +
       lessons.map(function(l){ return '<div class="lesson"><h5>'+l.t+'</h5><p>'+l.d+'</p></div>'; }).join('') + '</div>') : '';
+    var future = p.future || [], links = p.links || [];
+    var futureHtml = future.length ? ('<div class="case-block"><h4 class="label">What\'s next</h4>' +
+      future.map(entryHtml).join('') + '</div>') : '';
+    var linksHtml = links.length ? ('<div class="case-links">' +
+      links.map(function(l){ return '<a href="'+l.url+'" target="_blank" rel="noopener">'+l.label+'</a>'; }).join('') + '</div>') : '';
 
     caseView.innerHTML =
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
-      '<div class="case-hero" style="background:'+p.gradient+'"><span>'+p.word+'</span></div>'+
-      metaHtml+
+      '<div class="case-hero" style="background:'+(p.coverBg || p.gradient)+'">'+
+        (p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
+      metaHtml + linksHtml +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
-      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml;
+      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml;
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
   }
