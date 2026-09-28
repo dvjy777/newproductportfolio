@@ -441,6 +441,17 @@
   .case-block h4.label{ margin-bottom:14px; }
   .case-block .body-text{ font-size:16px; line-height:1.75; max-width:64ch; }
   .case-block .body-text + .body-text{ margin-top:14px; }
+  .cite{
+    font:inherit; font-family:'Geist Mono',monospace; font-size:.68em; line-height:0;
+    vertical-align:super; color:var(--accent); background:none; border:0;
+    padding:0 1px; margin-left:1px; cursor:pointer;
+  }
+  .cite::before{ content:'['; } .cite::after{ content:']'; }
+  .cite:hover{ text-decoration:underline; }
+  .refs{ margin:0; padding-left:1.5em; max-width:78ch; font-size:13.5px; line-height:1.65; color:var(--text-muted); }
+  .refs li{ margin:0 0 10px -6px; padding:4px 6px; transition:background-color 1.2s ease; }
+  .refs li.flash{ background-color:var(--accent-soft); transition:none; }
+  .refs a{ color:var(--accent); word-break:break-word; }
   .body-text a{ color:var(--accent); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
   .outcomes{ display:flex; flex-wrap:wrap; gap:32px; max-width:760px; }
   .outcome .num{
@@ -571,7 +582,7 @@
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
       overview:'INYUN (인연) means fate, or providence, in Korean. It is an exploration of a matching experience built around real-time collaboration. By bringing vibe coding (AI) into both the product pipeline and the product itself, I set out to make a speculative experience that questions how AI can shape the way people meet and connect, rather than simply automating it.',
       research:[
-        '<strong>Inspiration.</strong> I was interested in the ephemerality of digital experiences and how it could translate to modern dating apps. There are countless dating apps, but most simply match users based on their profile inputs, and <a href="https://www.eurekalert.org/news-releases/914890" target="_blank" rel="noopener">a Norwegian study of Tinder users</a> found that it takes a very large number of matches to lead to a relatively small number of meetups. Having experienced that difficulty firsthand, I came up with the idea of adding real-time collaboration that focuses on vulnerability and anonymity.',
+        '<strong>Inspiration.</strong> I was interested in the ephemerality of digital experiences and how it could translate to modern dating apps. There are countless dating apps, but most simply match users based on their profile inputs, and a Norwegian study of Tinder users found that it takes a very large number of matches to lead to a relatively small number of meetups [[1]]. Having experienced that difficulty firsthand, I came up with the idea of adding real-time collaboration that focuses on vulnerability and anonymity.',
         '<strong>The Identity Signifier.</strong> Instead of photos and headshots, each user is introduced by a digital avatar. Apps like Bumble, Tinder and Hinge offer optional verification so users can choose to match only with verified people. It isn\'t required, but it is an important step in building trust among users. The Identity Signifier\'s form was inspired by blob interfaces in TouchDesigner references.',
         {media:[{youtube:'JLoOt9YTscU', alt:'INYUN teaser video'}], caption:'Teaser video'},
         '<em>INYUN is an experiment in how strangers meet, shape each other, and make something together. What you share here is anonymous. It will be held. Be as open as you want to be. More honesty makes the encounter richer. Welcome to INYUN.</em>'
@@ -588,6 +599,9 @@
         {media:[{src:'images/inyun/collab-1.jpg', alt:'Prompt screen: something between a threshold and a shelter'}, {src:'images/inyun/collab-2.jpg', alt:'Sketching together on the canvas'}, {src:'images/inyun/collab-4.jpg', alt:'Finished shared sketch ready to confirm'}], caption:'Prompt and collaborative sketch', cols:3},
         '<strong>User flow.</strong> The lobby is the heart of the experience, with onboarding and offboarding at either end. Users can go through multiple sessions, depending on how much time they want to commit. Based on user testing, I also made it possible to adjust mediation settings directly from the lobby.',
         {media:[{src:'images/inyun/user-flow.jpg', alt:'INYUN user flow diagram'}], caption:'User flow'}
+      ],
+      references:[
+        {text:'Grøntvedt, T. V., Bendixen, M., Botnen, E. O., &amp; Kennair, L. E. O. (2020). Hook, line and sinker: Do Tinder matches and meet ups lead to one-night stands? <em>Evolutionary Psychological Science, 6</em>(2), 109–118.', url:'https://doi.org/10.1007/s40806-019-00222-z'}
       ]
     },
     {
@@ -604,6 +618,8 @@
       ],
       research:[
         '<strong>Three stages, organized in space.</strong> Visitors move through physical zones. <strong>Reflection:</strong> they register their current emotion. <strong>Intention:</strong> they choose what they want to do with it. <strong>Transformation:</strong> inside the tent, they go through a ritual of purge and renewal toward the state they want.',
+        '<strong>Why name a feeling.</strong> Putting a feeling into words is already a way of calming it: labeling an emotion reduces activity in the amygdala, the brain\'s alarm system [[1]]. People who describe their emotions with more precision also cope better with distress [[2]], which is why Ekpyrosis offers 26 specific emotions instead of a simple good or bad scale. Color carries emotion in remarkably similar ways across cultures [[3]], so each emotion\'s hue becomes part of how it is recognized, on the phone and in the room.',
+        '<strong>Why a ritual.</strong> Rituals help people regulate their emotions and feel connected to something larger [[4]], so the transformation happens as a ritual inside the tent rather than on another screen. Even short, guided digital experiences can measurably reduce stress [[5]], which is the role the phone plays here: a doorway into the space, not the destination.',
         {media:[{src:'images/ekpyrosis/slide-02.jpg', alt:'What is Ekpyrosis: an immersive visual installation'}, {src:'images/ekpyrosis/slide-05.jpg', alt:'The three zones: reflection, intention, transformation'}], caption:'The concept'},
         {media:[{src:'images/ekpyrosis/slide-06.jpg', alt:'The ritual: phone, zones, projection, darkroom, memory'}, {src:'images/ekpyrosis/slide-07.jpg', alt:'Spatial journey: reflection, intention, transformation'}], caption:'The ritual and the spatial journey'},
         {media:[{src:'images/ekpyrosis/slide-03.jpg', alt:'Graphic posters for Ekpyrosis'}, {src:'images/ekpyrosis/slide-04.jpg', alt:'Zone posters with glowing orbs'}], caption:'Graphic and zone posters'}
@@ -611,7 +627,7 @@
       journey:[
         '<strong>Pipeline.</strong> Scanning a QR code opens the web app\'s onboarding screen. WebSockets let multiple visitors enter at once, with a separately built queue system. Session data is stored in the database, and the projection, built in TouchDesigner, is networked with the backend so it reacts to each visitor\'s input in real time.',
         {media:[{src:'images/ekpyrosis/slide-09.jpg', alt:'System overview: phone, relay, database, TouchDesigner'}, {src:'images/ekpyrosis/slide-10.jpg', alt:'Design system: colors, orbs and type'}], caption:'System overview and design system'},
-        '<strong>Onboarding and the queue.</strong> The first screen shows a single button over a background animation. Once it begins, it transitions into registering the visitor\'s current emotional state. The system was first designed for instant input, but I added a queue later for crowd control during the exhibition. While waiting, visitors immerse in their current state with a matching visualization for about 10 seconds.',
+        '<strong>Onboarding and the queue.</strong> The first screen shows a single button over a background animation. Once it begins, it transitions into registering the visitor\'s current emotional state. The system was first designed for instant input, but I added a queue later for crowd control during the exhibition. While waiting, visitors immerse in their current state with a matching visualization for about 10 seconds. That pause became a feature: deliberate friction interrupts automatic, mindless interaction and invites a moment of reflection [[6]].',
         {media:[{src:'images/ekpyrosis/slide-11.jpg', alt:'Mobile web onboarding: feel, transform'}, {src:'images/ekpyrosis/slide-12.jpg', alt:'Mobile web: choosing how you feel'}], caption:'Mobile web onboarding'},
         '<strong>Choosing an emotion.</strong> I chose 26 distinct emotions in three categories (light, in between and heavy) so visitors can find their state more easily. Each emotion is color coded: lighter emotions have lighter hues, heavier ones darker hues. The first version only offered heavy emotions, since the goal was to purge negative feelings. User testing showed it should also welcome people feeling excitement or curiosity, so I added an in between category for visitors who aren\'t sure, so nobody has to default to a negative emotion.',
         {media:[{src:'images/ekpyrosis/slide-08.jpg', alt:'The emotional states grouped as light, in between and heavy'}], caption:'Emotional states'},
@@ -630,6 +646,14 @@
       lessons:[
         {t:'Guidance matters', d:'Some visitors were unsure how to move from one step to the next. Clearer cues between zones would help everyone reach the transformation.'},
         {t:'Design for every feeling', d:'Testing showed that a space built only for heavy emotions left people out. Adding an in between category made the experience open to anyone, whatever they walked in with.'}
+      ],
+      references:[
+        {text:'Lieberman, M. D., Eisenberger, N. I., Crockett, M. J., Tom, S. M., Pfeifer, J. H., &amp; Way, B. M. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. <em>Psychological Science, 18</em>(5), 421–428.', url:'https://doi.org/10.1111/j.1467-9280.2007.01916.x'},
+        {text:'Kashdan, T. B., Barrett, L. F., &amp; McKnight, P. E. (2015). Unpacking emotion differentiation: Transforming unpleasant experience by perceiving distinctions in negativity. <em>Current Directions in Psychological Science, 24</em>(1), 10–16.', url:'https://doi.org/10.1177/0963721414550708'},
+        {text:'Jonauskaite, D., Abu-Akel, A., Dael, N., et al. (2020). Universal patterns in color-emotion associations are further shaped by linguistic and geographic proximity. <em>Psychological Science, 31</em>(10), 1245–1260.', url:'https://doi.org/10.1177/0956797620948810'},
+        {text:'Hobson, N. M., Schroeder, J., Risen, J. L., Xygalatas, D., &amp; Inzlicht, M. (2018). The psychology of rituals: An integrative review and process-based framework. <em>Personality and Social Psychology Review, 22</em>(3), 260–284.', url:'https://doi.org/10.1177/1088868317734944'},
+        {text:'Economides, M., Martman, J., Bell, M. J., &amp; Sanderson, B. (2018). Improvements in stress, affect, and irritability following brief use of a mindfulness-based smartphone app: A randomized controlled trial. <em>Mindfulness, 9</em>(5), 1584–1593.', url:'https://doi.org/10.1007/s12671-018-0905-4'},
+        {text:'Cox, A. L., Gould, S. J. J., Cecchinato, M. E., Iacovides, I., &amp; Renfree, I. (2016). Design frictions for mindful interactions: The case for microboundaries. In <em>Proceedings of the 2016 CHI Conference Extended Abstracts on Human Factors in Computing Systems</em> (pp. 1389–1397). ACM.', url:'https://doi.org/10.1145/2851581.2892410'}
       ],
       future:[
         'This project was experimental and speculative, but the idea has many possible uses. Music streaming apps like Spotify and Apple Music could use it to power recommendations or generate playlists from a listener\'s emotion. Picture building a playlist for an event that starts low-key and chill, then builds into something high energy.'
@@ -651,8 +675,8 @@
         'Headspace was my main reference. Its minimal graphics, contrasting colors and intuitive onboarding make meditation feel approachable and refreshing. I wanted to create something similar but more immersive, replacing flat visual cues with 3D animation overlaid on the real world.',
         {media:[{src:'images/animi/headspace.jpg', alt:'Screens from the Headspace app'}], caption:'Case study: Headspace'},
         {media:[{src:'images/animi/who-its-for.png', alt:'Who it is for: corporate workers from age 18 and up, and anyone who wants to meditate in a fun, interactive way'}, {src:'images/animi/cognitive-overload.png', alt:'Why: addressing cognitive overload in immersive XR environments'}], caption:'Who it\'s for, and why'},
-        'Before shaping the interaction model, I looked into why screen based work and social platforms leave people so drained. A Stanford study led by Jeremy Bailenson identified an unnatural volume of close up eye contact as a leading cause of what researchers call Zoom fatigue, since every participant on a video call appears to be looking directly at every other participant for the full length of the call. Constant self view and reduced physical movement compounded the effect. ANIMI is built around that finding. Rather than adding another screen based habit, it interrupts screen time at intervals with a short augmented reality meditation, working against the exact conditions the research points to as the cause of the fatigue.',
-        'The mask is the most visible part of ANIMI, and I wanted its role to go beyond aesthetics. A 2023 study in Royal Society Open Science, titled Mask wearing provides psychological ease but does not affect facial expression intensity estimation, found that wearing a mask can increase the sense of ease felt by the person wearing it, separate from how the mask changes the way others read their expressions. That distinction shaped the design directly. Since the meditation moment in ANIMI is private and self facing, the mask was never meant to change how the user is perceived by anyone else. It was meant to give the wearer a felt sense of stepping outside their working identity for the length of the session, so the pause reads less like another task and more like a brief, deliberate exit from work.'
+        'Before shaping the interaction model, I looked into why screen based work and social platforms leave people so drained. Stanford researcher Jeremy Bailenson argues that an unnatural volume of close up eye contact is a leading cause of what is now called Zoom fatigue, since every participant on a video call appears to be looking directly at every other participant for the full length of the call, with constant self view and reduced physical movement compounding the effect [[1]]. ANIMI is built around that argument. Rather than adding another screen based habit, it interrupts screen time at intervals with a short augmented reality meditation, working against the exact conditions the research points to as the cause of the fatigue.',
+        'The mask is the most visible part of ANIMI, and I wanted its role to go beyond aesthetics. A 2023 study found that wearing a mask can increase the sense of ease felt by the person wearing it, reducing negative feelings caused by social pressure, separate from how the mask changes the way others read their expressions [[2]]. That distinction shaped the design directly. Since the meditation moment in ANIMI is private and self facing, the mask was never meant to change how the user is perceived by anyone else. It was meant to give the wearer a felt sense of stepping outside their working identity for the length of the session, so the pause reads less like another task and more like a brief, deliberate exit from work.'
       ],
       journey:[
         '<strong>Choosing a platform.</strong> I tested Unity and 8th Wall before settling on native web AR. With a six week timeline and an AI heavy workflow, it was the fastest route from idea to working prototype, and building in CodePen gave me instant visual feedback on every iteration.',
@@ -676,6 +700,10 @@
         {t:'Slot machine vs playing with uncertainty', d:'Vibe coding turned out not to be outsourcing intelligence. It was an interplay between me and the machine, and a process of learning how it understands my language. Sometimes the tools delivered exactly what I asked for, sometimes they didn\'t, and sometimes I leaned on them to interpret a vague idea. Either way, I learned to embrace the output. Ideas I was sure about became one option among many, and over time my anxious prompting turned into trust.'},
         {t:'Tools need foundations', d:'AI works best alongside real understanding. To build an app, you still need a grasp of the frameworks, the language and the workflow, and can then let AI handle the detailed technicalities. As a designer, even a rough moodboard or clear vision is what makes a prompt accurate.'},
         {t:'Balancing art and UX', d:'The project pushed me to balance artistic expression with UX design. I started from a standard UX pattern, and it gradually morphed into a more artistic approach.'}
+      ],
+      references:[
+        {text:'Bailenson, J. N. (2021). Nonverbal overload: A theoretical argument for the causes of Zoom fatigue. <em>Technology, Mind, and Behavior, 2</em>(1).', url:'https://doi.org/10.1037/tmb0000030'},
+        {text:'Kawagoe, T., &amp; Teramoto, W. (2023). Mask wearing provides psychological ease but does not affect facial expression intensity estimation. <em>Royal Society Open Science, 10</em>(8), 230653.', url:'https://doi.org/10.1098/rsos.230653'}
       ],
       future:[
         'At the core, I want the technology to feel almost invisible, asking fewer decisions of the user and leaving more room for storytelling. Next steps I\'d like to explore:',
@@ -768,8 +796,14 @@
       if(m.video) return '<video src="'+m.video+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video>';
       return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">';
     }
+    // [[n]] in the text becomes a small numbered marker linked to reference n
+    function cites(t){
+      return t.replace(/ ?\[\[(\d+)\]\]/g, function(_, n){
+        return '<button type="button" class="cite" data-ref="'+n+'" aria-label="See reference '+n+'">'+n+'</button>';
+      });
+    }
     function entryHtml(t){
-      if(typeof t === 'string') return '<p class="body-text">'+t+'</p>';
+      if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
       var kind = t.cols === 3 ? ' phones' : t.media.length === 1 ? ' single' : ' pair';
       return '<figure class="case-fig'+kind+'"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
         t.media.map(mediaHtml).join('') + '</div>' +
@@ -803,7 +837,10 @@
       wins.map(function(w){ return '<div class="win"><h5>'+w.t+'</h5><p>'+w.d+'</p></div>'; }).join('') + '</div>') : '';
     var lessonsHtml = lessons.length ? ('<div class="case-block"><h4 class="label">Reflection</h4>' +
       lessons.map(function(l){ return '<div class="lesson"><h5>'+l.t+'</h5><p>'+l.d+'</p></div>'; }).join('') + '</div>') : '';
-    var future = p.future || [], links = p.links || [];
+    var future = p.future || [], links = p.links || [], refs = p.references || [];
+    var refsHtml = refs.length ? ('<div class="case-block"><h4 class="label">References</h4><ol class="refs">' +
+      refs.map(function(r, i){ return '<li id="ref-'+(i+1)+'">'+r.text+' <a href="'+r.url+'" target="_blank" rel="noopener">'+r.url.replace('https://','')+'</a></li>'; }).join('') +
+      '</ol></div>') : '';
     var futureHtml = future.length ? ('<div class="case-block"><h4 class="label">What\'s next</h4>' +
       entriesHtml(future) + '</div>') : '';
     var linksHtml = links.length ? ('<div class="case-links">' +
@@ -817,11 +854,22 @@
         (p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
       metaHtml + linksHtml +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
-      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml;
+      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml;
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     decryptTitle(caseView.querySelector('.case-title'));
   }
+
+  // Citation markers jump to their reference (without touching the URL hash,
+  // which drives page routing) and briefly highlight it.
+  caseView.addEventListener('click', function(e){
+    var c = e.target.closest('.cite');
+    if(!c) return;
+    var li = document.getElementById('ref-' + c.dataset.ref);
+    if(!li) return;
+    li.scrollIntoView({ block:'center' });
+    li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash');
+  });
 
   // Images in a case study open full size when clicked.
   var lightbox = document.createElement('div');
