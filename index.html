@@ -1,4 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>David Jinho Yang</title>
 <style>
   /* Geist + Geist Mono, self-hosted (SIL Open Font License 1.1) — the same
@@ -388,6 +391,21 @@
   @media(min-width:860px){
     .case-split{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:44px; align-items:center; }
     .case-split .case-fig.phones{ max-width:480px; }
+  }
+
+  /* phones: a little more room at the edges, and rows of app screenshots
+     become a swipeable strip instead of three tiny images */
+  @media(max-width:559px){
+    body{ padding-inline:20px; }
+    .case-fig.phones .fig-grid.cols-3{
+      display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory;
+      margin-inline:-20px; padding:0 20px 6px; scrollbar-width:none;
+    }
+    .case-fig.phones .fig-grid.cols-3::-webkit-scrollbar{ display:none; }
+    .case-fig.phones img{ flex:0 0 auto; width:58%; min-width:0; scroll-snap-align:center; }
+    .case-fig.phones figcaption::after{ content:' · swipe →'; }
+    .overlay{ gap:14px; }
+    .overlay a{ font-size:30px; padding:4px 0; }
   }
 
   .lightbox{
