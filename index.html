@@ -387,6 +387,19 @@
   .case-fig .embed iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   /* keep media at a comfortable size instead of filling the page */
   .case-fig.phones{ max-width:620px; }
+  /* a phone frame around a looping product recording */
+  .phone-mock{
+    position:relative; width:min(300px, 100%); margin:0 auto; aspect-ratio:390/844;
+    padding:9px; border-radius:46px; background:#0c0e13;
+    box-shadow:inset 0 0 0 1.5px #2b303b, inset 0 0 0 4px #0c0e13, inset 0 0 0 5px #1b1f27,
+      0 30px 60px rgba(10,20,50,.22), 0 8px 18px rgba(10,20,50,.14);
+  }
+  .phone-mock::before{
+    content:''; position:absolute; z-index:1; top:19px; left:50%; transform:translateX(-50%);
+    width:30%; height:22px; border-radius:12px; background:#000;
+  }
+  .case-fig .phone-mock video{ width:100%; height:100%; object-fit:cover; border:0; border-radius:37px; background:#000; }
+  .case-fig.single:has(.phone-mock) figcaption{ text-align:center; }
   .case-fig.phones img{ border-radius:14px; }
   .case-fig img{ cursor:zoom-in; }
 
@@ -625,6 +638,8 @@
         {media:[{src:'images/ekpyrosis/slide-03.jpg', alt:'Graphic posters for Ekpyrosis'}, {src:'images/ekpyrosis/slide-04.jpg', alt:'Zone posters with glowing orbs'}], caption:'Graphic and zone posters'}
       ],
       journey:[
+        '<strong>The visitor\'s journey.</strong> On their phone, each visitor names what they feel, chooses an intention and picks the state they want to arrive at, pausing for a short reflection between zones before stepping into the darkroom for the transformation.',
+        {media:[{phone:'images/ekpyrosis/ekpyrosis-demo.mp4', poster:'images/ekpyrosis/ekpyrosis-demo-poster.jpg', alt:'Screen recording of the Ekpyrosis phone app: choosing exhaustion, letting go, arriving at peace'}], caption:'The full journey on the phone, from exhaustion to peace'},
         '<strong>Pipeline.</strong> Scanning a QR code opens the web app\'s onboarding screen. WebSockets let multiple visitors enter at once, with a separately built queue system. Session data is stored in the database, and the projection, built in TouchDesigner, is networked with the backend so it reacts to each visitor\'s input in real time.',
         {media:[{src:'images/ekpyrosis/slide-09.jpg', alt:'System overview: phone, relay, database, TouchDesigner'}, {src:'images/ekpyrosis/slide-10.jpg', alt:'Design system: colors, orbs and type'}], caption:'System overview and design system'},
         '<strong>Onboarding and the queue.</strong> The first screen shows a single button over a background animation. Once it begins, it transitions into registering the visitor\'s current emotional state. The system was first designed for instant input, but I added a queue later for crowd control during the exhibition. While waiting, visitors immerse in their current state with a matching visualization for about 10 seconds. That pause became a feature: deliberate friction interrupts automatic, mindless interaction and invites a moment of reflection [[6]].',
@@ -793,6 +808,7 @@
     // {media:[{src,alt} | {video,poster} | {youtube}], caption}
     function mediaHtml(m){
       if(m.youtube) return '<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/'+m.youtube+'" title="'+(m.alt||'Video')+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>';
+      if(m.phone) return '<div class="phone-mock"><video src="'+m.phone+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video></div>';
       if(m.video) return '<video src="'+m.video+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video>';
       return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">';
     }
@@ -811,7 +827,7 @@
     }
     // A paragraph followed by a row of phone screens sits beside it on wide
     // screens; everything else (videos, slides, pairs) keeps the full width.
-    function sideBySide(t){ return t && typeof t !== 'string' && t.cols === 3; }
+    function sideBySide(t){ return t && typeof t !== 'string' && (t.cols === 3 || !!t.media[0].phone); }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
@@ -858,6 +874,12 @@
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     decryptTitle(caseView.querySelector('.case-title'));
+    // autoplay isn't reliable for videos inserted as HTML; start them explicitly
+    caseView.querySelectorAll('video[autoplay]').forEach(function(v){
+      v.muted = true;
+      var p = v.play();
+      if(p && p.catch) p.catch(function(){});
+    });
   }
 
   // Citation markers jump to their reference (without touching the URL hash,
