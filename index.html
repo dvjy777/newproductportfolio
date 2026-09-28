@@ -234,14 +234,29 @@
   .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:22px; }
   .section-head h2{ font-family:'General Sans',sans-serif; font-weight:500; font-size:22px; }
 
+  #timeline{ display:flex; flex-direction:column; }
   .timeline-row{
     display:grid; grid-template-columns:74px 1fr; gap:18px;
     padding:14px 0; border-top:1px solid var(--border);
+    transition:opacity .3s ease;
   }
   .timeline-row:first-of-type{ border-top:none; }
   .timeline-row .year{ font-family:'Geist Mono',monospace; font-size:13px; color:var(--text-muted); padding-top:2px; }
   .timeline-row .company{ font-weight:600; font-size:16px; }
   .timeline-row .role{ color:var(--text-muted); font-size:14px; margin-top:2px; }
+  .timeline-row .role-desc{
+    margin:0; max-height:0; opacity:0; overflow:hidden; font-size:14px; line-height:1.6;
+    color:var(--text-muted); max-width:56ch;
+    transition:max-height .4s ease, opacity .3s ease .05s, margin-top .35s ease;
+  }
+  /* the row a visitor is on stays exactly where it is (nothing ever repositions
+     under the cursor); the others simply dim, and the description grows inside
+     the hovered row itself, pushing only what comes after it downward */
+  #timeline.hovering .timeline-row:not(.active){ opacity:.32; }
+  .timeline-row.active .role-desc{ max-height:240px; opacity:1; margin-top:10px; }
+  @media (prefers-reduced-motion: reduce){
+    .timeline-row, .timeline-row .role-desc{ transition:none; }
+  }
 
   /* ---------- project cards ---------- */
   .work-grid{ display:flex; flex-direction:column; gap:44px; }
@@ -424,11 +439,16 @@
 <script>
 (function(){
   var timeline = [
-    { year:'Present', company:'New York University', role:'M.S. Candidate, Integrated Design & Media (Tandon School of Engineering)' },
-    { year:'2026', company:'Chance AI x AStudio', role:'Design Lead (Mentorship Mentee)' },
-    { year:'2025', company:'Point Off View', role:'Creative Designer & Editor' },
-    { year:'2024–25', company:'IDM Experimental Print Studio, NYU', role:'Design Assistant' },
-    { year:'2021', company:'Bondit.io', role:'Product Design Intern' }
+    { year:'Present', company:'New York University', role:'M.S. Candidate, Integrated Design & Media (Tandon School of Engineering)',
+      desc:'I\'m concentrating in Human-Computer Interaction and Brand Strategy, working with emerging media such as AI and AR to explore how they serve as media for sentiment expression. I\'m currently working on my thesis :) I <3 IDM' },
+    { year:'2026', company:'Chance AI x AStudio', role:'Design Lead (Mentorship Mentee)',
+      desc:'I\'m currently working with an amazing team at NYU Tisch AStudio, alongside mentees, to help redesign the visual AI agent at Chance AI. More to come soon!' },
+    { year:'2025', company:'Point Off View', role:'Creative Designer & Editor',
+      desc:'I worked with Creative Director Marina Testino and her design team to redesign the website, research sustainable fashion companies, and attend events, including Peace Boat US.' },
+    { year:'2024–25', company:'IDM Experimental Print Studio, NYU', role:'Design Assistant',
+      desc:'I\'m a print and graphic design enthusiast. I spend my spare time at the studio helping ITP and IDM students with their print design projects, troubleshooting risograph machines, and making cool prints.' },
+    { year:'2021', company:'Bondit.io', role:'Product Design Intern',
+      desc:'I worked with the early founding team at Bondit to serve US college students, helping them schedule classes, connect with other students on campus, and find cool events. Our team helped design their mascots, too!' }
   ];
 
   var projects = [
@@ -466,10 +486,34 @@
   ];
 
   var timelineEl = document.getElementById('timeline');
-  timeline.forEach(function(row){
+  timeline.forEach(function(row, i){
     var el = document.createElement('div');
     el.className = 'timeline-row';
-    el.innerHTML = '<div class="year mono">'+row.year+'</div><div><div class="company">'+row.company+'</div><div class="role">'+row.role+'</div></div>';
+    el.tabIndex = 0;
+    el.innerHTML =
+      '<div class="year mono">'+row.year+'</div>'+
+      '<div><div class="company">'+row.company+'</div><div class="role">'+row.role+'</div>'+
+      (row.desc ? '<p class="role-desc">'+row.desc+'</p>' : '')+
+      '</div>';
+    if(row.desc){
+      // The hovered row never moves or resizes itself out from under the cursor.
+      // Others just dim in place; the description grows inside this same row,
+      // pushing only what comes after it downward. Nothing reflows above or
+      // under the pointer, so hovering any row stays stable.
+      var activate = function(){
+        timelineEl.classList.add('hovering');
+        Array.prototype.forEach.call(timelineEl.children, function(child){ child.classList.remove('active'); });
+        el.classList.add('active');
+      };
+      var deactivate = function(){
+        el.classList.remove('active');
+        timelineEl.classList.remove('hovering');
+      };
+      el.addEventListener('mouseenter', activate);
+      el.addEventListener('mouseleave', deactivate);
+      el.addEventListener('focus', activate);
+      el.addEventListener('blur', deactivate);
+    }
     timelineEl.appendChild(el);
   });
 
