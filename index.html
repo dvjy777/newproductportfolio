@@ -1,0 +1,700 @@
+<title>David Jinho Yang</title>
+<style>
+  /* Geist + Geist Mono, self-hosted (SIL Open Font License 1.1) — the same
+     typefaces the reference site uses, embedded directly since they are not
+     served from Google Fonts. */
+  @font-face{ font-family:'Geist'; src:url('fonts/Geist-Regular.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Geist'; src:url('fonts/Geist-Italic.woff2') format('woff2'); font-weight:400; font-style:italic; font-display:swap; }
+  @font-face{ font-family:'Geist'; src:url('fonts/Geist-Medium.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Geist'; src:url('fonts/Geist-SemiBold.woff2') format('woff2'); font-weight:600; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Geist Mono'; src:url('fonts/GeistMono-Regular.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Geist Mono'; src:url('fonts/GeistMono-Medium.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Geist Mono'; src:url('fonts/GeistMono-SemiBold.woff2') format('woff2'); font-weight:600; font-style:normal; font-display:swap; }
+
+  /* General Sans, self-hosted (Indian Type Foundry / Fontshare free license) —
+     the closest public typeface to OpenAI Sans's geometric-but-rounded
+     character, used here for headlines in place of the serif. */
+  @font-face{ font-family:'General Sans'; src:url('fonts/GeneralSans-Regular.woff') format('woff'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'General Sans'; src:url('fonts/GeneralSans-Italic.woff') format('woff'); font-weight:400; font-style:italic; font-display:swap; }
+  @font-face{ font-family:'General Sans'; src:url('fonts/GeneralSans-Medium.woff') format('woff'); font-weight:500; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'General Sans'; src:url('fonts/GeneralSans-Semibold.woff') format('woff'); font-weight:600; font-style:normal; font-display:swap; }
+
+  /* This site commits to a single light theme (like the reference site) —
+     the background stays pure white regardless of the viewer's OS setting. */
+  :root{
+    --bg:#ffffff;
+    --surface:#ffffff;
+    --text:#32404f;
+    --text-muted:#6d7c8c;
+    --border:#e2e8ee;
+    --accent:#1d5fff;
+    --accent-ink:#ffffff;
+    --accent-soft:#e8eefc;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Geist', -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-inline: 28px;
+  }
+  a{ color:inherit; }
+  /* Full-width sections (header, images, footer) run edge-to-edge against the
+     body's 28px gutter. .prose caps just the reading column so paragraphs and
+     lists don't stretch into unreadably long lines on a wide screen. */
+  .prose{ max-width:680px; }
+  .mono{
+    font-family:'Geist Mono', Menlo, Consolas, monospace;
+  }
+  .label{
+    font-family:'Geist Mono', Menlo, Consolas, monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+  }
+  .serif{ font-family:'General Sans', -apple-system, sans-serif; font-weight:500; }
+  h1,h2,h3{ font-weight:400; text-wrap:balance; margin:0; }
+
+  /* ---------- header ---------- */
+  header.site{
+    position:sticky; top:0; z-index:40;
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .brand{ line-height:1.4; }
+  .brand .name{
+    font-family:'Geist Mono', monospace;
+    font-weight:600; font-size:14px; letter-spacing:.08em;
+  }
+  .brand .role{
+    font-family:'Geist Mono', monospace;
+    font-size:12px; letter-spacing:.06em; color:var(--text-muted);
+  }
+  .menu-btn{
+    width:48px; height:48px; border:none; padding:0;
+    background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .menu-btn .dot{
+    width:26px; height:26px; border-radius:50%; background:var(--accent);
+    position:relative; animation:dotBreathe 3.2s ease-in-out infinite;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
+  }
+  .menu-btn:hover .dot, .menu-btn:focus-visible .dot{
+    box-shadow:0 0 0 10px rgba(29,95,255,.13), 0 0 22px rgba(29,95,255,.4);
+  }
+  .menu-btn:hover .dot.revealed, .menu-btn:focus-visible .dot.revealed{
+    box-shadow:0 0 0 10px rgba(198,40,40,.15), 0 0 22px rgba(198,40,40,.45);
+  }
+  .menu-btn .eye{
+    position:absolute; top:50%; left:50%; width:4px; height:4px; border-radius:50%;
+    background:var(--bg); transform:translate(-50%,-50%);
+    transition:transform .08s ease-out;
+  }
+  .menu-btn .eye-l{ margin-left:-6px; }
+  .menu-btn .eye-r{ margin-left:6px; }
+  @keyframes dotBreathe{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.1); } }
+  @keyframes dotSquish{
+    0%{ transform:scale(1,1); }
+    35%{ transform:scale(1.35,.7); }
+    65%{ transform:scale(.8,1.2); }
+    100%{ transform:scale(1,1); }
+  }
+  .menu-btn .dot.squish{ animation:dotSquish .4s ease; }
+  .menu-btn .dot.blink{ animation:dotBlink .22s ease; }
+  @keyframes dotBlink{ 0%,100%{ transform:scaleY(1); } 50%{ transform:scaleY(.2); } }
+
+  /* provoked, in escalating order */
+  @keyframes dotShake{
+    0%,100%{ margin-left:0; } 25%{ margin-left:-2px; } 75%{ margin-left:2px; }
+  }
+  .menu-btn .dot.anger-1{ animation:dotBreathe 3.2s ease-in-out infinite, dotShake .25s ease 2; }
+  .menu-btn .dot.anger-2{
+    background:#c65a3d;
+    animation:dotBreathe 2.4s ease-in-out infinite, dotShake .2s ease 3;
+  }
+  .menu-btn .dot.anger-3{
+    background:#d8442f;
+    animation:dotBreathe 1.6s ease-in-out infinite, dotShake .15s ease 4;
+  }
+  .menu-btn .dot.revealed{
+    background:#c62828 !important; animation:dotBreathe 1.2s ease-in-out infinite;
+  }
+  .menu-btn .dot.revealed::before, .menu-btn .dot.revealed::after{
+    content:''; position:absolute; top:2px; width:8px; height:2px; background:var(--bg);
+  }
+  .menu-btn .dot.revealed::before{ left:2px; transform:rotate(18deg); transform-origin:right center; }
+  .menu-btn .dot.revealed::after{ right:2px; transform:rotate(-18deg); transform-origin:left center; }
+  @media (prefers-reduced-motion: reduce){
+    .menu-btn .dot{ animation:none; }
+    .menu-btn .dot.squish, .menu-btn .dot.blink, .menu-btn .dot.anger-1, .menu-btn .dot.anger-2, .menu-btn .dot.anger-3{ animation:none; }
+    .menu-btn .dot.revealed{ animation:none; }
+  }
+
+  .menu-wrap{ position:relative; }
+  .alter-chip{
+    position:absolute; top:56px; right:0; z-index:1;
+    background:#c62828; color:#fff; text-decoration:none;
+    font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    padding:8px 12px; white-space:nowrap;
+    opacity:0; transform:translateY(-4px); pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .alter-chip.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  /* ---------- nav overlay ---------- */
+  .overlay{
+    position:fixed; inset:0; background:var(--bg);
+    z-index:60; display:flex; flex-direction:column;
+    justify-content:center; gap:10px; padding-inline: 28px;
+    clip-path:circle(0px at var(--ox,92%) var(--oy,38px));
+    transition:clip-path .7s cubic-bezier(.65,0,.35,1);
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .overlay.open{
+    clip-path:circle(var(--or,150%) at var(--ox,92%) var(--oy,38px));
+    pointer-events:auto;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .overlay{ transition:clip-path .01s linear; }
+  }
+  .cursor-glow{
+    position:fixed; left:0; top:0; width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle, rgba(29,95,255,.16), rgba(29,95,255,0) 70%);
+    transform:translate(-50%,-50%); pointer-events:none; z-index:0;
+    transition:transform .12s linear, opacity .2s ease; opacity:0;
+  }
+  .overlay.open .cursor-glow{ opacity:1; }
+  @media (prefers-reduced-motion: reduce){ .cursor-glow{ display:none; } }
+  .overlay a{
+    position:relative; z-index:1;
+    font-family:'General Sans', -apple-system, sans-serif; font-weight:500;
+    font-size:clamp(20px,4.2vw,30px); line-height:1.3;
+    text-decoration:none; color:var(--text); width:fit-content;
+    transition:color .2s ease, letter-spacing .2s ease;
+  }
+  .overlay a::after{
+    content:''; position:absolute; left:0; bottom:-2px; height:1.5px; width:0;
+    background:var(--accent); transition:width .3s ease;
+  }
+  .overlay a:hover{ color:var(--accent); letter-spacing:.01em; }
+  .overlay a:hover::after{ width:100%; }
+  @media (prefers-reduced-motion: reduce){
+    .overlay a{ transition:color .2s ease; }
+    .overlay a::after{ transition:none; }
+  }
+  .overlay-close{
+    position:absolute; top:18px; right:24px; z-index:1;
+    width:48px; height:48px; border:none; padding:0;
+    background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transition:opacity .2s ease .35s;
+  }
+  .overlay.open .overlay-close{ opacity:1; }
+  .overlay-close .dot{
+    width:26px; height:26px; border-radius:50%; background:var(--accent);
+    position:relative; transition:transform .2s ease;
+  }
+  .overlay-close .dot::before, .overlay-close .dot::after{
+    content:''; position:absolute; top:50%; left:50%; width:13px; height:1.5px;
+    background:var(--bg); transform-origin:center;
+  }
+  .overlay-close .dot::before{ transform:translate(-50%,-50%) rotate(45deg); }
+  .overlay-close .dot::after{ transform:translate(-50%,-50%) rotate(-45deg); }
+  .overlay-close:hover .dot{ transform:scale(1.15); }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:56px 0 40px; animation:rise .6s ease both; }
+  .hero-row{ display:flex; flex-direction:column; align-items:flex-start; gap:22px; }
+  .hero-photo{
+    width:112px; height:112px; object-fit:cover; object-position:50% 15%;
+    border:1px solid var(--border); border-radius:50%; flex-shrink:0;
+  }
+  @media(min-width:560px){
+    .hero-row{ flex-direction:row; align-items:center; gap:30px; }
+  }
+  .hero h1{
+    font-size:clamp(30px,5.4vw,44px);
+    line-height:1.25;
+    max-width:900px;
+  }
+  .hero h1 em{ font-style:italic; color:var(--accent); }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .hero{ animation:none; } }
+
+  /* ---------- timeline ---------- */
+  .section{ padding:40px 0; border-top:1px solid var(--border); }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:22px; }
+  .section-head h2{ font-family:'General Sans',sans-serif; font-weight:500; font-size:22px; }
+
+  .timeline-row{
+    display:grid; grid-template-columns:74px 1fr; gap:18px;
+    padding:14px 0; border-top:1px solid var(--border);
+  }
+  .timeline-row:first-of-type{ border-top:none; }
+  .timeline-row .year{ font-family:'Geist Mono',monospace; font-size:13px; color:var(--text-muted); padding-top:2px; }
+  .timeline-row .company{ font-weight:600; font-size:16px; }
+  .timeline-row .role{ color:var(--text-muted); font-size:14px; margin-top:2px; }
+
+  /* ---------- project cards ---------- */
+  .work-grid{ display:flex; flex-direction:column; gap:44px; }
+  .card{ cursor:pointer; display:block; text-decoration:none; color:inherit; }
+  .thumb{
+    position:relative; border-radius:0; overflow:hidden;
+    aspect-ratio:16/10; border:1px solid var(--border);
+    display:flex; align-items:flex-end; padding:22px;
+    transition:transform .3s ease;
+  }
+  .card:hover .thumb{ transform:translateY(-4px); }
+  .thumb .tag{
+    font-family:'Geist', sans-serif; font-weight:600; font-size:clamp(20px,4vw,28px);
+    color:#fff;
+  }
+  .card h3{ font-family:'General Sans',sans-serif; font-weight:500; font-size:21px; margin-top:16px; }
+  .card .meta{ margin-top:4px; }
+  .card.coming-soon{ cursor:default; }
+  .card.coming-soon:hover .thumb{ transform:none; }
+  .thumb .soon-badge{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:var(--text); color:var(--bg);
+    font-family:'Geist Mono',monospace; font-size:13px; letter-spacing:.12em; text-transform:uppercase;
+    opacity:0; transition:opacity .25s ease; pointer-events:none;
+  }
+  .card.coming-soon:hover .thumb .soon-badge{ opacity:1; }
+  .card.coming-soon h3, .card.coming-soon .meta{ color:var(--text-muted); }
+
+  /* ---------- about / fun ---------- */
+  .about-body{ font-size:16px; line-height:1.7; max-width:62ch; }
+  .stack-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .chip{
+    font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em;
+    border:1px solid var(--border); border-radius:0; padding:7px 13px; color:var(--text-muted);
+  }
+  .fun-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+  .fun-tile{
+    border:1px solid var(--border); border-radius:0; padding:16px;
+    background:var(--surface);
+  }
+  .fun-tile .label{ margin-bottom:6px; }
+  .fun-tile p{ margin:0; font-size:14px; color:var(--text-muted); line-height:1.5; }
+
+  /* ---------- footer ---------- */
+  footer{ padding:40px 0 64px; border-top:1px solid var(--border); }
+  .footer-links{ display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+  .footer-links a{
+    font-family:'Geist Mono',monospace; font-size:13px; letter-spacing:.06em;
+    text-transform:uppercase; text-decoration:none; color:var(--text-muted);
+    width:fit-content; border-bottom:1px solid transparent;
+  }
+  .footer-links a:hover{ color:var(--accent); border-color:var(--accent); }
+
+  /* ---------- FAB ---------- */
+  /* ---------- case study view ---------- */
+  #case-view{ display:none; padding-bottom:60px; }
+  #case-view.active{ display:block; }
+  #home-view.hidden{ display:none; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px; margin:26px 0 18px;
+    font-family:'Geist Mono',monospace; font-size:13px; letter-spacing:.05em;
+    text-transform:uppercase; text-decoration:none; color:var(--text-muted); cursor:pointer; background:none; border:none; padding:0;
+  }
+  .back-link:hover{ color:var(--accent); }
+  .case-title{ font-family:'General Sans',sans-serif; font-weight:500; font-size:clamp(28px,5vw,40px); margin-top:10px; max-width:900px; }
+  .case-hero{
+    border-radius:0; aspect-ratio:16/9; margin:26px 0; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .case-hero span{ font-family:'General Sans',sans-serif; font-weight:500; font-style:italic; font-size:clamp(28px,6vw,52px); color:#ffffff; }
+  .meta-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:760px;
+    padding:26px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  }
+  @media(min-width:560px){ .meta-grid{ grid-template-columns:repeat(4,1fr); } }
+  .meta-grid .label{ margin-bottom:8px; }
+  .meta-grid div p{ margin:0 0 3px; font-size:14px; }
+  .case-block{ padding:34px 0; border-bottom:1px solid var(--border); }
+  .case-block:last-of-type{ border-bottom:none; }
+  .case-block h4.label{ margin-bottom:14px; }
+  .case-block .body-text{ font-size:16px; line-height:1.75; max-width:64ch; }
+  .case-block .body-text + .body-text{ margin-top:14px; }
+  .outcomes{ display:flex; flex-wrap:wrap; gap:32px; max-width:760px; }
+  .outcome .num{
+    font-family:'General Sans',sans-serif; font-weight:500; font-size:38px; color:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+  .outcome .cap{ font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .win, .lesson{ margin-bottom:20px; max-width:640px; }
+  .win:last-child, .lesson:last-child{ margin-bottom:0; }
+  .win h5, .lesson h5{ font-size:15.5px; font-weight:600; margin:0 0 4px; }
+  .win p, .lesson p{ margin:0; font-size:14.5px; color:var(--text-muted); line-height:1.6; }
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translate(-50%,12px);
+    background:var(--text); color:var(--bg); font-family:'Geist Mono',monospace;
+    font-size:12.5px; padding:12px 18px; border-radius:0; opacity:0; pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease; z-index:80; max-width:88vw; text-align:center;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+</style>
+
+<header class="site">
+  <div class="brand">
+    <div class="name">DAVID JINHO YANG</div>
+    <div class="role">PRODUCT DESIGNER + CREATIVE</div>
+  </div>
+  <div class="menu-wrap">
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu"><span class="dot"><span class="eye eye-l"></span><span class="eye eye-r"></span></span></button>
+    <a class="alter-chip" id="alterChip" href="https://davidjinhoyang.cargo.site" target="_blank" rel="noopener">My other side &#8594;</a>
+  </div>
+</header>
+
+<div class="overlay" id="overlay">
+  <button class="overlay-close" id="overlayClose" aria-label="Close menu"><span class="dot"></span></button>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <a href="#work" data-close>Work</a>
+  <a href="#about" data-close>About</a>
+  <a href="#fun" data-close>Fun</a>
+  <a href="files/David-Yang-Resume.pdf" target="_blank" rel="noopener" data-close>Resume</a>
+</div>
+
+<main id="home-view">
+  <section class="hero">
+    <div class="hero-row">
+      <img class="hero-photo" src="images/headshot.jpg" alt="David Yang" width="112" height="112">
+      <h1 class="serif">I'm David, a creative who <em>designs</em> products.</h1>
+    </div>
+  </section>
+
+  <section class="section" id="experience">
+    <div id="timeline" class="prose"></div>
+  </section>
+
+  <section class="section" id="work">
+    <div class="section-head"><h2 class="serif">Selected work</h2></div>
+    <div class="work-grid" id="workGrid"></div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="section-head"><h2 class="serif">About</h2></div>
+    <p class="about-body">I am a product designer who works at the edges of emerging technology, using tools such as AI and augmented reality to prototype speculative concepts and surface stories that often go unnoticed. My latest interest is affective computing, exploring how human emotion can be interpreted and translated into interactive experiences and wearable technology.</p>
+    <p class="about-body" style="margin-top:14px;">I am always glad to connect with people working on similar questions. Feel free to email me if you would like to grab a coffee.</p>
+    <div class="stack-row">
+      <span class="chip">Figma</span>
+      <span class="chip">Python</span>
+      <span class="chip">HTML</span>
+      <span class="chip">CSS</span>
+      <span class="chip">Adobe Suite</span>
+      <span class="chip">AI (Claude, Gemini, Flora)</span>
+      <span class="chip">Autodesk Maya</span>
+      <span class="chip">Blender</span>
+    </div>
+  </section>
+
+  <section class="section" id="fun">
+    <div class="section-head"><h2 class="serif">Fun</h2></div>
+    <div class="fun-grid">
+      <div class="fun-tile"><div class="label">Travel &amp; Photography</div><p>Shooting and editing, sometimes.</p></div>
+      <div class="fun-tile"><div class="label">Cooking</div><p>Walking through Trader Joe's aisles for new recipes and ingredients.</p></div>
+      <div class="fun-tile"><div class="label">NYC Park Enthusiast</div><p>Immersing in parks and nature, and meditating.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/david-yang-3916671b6/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:jy3424@nyu.edu">Email</a>
+      <a href="https://github.com/jinho72" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+</main>
+
+<div id="case-view">
+  <div style="min-height:1px;"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var timeline = [
+    { year:'Present', company:'New York University', role:'M.S. Candidate, Integrated Design & Media (Tandon School of Engineering)' },
+    { year:'2026', company:'Chance AI x AStudio', role:'Design Lead (Mentorship Mentee)' },
+    { year:'2025', company:'Point Off View', role:'Creative Designer & Editor' },
+    { year:'2024–25', company:'IDM Experimental Print Studio, NYU', role:'Design Assistant' },
+    { year:'2021', company:'Bondit.io', role:'Product Design Intern' }
+  ];
+
+  var projects = [
+    {
+      comingSoon:true,
+      company:'Chance AI x AStudio', tagline:'DESIGN LEAD · COMING SOON',
+      title:'Visual Skills Search, an AI agent', word:'Chance AI',
+      gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)'
+    },
+    {
+      slug:'inyun', company:'INYUN', tagline:'CASE STUDY IN PROGRESS',
+      title:'Full write-up coming soon', word:'INYUN',
+      gradient:'linear-gradient(135deg,#12213f,#1d5fff 55%,#9db8ff)',
+      overview:'The full case study for this project is still being written. Message me directly if you would like a walkthrough in the meantime.'
+    },
+    {
+      slug:'ekpyrosis', company:'Ekpyrosis', tagline:'CASE STUDY IN PROGRESS',
+      title:'Full write-up coming soon', word:'Ekpyrosis',
+      gradient:'linear-gradient(135deg,#1f3a63,#4d78e6 55%,#c3d3ff)',
+      overview:'The full case study for this project is still being written. Message me directly if you would like a walkthrough in the meantime.'
+    },
+    {
+      slug:'animi', company:'ANIMI', tagline:'AR EXPERIENCE · 2025',
+      title:'An AR social media and meditation experience', word:'ANIMI',
+      gradient:'linear-gradient(135deg,#0c1a33,#2848a8 55%,#7fa0f2)',
+      role:'AI workflow and interface designer', timeline:'Sep to Dec 2025',
+      skills:['AI assisted workflows','Mobile AR interface design','Stakeholder presentations'],
+      overview:'ANIMI is an augmented reality experience that blends social media and meditation. I designed and implemented an AI assisted workflow that combined multiple AI tools, then used it to design and iterate on interface concepts for the mobile AR application.',
+      research:[
+        'Before shaping the interaction model, I looked into why screen based work and social platforms leave people so drained. A Stanford study led by Jeremy Bailenson identified an unnatural volume of close up eye contact as a leading cause of what researchers call Zoom fatigue, since every participant on a video call appears to be looking directly at every other participant for the full length of the call. Constant self view and reduced physical movement compounded the effect. ANIMI is built around that finding. Rather than adding another screen based habit, it interrupts screen time at intervals with a short augmented reality meditation, working against the exact conditions the research points to as the cause of the fatigue.',
+        'The mask is the most visible part of ANIMI, and I wanted its role to go beyond aesthetics. A 2023 study in Royal Society Open Science, titled Mask wearing provides psychological ease but does not affect facial expression intensity estimation, found that wearing a mask can increase the sense of ease felt by the person wearing it, separate from how the mask changes the way others read their expressions. That distinction shaped the design directly. Since the meditation moment in ANIMI is private and self facing, the mask was never meant to change how the user is perceived by anyone else. It was meant to give the wearer a felt sense of stepping outside their working identity for the length of the session, so the pause reads less like another task and more like a brief, deliberate exit from work.'
+      ],
+      wins:[ {t:'Presented to CNET and NYU', d:'Shared interface concepts with editorial teams at CNET and researchers at the NYU Mobile Augmented Reality Studio.'} ]
+    }
+  ];
+
+  var timelineEl = document.getElementById('timeline');
+  timeline.forEach(function(row){
+    var el = document.createElement('div');
+    el.className = 'timeline-row';
+    el.innerHTML = '<div class="year mono">'+row.year+'</div><div><div class="company">'+row.company+'</div><div class="role">'+row.role+'</div></div>';
+    timelineEl.appendChild(el);
+  });
+
+  var grid = document.getElementById('workGrid');
+  projects.forEach(function(p){
+    if(p.comingSoon){
+      var d = document.createElement('div');
+      d.className = 'card coming-soon';
+      d.setAttribute('aria-disabled', 'true');
+      d.title = 'Coming soon';
+      d.innerHTML =
+        '<div class="thumb" style="background:'+p.gradient+'">'+
+          '<span class="tag">'+p.company+'</span>'+
+          '<span class="soon-badge">Coming soon</span>'+
+        '</div>'+
+        '<h3>'+p.title+'</h3>'+
+        '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
+      grid.appendChild(d);
+      return;
+    }
+    var a = document.createElement('a');
+    a.className = 'card'; a.href = '#work/'+p.slug;
+    a.innerHTML =
+      '<div class="thumb" style="background:'+p.gradient+'"><span class="tag">'+p.company+'</span></div>'+
+      '<h3>'+p.title+'</h3>'+
+      '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
+    grid.appendChild(a);
+  });
+
+  var homeView = document.getElementById('home-view');
+  var caseView = document.getElementById('case-view');
+
+  function renderCase(p){
+    var metaFields = [
+      ['Role', p.role], ['Timeline', p.timeline], ['Team', p.team],
+      ['Skills', p.skills && p.skills.length ? p.skills.join(', ') : '']
+    ].filter(function(f){ return f[1]; });
+    var metaHtml = metaFields.length ? ('<div class="meta-grid">' +
+      metaFields.map(function(f){ return '<div><div class="label">'+f[0]+'</div><p>'+f[1]+'</p></div>'; }).join('') +
+      '</div>') : '';
+
+    var research = p.research || [], outcomes = p.outcomes || [], journey = p.journey || [], wins = p.wins || [], lessons = p.lessons || [];
+    var researchHtml = research.length ? ('<div class="case-block"><h4 class="label">Research</h4>' +
+      research.map(function(t){ return '<p class="body-text">'+t+'</p>'; }).join('') + '</div>') : '';
+    var outcomesHtml = outcomes.length ? ('<div class="case-block"><h4 class="label">Outcomes</h4><div class="outcomes">' +
+      outcomes.map(function(o){ return '<div class="outcome"><div class="num mono">'+o.num+'</div><div class="cap">'+o.cap+'</div></div>'; }).join('') +
+      '</div></div>') : '';
+    var journeyHtml = journey.length ? ('<div class="case-block"><h4 class="label">The journey</h4>' +
+      journey.map(function(t){ return '<p class="body-text">'+t+'</p>'; }).join('') + '</div>') : '';
+    var winsHtml = wins.length ? ('<div class="case-block"><h4 class="label">Wins</h4>' +
+      wins.map(function(w){ return '<div class="win"><h5>'+w.t+'</h5><p>'+w.d+'</p></div>'; }).join('') + '</div>') : '';
+    var lessonsHtml = lessons.length ? ('<div class="case-block"><h4 class="label">Reflection</h4>' +
+      lessons.map(function(l){ return '<div class="lesson"><h5>'+l.t+'</h5><p>'+l.d+'</p></div>'; }).join('') + '</div>') : '';
+
+    caseView.innerHTML =
+      '<button class="back-link" id="backBtn">&#8592; Back</button>'+
+      '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
+      '<h1 class="case-title">'+p.title+'</h1>'+
+      '<div class="case-hero" style="background:'+p.gradient+'"><span>'+p.word+'</span></div>'+
+      metaHtml+
+      '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
+      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml;
+
+    document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
+  }
+
+  function route(){
+    var hash = location.hash.replace('#','');
+    if(hash.indexOf('work/') === 0){
+      var slug = hash.slice(5);
+      var p = projects.filter(function(x){ return x.slug === slug; })[0];
+      if(p){
+        renderCase(p);
+        homeView.classList.add('hidden');
+        caseView.classList.add('active');
+        window.scrollTo(0,0);
+        document.title = p.company + ' — David Jinho Yang';
+        return;
+      }
+    }
+    homeView.classList.remove('hidden');
+    caseView.classList.remove('active');
+    document.title = 'David Jinho Yang';
+    if(hash === 'work' || hash === 'about' || hash === 'fun'){
+      var target = document.getElementById(hash);
+      if(target){ setTimeout(function(){ target.scrollIntoView({behavior:'smooth', block:'start'}); }, 30); }
+    } else if(!hash){
+      window.scrollTo(0,0);
+    }
+  }
+  window.addEventListener('hashchange', route);
+  route();
+
+  var overlay = document.getElementById('overlay');
+  var menuBtn = document.getElementById('menuBtn');
+
+  function openOverlay(){
+    var rect = menuBtn.getBoundingClientRect();
+    var ox = rect.left + rect.width/2;
+    var oy = rect.top + rect.height/2;
+    var farX = Math.max(ox, window.innerWidth - ox);
+    var farY = Math.max(oy, window.innerHeight - oy);
+    var radius = Math.hypot(farX, farY);
+    overlay.style.setProperty('--ox', ox + 'px');
+    overlay.style.setProperty('--oy', oy + 'px');
+    overlay.style.setProperty('--or', radius + 'px');
+    overlay.classList.add('open');
+  }
+  function closeOverlay(){ overlay.classList.remove('open'); }
+
+  var menuDot = menuBtn.querySelector('.dot');
+  var menuEyes = menuBtn.querySelectorAll('.eye');
+  var alterChip = document.getElementById('alterChip');
+  var menuMotionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  // Click the dot fast and repeatedly, rather than once, and it starts to
+  // lose patience. Reach the end of that and it hands over the link to a
+  // different, less patient version of this site.
+  var ANGER_THRESHOLD = 6;
+  var CLICK_GAP_MS = 450;
+  var lastClickTime = 0;
+  var angerCount = 0;
+  var revealed = false;
+
+  function setAngerStage(n){
+    menuDot.classList.remove('anger-1', 'anger-2', 'anger-3');
+    if(n >= 5) menuDot.classList.add('anger-3');
+    else if(n >= 3) menuDot.classList.add('anger-2');
+    else if(n >= 1) menuDot.classList.add('anger-1');
+  }
+
+  function revealAlterEgo(){
+    revealed = true;
+    menuDot.classList.remove('anger-1', 'anger-2', 'anger-3');
+    menuDot.classList.add('revealed');
+    alterChip.classList.add('show');
+  }
+
+  menuBtn.addEventListener('click', function(e){
+    var now = Date.now();
+    var isRapid = menuMotionOk && !revealed && (now - lastClickTime) < CLICK_GAP_MS;
+    lastClickTime = now;
+
+    if(isRapid){
+      e.preventDefault();
+      angerCount++;
+      if(angerCount >= ANGER_THRESHOLD){ revealAlterEgo(); }
+      else { setAngerStage(angerCount); }
+      return;
+    }
+
+    angerCount = revealed ? angerCount : 0;
+    if(!revealed) setAngerStage(0);
+    if(menuMotionOk){
+      menuDot.classList.remove('squish');
+      void menuDot.offsetWidth;
+      menuDot.classList.add('squish');
+    }
+    openOverlay();
+  });
+
+  // A quiet, occasional blink so the dot reads as something alive even
+  // before anyone has clicked it.
+  if(menuMotionOk){
+    (function scheduleBlink(){
+      var delay = 18000 + Math.random() * 14000;
+      setTimeout(function(){
+        if(!overlay.classList.contains('open')){
+          menuDot.classList.add('blink');
+          setTimeout(function(){ menuDot.classList.remove('blink'); }, 220);
+        }
+        scheduleBlink();
+      }, delay);
+    })();
+  }
+  document.getElementById('overlayClose').addEventListener('click', closeOverlay);
+  overlay.querySelectorAll('[data-close]').forEach(function(a){
+    a.addEventListener('click', closeOverlay);
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
+  });
+
+  if(menuMotionOk){
+    menuBtn.addEventListener('mousemove', function(e){
+      var rect = menuBtn.getBoundingClientRect();
+      var dx = e.clientX - (rect.left + rect.width/2);
+      var dy = e.clientY - (rect.top + rect.height/2);
+      menuDot.style.transform = 'translate(' + (dx*0.3) + 'px,' + (dy*0.3) + 'px) scale(1.25)';
+    });
+    menuBtn.addEventListener('mouseleave', function(){ menuDot.style.transform = ''; });
+
+    // The dot's little eyes glance toward the cursor anywhere on the page,
+    // like a small character keeping watch over the site.
+    document.addEventListener('mousemove', function(e){
+      var rect = menuDot.getBoundingClientRect();
+      var cx = rect.left + rect.width/2;
+      var cy = rect.top + rect.height/2;
+      var dx = e.clientX - cx;
+      var dy = e.clientY - cy;
+      var dist = Math.hypot(dx, dy) || 1;
+      var reach = Math.min(1.8, dist / 30);
+      var ex = (dx/dist) * reach;
+      var ey = (dy/dist) * reach;
+      var t = 'translate(calc(-50% + ' + ex + 'px), calc(-50% + ' + ey + 'px))';
+      menuEyes[0].style.transform = t;
+      menuEyes[1].style.transform = t;
+    });
+  }
+
+  var cursorGlow = document.getElementById('cursorGlow');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduceMotion){
+    window.addEventListener('pointermove', function(e){
+      if(!overlay.classList.contains('open')) return;
+      cursorGlow.style.transform = 'translate(' + (e.clientX - 170) + 'px,' + (e.clientY - 170) + 'px)';
+    });
+  }
+
+  var toast = document.getElementById('toast');
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+})();
+</script>
