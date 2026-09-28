@@ -466,6 +466,29 @@
   .clip-phone .phone-mock .screen{ border-radius:32px; }
   .clip-phone .phone-mock::before{ top:16px; height:19px; }
 
+  /* INYUN user flow, built from real screens */
+  .flow-panel{ background:#0b0b0e; color:#e9ecf1; padding:26px 22px 22px; border:1px solid #1d2028; }
+  .flow-stage + .flow-stage, .flow-stage + .flow-pair, .flow-pair + .flow-stage{ margin-top:26px; padding-top:22px; border-top:1px solid #1f232c; }
+  .flow-pair{ display:flex; flex-wrap:wrap; gap:26px 30px; }
+  @media(max-width:700px){ .flow-stage.scrolls .flow-stage-label::after{ content:' · swipe →'; color:#566074; } }
+  .flow-pair > .flow-stage:first-child{ flex:0 1 auto; min-width:0; }
+  .flow-pair > .flow-stage + .flow-stage{ margin:0; padding:0 0 0 30px; border-top:0; border-left:1px solid #1f232c; flex:0 0 auto; }
+  @media(max-width:700px){ .flow-pair > .flow-stage + .flow-stage{ padding:22px 0 0; border-left:0; border-top:1px solid #1f232c; flex-basis:100%; } }
+  .flow-stage-label{ font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8a93a3; margin-bottom:14px; }
+  .flow-row{ display:flex; align-items:flex-start; gap:6px; overflow-x:auto; padding-bottom:6px; scrollbar-width:thin; }
+  .flow-node{ flex:0 0 auto; width:92px; text-align:center; }
+  .flow-node img{ width:78px; aspect-ratio:390/844; object-fit:cover; border-radius:12px; border:1px solid #2a2f3a; display:block; margin:0 auto; cursor:zoom-in; background:#000; }
+  .flow-node.hub img{ border-color:#7aa2ff; box-shadow:0 0 0 3px rgba(122,162,255,.18), 0 0 26px rgba(122,162,255,.25); }
+  .flow-title{ font-size:12.5px; line-height:1.3; margin-top:9px; color:#e9ecf1; }
+  .flow-tag{ display:inline-block; margin-top:6px; font-family:'Geist Mono',monospace; font-size:9.5px; letter-spacing:.04em; line-height:1.3; color:#9fb5e8; border:1px solid #2a3552; padding:2px 6px; }
+  .flow-arrow{ flex:0 0 auto; align-self:center; margin-top:-46px; color:#566074; font-size:14px; }
+  .flow-loops{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .flow-loop{ font-size:12px; color:#c9d3e6; border:1px dashed #3a4460; padding:6px 10px; }
+  .flow-loop b{ color:#7aa2ff; font-weight:600; margin-right:2px; }
+  .flow-full{ margin-top:22px; font-family:'Geist Mono',monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:#9fb5e8; background:none; border:1px solid #2a3552; padding:9px 14px; cursor:zoom-in; }
+  .flow-full:hover{ color:#fff; border-color:#7aa2ff; }
+  .case-fig.flowmap{ max-width:none; }
+
   .lightbox{
     position:fixed; inset:0; z-index:80; display:none;
     align-items:center; justify-content:center; padding:4vh 4vw;
@@ -663,7 +686,26 @@
         '<strong>Why the prompt matters.</strong> The prompt is the only thing a group gets to start with, so it carries a lot. It has to be open enough that nobody can get it wrong, but concrete enough that you can make the first mark without overthinking it. It also shifts the attention away from judging each other\'s profiles and toward making something together. How someone responds to a prompt says more about them than a bio would.',
         '<strong>How it\'s chosen.</strong> Where the prompt comes from depends on the group\'s mediation settings. When the artist\'s weight is high, it comes from a pool of prompts I wrote myself. When AI\'s weight is high, the plan is for AI to write one from the group\'s onboarding answers, and in between, the two get mixed. In this version, the AI route still falls back to my written pool, so that part is next on the list. The sketch timer is shared too: it averages how much time each person said they were willing to give. For the demo I used a more concrete prompt, "Draw a place where the three of you could wait out the rain", which gives people an easier first mark while leaving plenty of room for interpretation.',
         '<strong>User flow.</strong> The lobby is the heart of the experience, with onboarding and offboarding at either end. Users can go through multiple sessions, depending on how much time they want to commit. Based on user testing, I also made it possible to adjust mediation settings directly from the lobby.',
-        {media:[{src:'images/inyun/user-flow.jpg', alt:'INYUN user flow diagram'}], caption:'User flow'}
+        {flow:{full:'images/inyun/user-flow.jpg', stages:[
+          {label:'01 · Enter the field', nodes:[
+            {img:'images/inyun/flow/01-welcome.jpg', title:'Welcome'},
+            {img:'images/inyun/flow/02-mediation.jpg', title:'Mediation triangle', tag:'AI · artist · you'},
+            {img:'images/inyun/flow/03-questions.jpg', title:'Three questions', tag:'emotion keywords'},
+            {img:'images/inyun/flow/04-time.jpg', title:'Session length', tag:'time budget'},
+            {img:'images/inyun/flow/05-bring.jpg', title:'Bring something', tag:'image, optional'},
+            {img:'images/inyun/flow/06-identity.jpg', title:'Name, then hold', tag:'identity signifier'}
+          ]},
+          {label:'02 · In the field', nodes:[
+            {img:'images/inyun/flow/07-lobby.jpg', title:'Lobby: pair or group up', tag:'set by mediation', hub:true},
+            {img:'images/inyun/flow/08-prompt.jpg', title:'Shared prompt', tag:'artist pool or AI'},
+            {img:'images/inyun/flow/09-sketch.jpg', title:'Sketch together', tag:'shared timer'},
+            {img:'images/inyun/flow/10-forging.jpg', title:'Forging the object', tag:'strokes to 3D model'},
+            {img:'images/inyun/flow/11-reveal.jpg', title:'Reveal and reflect', tag:'reflection'}
+          ], loops:['Draw together again: back to a new prompt', 'Release back to the field: back to the lobby']},
+          {label:'03 · Leave', beside:true, nodes:[
+            {img:'images/inyun/flow/12-share.jpg', title:'Crystallise and share', tag:'session summary'}
+          ]}
+        ]}, caption:'User flow, built from INYUN\'s own screens · tap any screen to enlarge'}
       ],
       references:[
         {text:'Grøntvedt, T. V., Bendixen, M., Botnen, E. O., &amp; Kennair, L. E. O. (2020). Hook, line and sinker: Do Tinder matches and meet ups lead to one-night stands? <em>Evolutionary Psychological Science, 6</em>(2), 109–118.', url:'https://doi.org/10.1007/s40806-019-00222-z'}
@@ -892,6 +934,7 @@
     }
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
+      if(t.flow) return flowHtml(t);
       if(t.table) return '<figure class="case-fig case-table"><div class="table-scroll"><table><thead><tr>' +
         t.table.head.map(function(h){ return '<th scope="col">'+h+'</th>'; }).join('') + '</tr></thead><tbody>' +
         t.table.rows.map(function(r){ return '<tr>' + r.map(function(c, i){ return i === 0 ? '<th scope="row">'+c+'</th>' : '<td>'+c+'</td>'; }).join('') + '</tr>'; }).join('') +
@@ -904,6 +947,29 @@
     // A paragraph followed by a row of phone screens sits beside it on wide
     // screens; everything else (videos, slides, pairs) keeps the full width.
     function sideBySide(t){ return t && typeof t !== 'string' && !!t.media && (t.cols === 3 || !!t.media[0].phone); }
+    // A user flow drawn with the product's own screens
+    function flowHtml(t){
+      var f = t.flow;
+      var html = '', i = 0;
+      function stageHtml(st){
+          return '<div class="flow-stage'+(st.nodes.length > 3 ? ' scrolls' : '')+'"><div class="flow-stage-label">'+st.label+'</div><div class="flow-row">' +
+            st.nodes.map(function(n, i){
+              return (i ? '<span class="flow-arrow" aria-hidden="true">→</span>' : '') +
+                '<div class="flow-node'+(n.hub ? ' hub' : '')+'"><img src="'+n.img+'" alt="'+n.title+' screen" loading="lazy">' +
+                '<div class="flow-title">'+n.title+'</div>' + (n.tag ? '<div class="flow-tag">'+n.tag+'</div>' : '') + '</div>';
+            }).join('') + '</div>' +
+            (st.loops ? '<div class="flow-loops">' + st.loops.map(function(l){ return '<span class="flow-loop"><b>↺</b> '+l+'</span>'; }).join('') + '</div>' : '') +
+            '</div>';
+      }
+      // a stage marked "beside" sits next to the one before it
+      for(; i < f.stages.length; i++){
+        if(f.stages[i + 1] && f.stages[i + 1].beside){ html += '<div class="flow-pair">' + stageHtml(f.stages[i]) + stageHtml(f.stages[i + 1]) + '</div>'; i++; }
+        else html += stageHtml(f.stages[i]);
+      }
+      return '<figure class="case-fig flowmap"><div class="flow-panel">' + html +
+        (f.full ? '<button type="button" class="flow-full" data-lightbox="'+f.full+'">See my detailed flow diagram ↗</button>' : '') +
+        '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+    }
     function clipPhone(c){ return '<figure class="case-fig clip-phone">' + mediaHtml({phone:c.src, poster:c.poster, alt:c.alt, statusBg:c.statusBg, statusInk:c.statusInk}) + '</figure>'; }
     function thumbsHtml(t){
       return '<figure class="case-fig thumbs"><div class="thumb-row">' +
@@ -1015,10 +1081,11 @@
   document.body.appendChild(lightbox);
   var lightboxImg = lightbox.querySelector('img');
   caseView.addEventListener('click', function(e){
-    var img = e.target.closest('.case-fig img');
-    if(!img) return;
-    lightboxImg.src = img.src;
-    lightboxImg.alt = img.alt;
+    var btn = e.target.closest('[data-lightbox]');
+    var img = btn ? null : e.target.closest('.case-fig img');
+    if(!img && !btn) return;
+    lightboxImg.src = btn ? btn.dataset.lightbox : img.src;
+    lightboxImg.alt = btn ? 'Detailed user flow diagram' : img.alt;
     lightbox.classList.add('open');
   });
   lightbox.addEventListener('click', function(){ lightbox.classList.remove('open'); });
