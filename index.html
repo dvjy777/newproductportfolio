@@ -376,6 +376,27 @@
   .case-fig img, .case-fig video{ width:100%; height:auto; display:block; border:1px solid var(--border); background:var(--accent-soft); }
   .case-fig .embed{ position:relative; aspect-ratio:16/9; border:1px solid var(--border); background:#000; }
   .case-fig .embed iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  /* keep media at a comfortable size instead of filling the page */
+  .case-fig.phones{ max-width:620px; }
+  .case-fig.phones img{ border-radius:14px; }
+  .case-fig img{ cursor:zoom-in; }
+
+  .case-split{ display:grid; gap:18px; margin:6px 0 30px; }
+  .case-split .body-text{ margin:0; }
+  .case-split .case-fig{ margin:0; max-width:none; }
+  @media(min-width:860px){
+    .case-split{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:44px; align-items:center; }
+    .case-split .case-fig.phones{ max-width:480px; }
+  }
+
+  .lightbox{
+    position:fixed; inset:0; z-index:80; display:none;
+    align-items:center; justify-content:center; padding:4vh 4vw;
+    background:rgba(12,16,24,.9); cursor:zoom-out;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+
   .case-fig figcaption{ font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--text-muted); margin-top:10px; }
   .meta-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:760px;
@@ -724,26 +745,42 @@
     }
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+t+'</p>';
-      return '<figure class="case-fig"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
+      var kind = t.cols === 3 ? ' phones' : t.media.length === 1 ? ' single' : ' pair';
+      return '<figure class="case-fig'+kind+'"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
         t.media.map(mediaHtml).join('') + '</div>' +
         (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+    }
+    // A paragraph followed by a row of phone screens sits beside it on wide
+    // screens; everything else (videos, slides, pairs) keeps the full width.
+    function sideBySide(t){ return t && typeof t !== 'string' && t.cols === 3; }
+    function entriesHtml(list){
+      var html = '';
+      for(var i = 0; i < list.length; i++){
+        if(typeof list[i] === 'string' && sideBySide(list[i+1])){
+          html += '<div class="case-split">' + entryHtml(list[i]) + entryHtml(list[i+1]) + '</div>';
+          i++;
+        } else {
+          html += entryHtml(list[i]);
+        }
+      }
+      return html;
     }
 
     var research = p.research || [], outcomes = p.outcomes || [], journey = p.journey || [], wins = p.wins || [], lessons = p.lessons || [];
     var researchHtml = research.length ? ('<div class="case-block"><h4 class="label">Research</h4>' +
-      research.map(entryHtml).join('') + '</div>') : '';
+      entriesHtml(research) + '</div>') : '';
     var outcomesHtml = outcomes.length ? ('<div class="case-block"><h4 class="label">Outcomes</h4><div class="outcomes">' +
       outcomes.map(function(o){ return '<div class="outcome"><div class="num mono">'+o.num+'</div><div class="cap">'+o.cap+'</div></div>'; }).join('') +
       '</div></div>') : '';
     var journeyHtml = journey.length ? ('<div class="case-block"><h4 class="label">The journey</h4>' +
-      journey.map(entryHtml).join('') + '</div>') : '';
+      entriesHtml(journey) + '</div>') : '';
     var winsHtml = wins.length ? ('<div class="case-block"><h4 class="label">Wins</h4>' +
       wins.map(function(w){ return '<div class="win"><h5>'+w.t+'</h5><p>'+w.d+'</p></div>'; }).join('') + '</div>') : '';
     var lessonsHtml = lessons.length ? ('<div class="case-block"><h4 class="label">Reflection</h4>' +
       lessons.map(function(l){ return '<div class="lesson"><h5>'+l.t+'</h5><p>'+l.d+'</p></div>'; }).join('') + '</div>') : '';
     var future = p.future || [], links = p.links || [];
     var futureHtml = future.length ? ('<div class="case-block"><h4 class="label">What\'s next</h4>' +
-      future.map(entryHtml).join('') + '</div>') : '';
+      entriesHtml(future) + '</div>') : '';
     var linksHtml = links.length ? ('<div class="case-links">' +
       links.map(function(l){ return '<a href="'+l.url+'" target="_blank" rel="noopener">'+l.label+'</a>'; }).join('') + '</div>') : '';
 
@@ -759,6 +796,24 @@
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
   }
+
+  // Images in a case study open full size when clicked.
+  var lightbox = document.createElement('div');
+  lightbox.className = 'lightbox';
+  lightbox.innerHTML = '<img alt="">';
+  document.body.appendChild(lightbox);
+  var lightboxImg = lightbox.querySelector('img');
+  caseView.addEventListener('click', function(e){
+    var img = e.target.closest('.case-fig img');
+    if(!img) return;
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    lightbox.classList.add('open');
+  });
+  lightbox.addEventListener('click', function(){ lightbox.classList.remove('open'); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') lightbox.classList.remove('open');
+  });
 
   function route(){
     var hash = location.hash.replace('#','');
