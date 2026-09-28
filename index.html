@@ -29,7 +29,7 @@
     --bg:#ffffff;
     --surface:#ffffff;
     --text:#32404f;
-    --text-muted:#6d7c8c;
+    --text-muted:#647384;
     --border:#e2e8ee;
     --accent:#1d5fff;
     --accent-ink:#ffffff;
@@ -46,6 +46,7 @@
     padding-inline: 28px;
   }
   a{ color:inherit; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
   /* Full-width sections (header, images, footer) run edge-to-edge against the
      body's 28px gutter. .prose caps just the reading column so paragraphs and
      lists don't stretch into unreadably long lines on a wide screen. */
@@ -150,16 +151,17 @@
     z-index:60; display:flex; flex-direction:column;
     justify-content:center; gap:10px; padding-inline: 28px;
     clip-path:circle(0px at var(--ox,92%) var(--oy,38px));
-    transition:clip-path .7s cubic-bezier(.65,0,.35,1);
-    pointer-events:none;
+    transition:clip-path .7s cubic-bezier(.65,0,.35,1), visibility 0s linear .7s;
+    pointer-events:none; visibility:hidden;
     overflow:hidden;
   }
   .overlay.open{
     clip-path:circle(var(--or,150%) at var(--ox,92%) var(--oy,38px));
-    pointer-events:auto;
+    pointer-events:auto; visibility:visible;
+    transition:clip-path .7s cubic-bezier(.65,0,.35,1), visibility 0s;
   }
   @media (prefers-reduced-motion: reduce){
-    .overlay{ transition:clip-path .01s linear; }
+    .overlay, .overlay.open{ transition:clip-path .01s linear, visibility 0s; }
   }
   .cursor-glow{
     position:fixed; left:0; top:0; width:340px; height:340px; border-radius:50%;
