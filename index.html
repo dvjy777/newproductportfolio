@@ -441,6 +441,7 @@
   .case-block h4.label{ margin-bottom:14px; }
   .case-block .body-text{ font-size:16px; line-height:1.75; max-width:64ch; }
   .case-block .body-text + .body-text{ margin-top:14px; }
+  .body-text a{ color:var(--accent); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
   .outcomes{ display:flex; flex-wrap:wrap; gap:32px; max-width:760px; }
   .outcome .num{
     font-family:'General Sans',sans-serif; font-weight:500; font-size:38px; color:var(--accent);
@@ -570,10 +571,10 @@
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
       overview:'INYUN (인연) means fate, or providence, in Korean. It is an exploration of a matching experience built around real-time collaboration. By bringing vibe coding (AI) into both the product pipeline and the product itself, I set out to make a speculative experience that questions how AI can shape the way people meet and connect, rather than simply automating it.',
       research:[
-        '<strong>Inspiration.</strong> I was interested in the ephemerality of digital experiences and how it could translate to modern dating apps. There are countless dating apps, but most simply match users based on their profile inputs, and one study found that fewer than 30% of matches actually lead to an in-person date. Having experienced that difficulty firsthand, I came up with the idea of adding real-time collaboration that focuses on vulnerability and anonymity.',
+        '<strong>Inspiration.</strong> I was interested in the ephemerality of digital experiences and how it could translate to modern dating apps. There are countless dating apps, but most simply match users based on their profile inputs, and <a href="https://www.eurekalert.org/news-releases/914890" target="_blank" rel="noopener">a Norwegian study of Tinder users</a> found that it takes a very large number of matches to lead to a relatively small number of meetups. Having experienced that difficulty firsthand, I came up with the idea of adding real-time collaboration that focuses on vulnerability and anonymity.',
         '<strong>The Identity Signifier.</strong> Instead of photos and headshots, each user is introduced by a digital avatar. Apps like Bumble, Tinder and Hinge offer optional verification so users can choose to match only with verified people. It isn\'t required, but it is an important step in building trust among users. The Identity Signifier\'s form was inspired by blob interfaces in TouchDesigner references.',
         {media:[{youtube:'JLoOt9YTscU', alt:'INYUN teaser video'}], caption:'Teaser video'},
-        '<em>INYUN is an experiment in how strangers meet, shape each other, and make something together. What you share here is anonymous. It will be held. Be as open as you want to be. More honestly makes the encounter richer. Welcome to INYUN.</em>'
+        '<em>INYUN is an experiment in how strangers meet, shape each other, and make something together. What you share here is anonymous. It will be held. Be as open as you want to be. More honesty makes the encounter richer. Welcome to INYUN.</em>'
       ],
       journey:[
         {media:[{youtube:'iJZ1TIdbeYM', alt:'INYUN first iteration demo'}, {youtube:'WvkPaeggxVY', alt:'INYUN second iteration demo'}], caption:'Iteration 1 and iteration 2'},
@@ -590,10 +591,10 @@
       ]
     },
     {
-      slug:'ekpyrosis', company:'Ekpyrosis', tagline:'IMMERSIVE INSTALLATION',
+      slug:'ekpyrosis', company:'Ekpyrosis', tagline:'IMMERSIVE INSTALLATION · 2026',
       title:'An installation where emotions become light and space', word:'Ekpyrosis',
       gradient:'linear-gradient(135deg,#1f3a63,#4d78e6 55%,#c3d3ff)',
-      role:'Designer and developer', timeline:'4 weeks', team:'Supervised by Carla Gannis',
+      role:'Designer', timeline:'4 weeks, May 2026', team:'Supervised by Carla Gannis',
       tools:'Supabase, Claude, Vercel, TouchDesigner, Adobe Suite',
       overview:'Ekpyrosis (ἐκπύρωσις) means conflagration: renewal through destruction. It is an experimental exhibition that asks what happens when human sentiment merges with spatial awareness. By displaying each visitor\'s emotions in a systematic spatial form, I wanted to make feelings visible while helping visitors understand and move them toward a state they choose. Motto: feel, transform.',
       outcomes:[
@@ -602,7 +603,7 @@
         {num:'6', cap:'intentions to choose from'}
       ],
       research:[
-        '<strong>Three stages, organized in space.</strong> Visitors move through physical zones. <strong>Reflection:</strong> they register their current emotion. <strong>Intention:</strong> they choose what they want to do with it. <strong>Transformation:</strong> they go through a purge and renewal toward the state they want.',
+        '<strong>Three stages, organized in space.</strong> Visitors move through physical zones. <strong>Reflection:</strong> they register their current emotion. <strong>Intention:</strong> they choose what they want to do with it. <strong>Transformation:</strong> inside the tent, they go through a ritual of purge and renewal toward the state they want.',
         {media:[{src:'images/ekpyrosis/slide-02.jpg', alt:'What is Ekpyrosis: an immersive visual installation'}, {src:'images/ekpyrosis/slide-05.jpg', alt:'The three zones: reflection, intention, transformation'}], caption:'The concept'},
         {media:[{src:'images/ekpyrosis/slide-06.jpg', alt:'The ritual: phone, zones, projection, darkroom, memory'}, {src:'images/ekpyrosis/slide-07.jpg', alt:'Spatial journey: reflection, intention, transformation'}], caption:'The ritual and the spatial journey'},
         {media:[{src:'images/ekpyrosis/slide-03.jpg', alt:'Graphic posters for Ekpyrosis'}, {src:'images/ekpyrosis/slide-04.jpg', alt:'Zone posters with glowing orbs'}], caption:'Graphic and zone posters'}
@@ -636,9 +637,9 @@
     },
     {
       slug:'animi', company:'ANIMI', tagline:'AR EXPERIENCE · 2025',
-      title:'An AR social media and meditation experience', word:'ANIMI',
+      title:'An AR guided meditation experience', word:'ANIMI',
       gradient:'linear-gradient(135deg,#0c1a33,#2848a8 55%,#7fa0f2)',
-      role:'AI workflow and interface designer', timeline:'6 weeks, fall 2025',
+      role:'AI workflow and interface designer', timeline:'6 weeks',
       tools:'Google MediaPipe, Three.js, CodePen, Claude, ChatGPT, Gemini, Meshy AI',
       skills:['AI assisted workflows','Web AR prototyping','Mobile AR interface design','Stakeholder presentations'],
       links:[
