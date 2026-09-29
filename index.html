@@ -331,6 +331,11 @@
   /* ---------- about / fun ---------- */
   .about-body{ font-size:16px; line-height:1.7; max-width:62ch; }
   .stack-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .how-i-work{ margin-top:26px; max-width:62ch; }
+  .how-i-work .label{ margin-bottom:10px; }
+  .how-i-work ul{ list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+  .how-i-work li{ font-size:15px; line-height:1.6; color:var(--text-muted); padding-left:16px; border-left:2px solid var(--accent-soft); }
+  .how-i-work li strong{ color:var(--text); font-weight:600; }
   .chip{
     font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em;
     border:1px solid var(--border); border-radius:0; padding:7px 13px; color:var(--text-muted);
@@ -677,6 +682,14 @@
     <div class="section-head"><h2 class="serif">About</h2></div>
     <p class="about-body">I am a product designer who works at the edges of emerging technology, using tools such as AI and augmented reality to prototype speculative concepts and surface stories that often go unnoticed. My latest interest is affective computing, exploring how human emotion can be interpreted and translated into interactive experiences and wearable technology.</p>
     <p class="about-body" style="margin-top:14px;">I am always glad to connect with people working on similar questions. Feel free to email me if you would like to grab a coffee.</p>
+    <div class="how-i-work">
+      <div class="label">How I work</div>
+      <ul>
+        <li><strong>I prototype fast and test early.</strong> Every project here is a working prototype I put in front of people quickly, then changed based on what they actually did.</li>
+        <li><strong>I code my own prototypes.</strong> I build with AI coding tools, so an idea goes from sketch to something you can tap in days, not weeks.</li>
+        <li><strong>I back decisions with evidence.</strong> Each choice in my case studies traces back to a user test or a study, and I'm clear about what's built and what's still a plan.</li>
+      </ul>
+    </div>
     <div class="stack-row">
       <span class="chip">Figma</span>
       <span class="chip">Python</span>
@@ -752,7 +765,7 @@
         role:'Product designer, solo, from concept and flows to a working prototype built with AI coding tools.',
         decision:'Replace profiles with a shared act: strangers meet by sketching together, and a mediation triangle lets each person decide how much AI, the artist, or they themselves shape the match.',
         outcome:'A working multi-screen prototype, from onboarding to a shared canvas. User testing led me to let people adjust their mediation right from the lobby.',
-        stats:[['16','versions of the prototype in 8 weeks'], ['3','onboarding questions instead of a profile form'], ['4','session lengths, from 5 to 20 minutes']]
+        stats:[['16','versions of the prototype in 8 weeks'], ['10+','people tested the prototype'], ['3','onboarding questions instead of a profile form']]
       },
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
       overview:'INYUN (인연) means fate, or providence, in Korean. It is an exploration of a matching experience built around real-time collaboration. By bringing vibe coding (AI) into both the product pipeline and the product itself, I set out to make a speculative experience that questions how AI can shape the way people meet and connect, rather than simply automating it.',
@@ -760,6 +773,7 @@
         '<strong>Inspiration.</strong> I was interested in the ephemerality of digital experiences and how it could translate to modern dating apps. There are countless dating apps, but most simply match users based on their profile inputs, and a Norwegian study of Tinder users found that it takes a very large number of matches to lead to a relatively small number of meetups [[1]]. Having experienced that difficulty firsthand, I came up with the idea of adding real-time collaboration that focuses on vulnerability and anonymity.',
         '<strong>The Identity Signifier.</strong> Instead of photos and headshots, each user is introduced by a digital avatar. Apps like Bumble, Tinder and Hinge offer optional verification so users can choose to match only with verified people. It isn\'t required, but it is an important step in building trust among users. The Identity Signifier\'s form was inspired by blob interfaces in TouchDesigner references.',
         {media:[{youtube:'JLoOt9YTscU', alt:'INYUN teaser video'}], caption:'Teaser video'},
+        '<strong>Why drawing together.</strong> Drawing is one of the first ways we make friends, like in kindergarten, sitting next to someone and sharing crayons. There\'s research behind that instinct. In a six-week study, pairs of strangers who drew together each week reported feeling closer over time, and their brain activity synced up more when they drew together than when they drew alone [[2]]. Doing something at the same time as someone, even just tapping in rhythm, makes people feel more connected to each other [[3]]. Drawing also asks for a little vulnerability, since most of us aren\'t great at it. People tend to see their own awkwardness as weakness, but read the same openness in others as courage and authenticity [[4]]. And closeness grows fastest through small, mutual steps of opening up, rather than small talk [[5]], which is what the three questions and the shared sketch are built around.',
         '<em>INYUN is an experiment in how strangers meet, shape each other, and make something together. What you share here is anonymous. It will be held. Be as open as you want to be. More honesty makes the encounter richer. Welcome to INYUN.</em>'
       ],
       journey:[
@@ -805,7 +819,11 @@
         ]}, caption:'User flow, built from INYUN\'s own screens · tap any screen to enlarge'}
       ],
       references:[
-        {text:'Grøntvedt, T. V., Bendixen, M., Botnen, E. O., &amp; Kennair, L. E. O. (2020). Hook, line and sinker: Do Tinder matches and meet ups lead to one-night stands? <em>Evolutionary Psychological Science, 6</em>(2), 109–118.', url:'https://doi.org/10.1007/s40806-019-00222-z'}
+        {text:'Grøntvedt, T. V., Bendixen, M., Botnen, E. O., &amp; Kennair, L. E. O. (2020). Hook, line and sinker: Do Tinder matches and meet ups lead to one-night stands? <em>Evolutionary Psychological Science, 6</em>(2), 109–118.', url:'https://doi.org/10.1007/s40806-019-00222-z'},
+        {text:'Moffat, R., Dumas, G., &amp; Cross, E. S. (2026). Social interactions between people of same and different generations shape longitudinal changes in interpersonal neural synchrony, loneliness, and social connection. <em>PLOS Biology, 24</em>(8), e3003899.', url:'https://doi.org/10.1371/journal.pbio.3003899'},
+        {text:'Hove, M. J., &amp; Risen, J. L. (2009). It\'s all in the timing: Interpersonal synchrony increases affiliation. <em>Social Cognition, 27</em>(6), 949–960.', url:'https://doi.org/10.1521/soco.2009.27.6.949'},
+        {text:'Bruk, A., Scholl, S. G., &amp; Bless, H. (2018). Beautiful mess effect: Self–other differences in evaluation of showing vulnerability. <em>Journal of Personality and Social Psychology, 115</em>(2), 192–205.', url:'https://doi.org/10.1037/pspa0000120'},
+        {text:'Aron, A., Melinat, E., Aron, E. N., Vallone, R. D., &amp; Bator, R. J. (1997). The experimental generation of interpersonal closeness: A procedure and some preliminary findings. <em>Personality and Social Psychology Bulletin, 23</em>(4), 363–377.', url:'https://doi.org/10.1177/0146167297234003'}
       ]
     },
     {
