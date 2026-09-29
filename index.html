@@ -411,6 +411,24 @@
   /* a product recording as the opening image of a case study */
   .case-hero.has-phone{ aspect-ratio:auto; padding:clamp(28px,5vw,56px) 20px; }
   .case-hero.has-phone .phone-mock{ width:min(280px, 72%); }
+  /* desktop and phone recordings side by side */
+  .device-pair{ display:flex; align-items:flex-end; justify-content:center; gap:clamp(14px,3vw,40px); width:100%; }
+  .laptop-mock{ flex:0 1 640px; min-width:0; }
+  .laptop-screen{
+    background:#0c0e13; border-radius:clamp(8px,1.4vw,16px) clamp(8px,1.4vw,16px) 3px 3px; padding:2.2% 2.2% 2.8%;
+    box-shadow:inset 0 0 0 1.5px #2b303b, 0 30px 60px rgba(10,20,50,.25), 0 8px 18px rgba(10,20,50,.14);
+  }
+  .laptop-screen video{ display:block; width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:3px; background:#000; }
+  .laptop-base{
+    position:relative; height:clamp(8px,1.3vw,15px); width:112%; margin-left:-6%;
+    background:linear-gradient(#e4e7ec, #aeb4bd); border-radius:0 0 clamp(8px,1.4vw,16px) clamp(8px,1.4vw,16px);
+    box-shadow:0 10px 24px rgba(10,20,50,.25);
+  }
+  .laptop-base::after{ content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:16%; height:45%; background:#c3c8cf; border-radius:0 0 8px 8px; }
+  .case-hero.has-phone .device-pair .phone-mock{ flex:0 0 auto; width:clamp(92px, 20%, 200px); padding:6px; border-radius:clamp(18px,3.2vw,34px); }
+  .device-pair .phone-mock .screen{ border-radius:clamp(13px,2.6vw,28px); }
+  .device-pair .phone-mock::before{ top:clamp(9px,1.6vw,15px); height:clamp(9px,1.5vw,16px); }
+  .device-pair .phone-mock .status{ font-size:clamp(6px,1vw,10px); }
   /* Ekpyrosis: a dark room where the light behind the phone takes on the
      colour the visitor chooses, like the installation's projections */
   .case-hero.has-glow{
@@ -774,6 +792,7 @@
     {
       slug:'animi', company:'ANIMI', tagline:'AR EXPERIENCE · 2025',
       title:'An AR guided meditation experience', word:'ANIMI',
+      heroLaptop:{src:'images/animi/animi-desktop.mp4', poster:'images/animi/animi-desktop-poster.jpg', alt:'Screen recording of ANIMI on a desktop browser: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
       heroPhone:{statusBg:'#c6f0f4', statusInk:'dark', src:'images/animi/animi-demo.mp4', poster:'images/animi/animi-demo-poster.jpg', alt:'Screen recording of ANIMI on a phone: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
       gradient:'linear-gradient(135deg,#0c1a33,#2848a8 55%,#7fa0f2)',
       role:'AI workflow and interface designer', timeline:'6 weeks',
@@ -1018,7 +1037,9 @@
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
       '<div class="case-hero'+(p.heroPhone ? ' has-phone' : '')+(p.heroPhone && p.heroPhone.glow ? ' has-glow' : '')+'" style="background:'+(p.heroPhone && p.heroPhone.glow ? '' : (p.coverBg || p.gradient))+'">'+
-        (p.heroPhone ? mediaHtml({phone:p.heroPhone.src, poster:p.heroPhone.poster, alt:p.heroPhone.alt, statusBg:p.heroPhone.statusBg, statusInk:p.heroPhone.statusInk}) +
+        (p.heroPhone ? (p.heroLaptop ? '<div class="device-pair"><div class="laptop-mock"><div class="laptop-screen"><video src="'+p.heroLaptop.src+'" poster="'+p.heroLaptop.poster+'" autoplay muted loop playsinline aria-label="'+p.heroLaptop.alt+'"></video></div><div class="laptop-base"></div></div>' : '') +
+          mediaHtml({phone:p.heroPhone.src, poster:p.heroPhone.poster, alt:p.heroPhone.alt, statusBg:p.heroPhone.statusBg, statusInk:p.heroPhone.statusInk}) +
+          (p.heroLaptop ? '</div>' : '') +
           (p.heroPhone.note ? '<div class="hero-note">'+p.heroPhone.note+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
       metaHtml + linksHtml +
