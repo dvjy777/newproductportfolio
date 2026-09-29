@@ -278,6 +278,29 @@
   .section-head h2{ font-family:'General Sans',sans-serif; font-weight:500; font-size:22px; }
 
   #timeline{ display:flex; flex-direction:column; }
+  .exp-layout{ display:grid; gap:40px; }
+  @media(min-width:980px){
+    .exp-layout{ grid-template-columns:minmax(0,680px) minmax(0,1fr); gap:clamp(40px,6vw,96px); align-items:start; }
+    .ethos{ position:sticky; top:110px; }
+  }
+  .ethos-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:18px; }
+  .ethos-count{ font-size:12px; color:var(--text-muted); letter-spacing:.06em; }
+  .ethos-stage{ display:grid; }
+  .ethos-line{
+    grid-area:1/1; margin:0; font-family:'General Sans',sans-serif; font-weight:500;
+    font-size:clamp(22px,2.3vw,30px); line-height:1.3; color:var(--text); text-wrap:balance;
+    opacity:0; transform:translateY(10px); filter:blur(4px);
+    transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1), filter .9s ease;
+  }
+  .ethos-line.active{ opacity:1; transform:none; filter:none; }
+  .ethos-dots{ display:flex; gap:8px; margin-top:22px; }
+  .ethos-dots span{ width:22px; height:3px; background:var(--border); transition:background .4s ease, width .4s ease; }
+  .ethos-dots span.on{ background:var(--accent); width:36px; }
+  @media (prefers-reduced-motion: reduce){
+    .ethos-stage{ gap:14px; }
+    .ethos-line{ grid-area:auto; opacity:1; transform:none; filter:none; font-size:20px; }
+    .ethos-dots, .ethos-count{ display:none; }
+  }
   .timeline-row{
     display:grid; grid-template-columns:74px 1fr; gap:18px;
     padding:14px 0; border-top:1px solid var(--border);
@@ -670,7 +693,18 @@
   </section>
 
   <section class="section" id="experience">
-    <div id="timeline" class="prose"></div>
+    <div class="exp-layout">
+      <div id="timeline" class="prose"></div>
+      <aside class="ethos" id="ethos" aria-label="My ethos">
+        <div class="ethos-head"><span class="label">My ethos</span><span class="ethos-count mono" aria-hidden="true"><span id="ethosNum">01</span> / 03</span></div>
+        <div class="ethos-stage">
+          <p class="ethos-line active">I go from 0 to 1 with rapid AI prototyping, then keep iterating on user feedback.</p>
+          <p class="ethos-line">I make assumptions, then test them thoroughly with data and concrete evidence.</p>
+          <p class="ethos-line">I start from personal problems and widen them to more people, looking for the common thread.</p>
+        </div>
+        <div class="ethos-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+      </aside>
+    </div>
   </section>
 
   <section class="section" id="work">
@@ -682,14 +716,6 @@
     <div class="section-head"><h2 class="serif">About</h2></div>
     <p class="about-body">I am a product designer who works at the edges of emerging technology, using tools such as AI and augmented reality to prototype speculative concepts and surface stories that often go unnoticed. My latest interest is affective computing, exploring how human emotion can be interpreted and translated into interactive experiences and wearable technology.</p>
     <p class="about-body" style="margin-top:14px;">I am always glad to connect with people working on similar questions. Feel free to email me if you would like to grab a coffee.</p>
-    <div class="how-i-work">
-      <div class="label">How I work</div>
-      <ul>
-        <li><strong>I go from 0 to 1 with rapid AI prototyping,</strong> then keep iterating on user feedback.</li>
-        <li><strong>I make assumptions, then test them thoroughly</strong> through observation and research.</li>
-        <li><strong>I start from personal problems</strong> and widen them to more people, looking for the common thread.</li>
-      </ul>
-    </div>
     <div class="stack-row">
       <span class="chip">Figma</span>
       <span class="chip">Python</span>
@@ -1353,6 +1379,23 @@
   var brandName = document.querySelector('.brand .name');
   setTimeout(function(){ decryptName(brandName); }, 250);
   document.getElementById('homeLink').addEventListener('mouseenter', function(){ decryptName(brandName); });
+
+  // My ethos: one line at a time, fading through the three
+  (function(){
+    var lines = document.querySelectorAll('.ethos-line'), dots = document.querySelectorAll('.ethos-dots span');
+    var num = document.getElementById('ethosNum'), box = document.getElementById('ethos');
+    if(!lines.length || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    var i = 0, paused = false;
+    box.addEventListener('mouseenter', function(){ paused = true; });
+    box.addEventListener('mouseleave', function(){ paused = false; });
+    setInterval(function(){
+      if(paused || document.hidden) return;
+      lines[i].classList.remove('active'); dots[i].classList.remove('on');
+      i = (i + 1) % lines.length;
+      lines[i].classList.add('active'); dots[i].classList.add('on');
+      num.textContent = '0' + (i + 1);
+    }, 4500);
+  })();
 
   // Local time in New York, kept current while the page is open.
   var nycTime = document.getElementById('nycTime');
