@@ -370,7 +370,7 @@
     display:flex; align-items:center; justify-content:center;
   }
   .case-hero span{ font-family:'General Sans',sans-serif; font-weight:500; font-style:italic; font-size:clamp(28px,6vw,52px); color:#ffffff; }
-  .case-hero{ overflow:hidden; }
+  .case-hero{ overflow:hidden; position:relative; }
   .case-hero img{ height:100%; width:auto; max-width:100%; object-fit:contain; display:block; }
   .thumb .thumb-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
   .thumb .tag{ z-index:1; }
@@ -442,6 +442,31 @@
     box-shadow:inset 0 0 0 1.5px #2b303b, inset 0 0 0 4px #0c0e13, inset 0 0 0 5px #1b1f27,
       0 0 90px rgba(var(--g), calc(var(--ga) * .7)), 0 30px 60px rgba(0,0,0,.5);
   }
+  .device-pair .phone-mock{ margin:0; }
+  .device-pair.duo{ gap:clamp(16px,4vw,48px); }
+  .case-hero.has-phone .device-pair.duo .phone-mock{ width:min(230px, 38%); padding:8px; border-radius:clamp(22px,4vw,40px); }
+  .device-pair.duo .phone-mock .screen{ border-radius:clamp(16px,3.2vw,32px); }
+  .device-pair.duo .phone-mock::before{ top:clamp(11px,1.9vw,17px); height:clamp(11px,1.8vw,19px); }
+  .device-pair.duo .phone-mock .status{ font-size:clamp(7px,1.2vw,11px); }
+
+  /* homepage cards: the same device setups, sized to the card */
+  .thumb.has-devices{ container-type:size; }
+  .thumb .thumb-stage{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .thumb .thumb-stage > .phone-mock{ width:37cqh; padding:1.1cqh; border-radius:6cqh; }
+  .thumb .thumb-stage .phone-mock .screen{ border-radius:5cqh; }
+  .thumb .thumb-stage .phone-mock::before{ top:2.2cqh; height:2.4cqh; }
+  .thumb .thumb-stage .phone-mock .status{ font-size:1.5cqh; }
+  .thumb .thumb-stage .device-pair{ height:100%; align-items:center; gap:4cqh; }
+  .thumb .thumb-stage .device-pair.duo .phone-mock{ width:35cqh; flex:0 0 auto; padding:1.1cqh; border-radius:6cqh; }
+  .thumb .thumb-stage .device-pair .laptop-mock{ flex:0 0 auto; width:104cqh; }
+  .thumb .thumb-stage .device-pair .laptop-mock + .phone-mock{ width:30cqh; flex:0 0 auto; padding:.9cqh; border-radius:5cqh; }
+  .thumb.has-devices .tag{ position:relative; z-index:2; }
+  .thumb.has-glow{ --g:154,163,173; --ga:.25;
+    background:
+      radial-gradient(ellipse 40% 70% at 50% 50%, rgba(var(--g), var(--ga)) 0%, rgba(var(--g), calc(var(--ga) * .35)) 42%, rgba(var(--g), 0) 74%),
+      #07080b; }
+  .thumb.has-glow .phone-mock{ box-shadow:inset 0 0 0 1.5px #2b303b, 0 0 60px rgba(var(--g), calc(var(--ga) * .7)), 0 20px 40px rgba(0,0,0,.5); }
+
   .hero-note{
     position:absolute; left:18px; bottom:14px; right:18px;
     font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
@@ -680,7 +705,12 @@
     {
       slug:'inyun', company:'INYUN', tagline:'PRODUCT DESIGN · 2026',
       title:'A matching experience built on real-time collaboration', word:'INYUN',
-      heroPhone:{src:'images/inyun/inyun-demo.mp4', poster:'images/inyun/inyun-demo-poster.jpg', statusBg:'#050505', alt:'Screen recording of INYUN on a phone: setting the mediation triangle, answering three questions, entering the field, pairing with Rin and sketching together'},
+      heroPhones:[
+        {src:'images/inyun/inyun-duo-david.mp4', poster:'images/inyun/inyun-duo-david-poster.jpg', statusBg:'#050505', alt:'David on INYUN: setting the mediation triangle, answering three questions, entering the field, pairing, and drawing a small house for the shared prompt'},
+        {src:'images/inyun/inyun-duo-rin.mp4', poster:'images/inyun/inyun-duo-rin-poster.jpg', statusBg:'#050505', alt:'Rin on INYUN at the same time: answering their own questions, entering the field, pairing, and drawing a rain cloud for the same shared prompt'}
+      ],
+      heroBg:'radial-gradient(ellipse 42% 70% at 30% 55%, rgba(232,69,107,.34), rgba(232,69,107,0) 72%), radial-gradient(ellipse 42% 70% at 70% 45%, rgba(245,185,110,.28), rgba(245,185,110,0) 72%), #120d0f',
+      heroNote:'Two visitors, one shared prompt',
       gradient:'linear-gradient(135deg,#12213f,#1d5fff 55%,#9db8ff)',
       role:'Product designer', timeline:'8 weeks', team:'Supervised by Carla Gannis',
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
@@ -892,6 +922,25 @@
     timelineEl.appendChild(el);
   });
 
+  // ── device frames shared by project banners and homepage cards ──
+  function phoneMockHtml(m){
+    return '<div class="phone-mock"><div class="screen">'+
+        '<div class="status'+(m.statusInk === 'dark' ? ' ink-dark' : '')+'" style="background:'+(m.statusBg||'#000')+'" aria-hidden="true">'+
+          '<span>9:41</span><svg viewBox="0 0 68 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/>'+
+          '<path d="M30 3.2a9 9 0 0 1 11.4 0l-1.3 1.5a7 7 0 0 0-8.8 0zM32.3 5.9a5.4 5.4 0 0 1 6.8 0l-1.3 1.5a3.4 3.4 0 0 0-4.2 0zM34.6 8.6a1.8 1.8 0 0 1 2.2 0L35.7 10z"/>'+
+          '<rect x="47.5" y="1.5" width="17" height="9" rx="2.5" fill="none" stroke="currentColor" stroke-opacity=".45"/><rect x="49" y="3" width="12" height="6" rx="1.2"/><rect x="65.5" y="4.5" width="1.5" height="3" rx=".7" opacity=".45"/></svg></div>'+
+        '<video src="'+m.phone+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video></div></div>';
+  }
+  function heroDevicesHtml(p){
+    function phone(h){ return phoneMockHtml({phone:h.src, poster:h.poster, alt:h.alt, statusBg:h.statusBg, statusInk:h.statusInk}); }
+    if(p.heroPhones) return '<div class="device-pair duo">' + p.heroPhones.map(phone).join('') + '</div>';
+    if(p.heroLaptop) return '<div class="device-pair"><div class="laptop-mock"><div class="laptop-screen"><video src="'+p.heroLaptop.src+'" poster="'+p.heroLaptop.poster+'" autoplay muted loop playsinline aria-label="'+p.heroLaptop.alt+'"></video></div><div class="laptop-base"></div></div>' + phone(p.heroPhone) + '</div>';
+    if(p.heroPhone) return phone(p.heroPhone);
+    return '';
+  }
+  function heroGlow(p){ return p.heroPhone && p.heroPhone.glow; }
+  function heroBackground(p){ return heroGlow(p) ? '' : (p.heroBg || p.coverBg || p.gradient); }
+
   var grid = document.getElementById('workGrid');
   projects.forEach(function(p){
     if(p.comingSoon){
@@ -911,14 +960,36 @@
     }
     var a = document.createElement('a');
     a.className = 'card'; a.href = '#work/'+p.slug;
+    var devices = heroDevicesHtml(p);
     a.innerHTML =
-      '<div class="thumb'+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+'" style="background:'+(p.coverBg || p.gradient)+'">'+
-        (p.cover ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
+      '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+'" style="background:'+(devices ? heroBackground(p) : (p.coverBg || p.gradient))+'">'+
+        (devices ? '<div class="thumb-stage">'+devices+'</div>' : '')+
+        (p.cover && !devices ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
         '<span class="tag">'+p.company+'</span></div>'+
       '<h3>'+p.title+'</h3>'+
       '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
     grid.appendChild(a);
   });
+
+  // homepage recordings: play while visible, and let the Ekpyrosis light follow its video
+  (function(){
+    var vids = grid.querySelectorAll('video');
+    vids.forEach(function(v){ v.muted = true; v.removeAttribute('autoplay'); v.preload = 'metadata'; });
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){ var pr = en.target.play(); if(pr && pr.catch) pr.catch(function(){}); }
+          else en.target.pause();
+        });
+      }, { threshold:0.25 });
+      vids.forEach(function(v){ io.observe(v); });
+    }
+    syncDuo(grid);
+    projects.forEach(function(p){
+      if(!heroGlow(p) || !p.slug) return;
+      glowWithVideo(grid.querySelector('a.card[href="#work/'+p.slug+'"] .thumb'), p.heroPhone.glow);
+    });
+  })();
 
   var homeView = document.getElementById('home-view');
   var caseView = document.getElementById('case-view');
@@ -936,12 +1007,7 @@
     // {media:[{src,alt} | {video,poster} | {youtube}], caption}
     function mediaHtml(m){
       if(m.youtube) return '<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/'+m.youtube+'" title="'+(m.alt||'Video')+'" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen"></iframe></div>';
-      if(m.phone) return '<div class="phone-mock"><div class="screen">'+
-        '<div class="status'+(m.statusInk === 'dark' ? ' ink-dark' : '')+'" style="background:'+(m.statusBg||'#000')+'" aria-hidden="true">'+
-          '<span>9:41</span><svg viewBox="0 0 68 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/>'+
-          '<path d="M30 3.2a9 9 0 0 1 11.4 0l-1.3 1.5a7 7 0 0 0-8.8 0zM32.3 5.9a5.4 5.4 0 0 1 6.8 0l-1.3 1.5a3.4 3.4 0 0 0-4.2 0zM34.6 8.6a1.8 1.8 0 0 1 2.2 0L35.7 10z"/>'+
-          '<rect x="47.5" y="1.5" width="17" height="9" rx="2.5" fill="none" stroke="currentColor" stroke-opacity=".45"/><rect x="49" y="3" width="12" height="6" rx="1.2"/><rect x="65.5" y="4.5" width="1.5" height="3" rx=".7" opacity=".45"/></svg></div>'+
-        '<video src="'+m.phone+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video></div></div>';
+      if(m.phone) return phoneMockHtml(m);
       if(m.video) return '<video src="'+m.video+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video>';
       return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">';
     }
@@ -1036,11 +1102,8 @@
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
-      '<div class="case-hero'+(p.heroPhone ? ' has-phone' : '')+(p.heroPhone && p.heroPhone.glow ? ' has-glow' : '')+'" style="background:'+(p.heroPhone && p.heroPhone.glow ? '' : (p.coverBg || p.gradient))+'">'+
-        (p.heroPhone ? (p.heroLaptop ? '<div class="device-pair"><div class="laptop-mock"><div class="laptop-screen"><video src="'+p.heroLaptop.src+'" poster="'+p.heroLaptop.poster+'" autoplay muted loop playsinline aria-label="'+p.heroLaptop.alt+'"></video></div><div class="laptop-base"></div></div>' : '') +
-          mediaHtml({phone:p.heroPhone.src, poster:p.heroPhone.poster, alt:p.heroPhone.alt, statusBg:p.heroPhone.statusBg, statusInk:p.heroPhone.statusInk}) +
-          (p.heroLaptop ? '</div>' : '') +
-          (p.heroPhone.note ? '<div class="hero-note">'+p.heroPhone.note+'</div>' : '') :
+      '<div class="case-hero'+(heroDevicesHtml(p) ? ' has-phone' : '')+(heroGlow(p) ? ' has-glow' : '')+'" style="background:'+heroBackground(p)+'">'+
+        (heroDevicesHtml(p) ? heroDevicesHtml(p) + ((p.heroNote || (p.heroPhone && p.heroPhone.note)) ? '<div class="hero-note">'+(p.heroNote || p.heroPhone.note)+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
       metaHtml + linksHtml +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
@@ -1048,7 +1111,8 @@
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     decryptTitle(caseView.querySelector('.case-title'));
-    if(p.heroPhone && p.heroPhone.glow) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
+    if(heroGlow(p)) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
+    syncDuo(caseView);
     // Videos play only while on screen (saves battery and data on phones).
     // Autoplay isn't reliable for videos inserted as HTML, so start them explicitly.
     var vids = caseView.querySelectorAll('video[autoplay]');
@@ -1061,6 +1125,22 @@
     } else {
       vids.forEach(play);
     }
+  }
+
+  // Two recordings meant to be watched together stay in step: the second
+  // follows the first whenever they drift apart.
+  function syncDuo(root){
+    (root || document).querySelectorAll('.device-pair.duo').forEach(function(pair){
+      var v = pair.querySelectorAll('video');
+      if(v.length < 2 || pair._synced) return;
+      pair._synced = true;
+      var lead = v[0], follow = v[1];
+      lead.addEventListener('timeupdate', function(){
+        if(Math.abs(follow.currentTime - lead.currentTime) > 0.25) follow.currentTime = lead.currentTime;
+      });
+      lead.addEventListener('play', function(){ var pr = follow.play(); if(pr && pr.catch) pr.catch(function(){}); });
+      lead.addEventListener('pause', function(){ follow.pause(); });
+    });
   }
 
   // Colours the hero's light to match what is happening in its video.
