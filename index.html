@@ -573,6 +573,15 @@
   .case-table td{ color:var(--text-muted); }
   .case-table td:last-child{ color:var(--text); }
   .case-fig figcaption{ font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--text-muted); margin-top:10px; }
+  .glance{ margin:30px 0 6px; border:1px solid var(--border); background:linear-gradient(180deg, var(--accent-soft), rgba(232,238,252,.25)); padding:24px clamp(18px,3vw,30px); }
+  .glance-head{ color:var(--accent); margin-bottom:16px; }
+  .glance-grid{ display:grid; gap:18px 30px; }
+  @media(min-width:760px){ .glance-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  .glance-cell .label{ margin-bottom:6px; }
+  .glance-cell p{ margin:0; font-size:15px; line-height:1.6; color:var(--text); max-width:52ch; }
+  .glance-stats{ display:flex; flex-wrap:wrap; gap:14px 36px; margin-top:22px; padding-top:18px; border-top:1px solid rgba(29,95,255,.15); }
+  .glance-stat .num{ font-family:'General Sans',sans-serif; font-weight:500; font-size:30px; line-height:1.1; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .glance-stat .cap{ font-size:12.5px; color:var(--text-muted); margin-top:4px; max-width:22ch; }
   .meta-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:760px;
     padding:26px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
@@ -738,6 +747,13 @@
       blurb:'A matching experiment where strangers get to know each other by sketching together, not by swiping through profiles.',
       gradient:'linear-gradient(135deg,#12213f,#1d5fff 55%,#9db8ff)',
       role:'Product designer', timeline:'8 weeks', team:'Supervised by Carla Gannis',
+      glance:{
+        problem:'Dating apps match people on profiles, and very few matches ever turn into a real meeting. The first impression is a photo and a bio, not how someone actually is with you.',
+        role:'Product designer, solo, from concept and flows to a working prototype built with AI coding tools.',
+        decision:'Replace profiles with a shared act: strangers meet by sketching together, and a mediation triangle lets each person decide how much AI, the artist, or they themselves shape the match.',
+        outcome:'A working multi-screen prototype, from onboarding to a shared canvas. User testing led me to let people adjust their mediation right from the lobby.',
+        stats:[['16','versions of the prototype in 8 weeks'], ['3','onboarding questions instead of a profile form'], ['4','session lengths, from 5 to 20 minutes']]
+      },
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
       overview:'INYUN (인연) means fate, or providence, in Korean. It is an exploration of a matching experience built around real-time collaboration. By bringing vibe coding (AI) into both the product pipeline and the product itself, I set out to make a speculative experience that questions how AI can shape the way people meet and connect, rather than simply automating it.',
       research:[
@@ -794,6 +810,13 @@
         glow:[[0,'#9aa3ad',.22,.8],[7.4,'#78909C',.6,.8],[20.9,'#69FF47',.5,.8],[34.3,'#00E5FF',.55,.8],[39.7,'#78909C',.32,1.2],[50.2,'#00E5FF',.75,7]]},
       gradient:'linear-gradient(135deg,#1f3a63,#4d78e6 55%,#c3d3ff)',
       role:'Designer', timeline:'4 weeks, May 2026', team:'Supervised by Carla Gannis',
+      glance:{
+        problem:'Emotions are hard to name and even harder to move through. I wanted to see what happens when a feeling becomes something you can see and walk into.',
+        role:'Designer, solo: concept, mobile web app, projection system, and the physical installation.',
+        decision:'After testing, I added an "in between" emotion category so people weren\'t forced into a negative feeling, and kept a short wait between zones as deliberate friction for reflection.',
+        outcome:'A live, three-zone installation where each visitor\'s phone drove the room\'s light in real time. Visitors described it as relaxing, meditative, even transformative.',
+        stats:[['50–60','participants at the exhibition'], ['26','emotions to choose from'], ['3','physical zones, one phone journey']]
+      },
       tools:'Supabase, Claude, Vercel, TouchDesigner, Adobe Suite',
       overview:'Ekpyrosis (ἐκπύρωσις) means conflagration: renewal through destruction. It is an experimental exhibition that asks what happens when human sentiment merges with spatial awareness. By displaying each visitor\'s emotions in a systematic spatial form, I wanted to make feelings visible while helping visitors understand and move them toward a state they choose. Motto: feel, transform.',
       outcomes:[
@@ -855,6 +878,13 @@
       heroPhone:{statusBg:'#c6f0f4', statusInk:'dark', src:'images/animi/animi-demo.mp4', poster:'images/animi/animi-demo-poster.jpg', alt:'Screen recording of ANIMI on a phone: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
       gradient:'linear-gradient(135deg,#0c1a33,#2848a8 55%,#7fa0f2)',
       role:'AI workflow and interface designer', timeline:'6 weeks',
+      glance:{
+        problem:'Screen-heavy work leaves people drained, and meditation apps mostly add another flat screen. I wanted a short break that feels immersive without needing a headset.',
+        role:'AI workflow and interface designer, solo: research, visual direction, and a working web AR prototype built with AI tools.',
+        decision:'I chose native web AR over Unity and 8th Wall so it runs in any browser, and moved away from constant self-view after testers said watching their own face was tiring.',
+        outcome:'A live prototype on desktop and mobile, presented to editorial teams at CNET and researchers at the NYU Mobile Augmented Reality Studio.',
+        stats:[['5','versions in 6 weeks'], ['3','breathing rhythms'], ['2','platforms, desktop and mobile']]
+      },
       tools:'Google MediaPipe, Three.js, CodePen, Claude, ChatGPT, Gemini, Meshy AI',
       skills:['AI assisted workflows','Web AR prototyping','Mobile AR interface design','Stakeholder presentations'],
       links:[
@@ -1086,6 +1116,16 @@
         (f.full ? '<button type="button" class="flow-full" data-lightbox="'+f.full+'">See my detailed flow diagram ↗</button>' : '') +
         '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
     }
+    // At a glance: problem, role, key decision, outcome, plus a few numbers
+    function glanceHtml(g){
+      if(!g) return '';
+      var cells = [['Problem', g.problem], ['My role', g.role], ['Key decision', g.decision], ['Outcome', g.outcome]]
+        .filter(function(c){ return c[1]; })
+        .map(function(c){ return '<div class="glance-cell"><div class="label">'+c[0]+'</div><p>'+c[1]+'</p></div>'; }).join('');
+      var stats = (g.stats || []).map(function(st){ return '<div class="glance-stat"><div class="num">'+st[0]+'</div><div class="cap">'+st[1]+'</div></div>'; }).join('');
+      return '<section class="glance" aria-label="At a glance"><div class="glance-head label">At a glance</div><div class="glance-grid">'+cells+'</div>' +
+        (stats ? '<div class="glance-stats">'+stats+'</div>' : '') + '</section>';
+    }
     function clipPhone(c){ return '<figure class="case-fig clip-phone">' + mediaHtml({phone:c.src, poster:c.poster, alt:c.alt, statusBg:c.statusBg, statusInk:c.statusInk}) + '</figure>'; }
     function thumbsHtml(t){
       return '<figure class="case-fig thumbs"><div class="thumb-row">' +
@@ -1136,7 +1176,7 @@
       '<div class="case-hero'+(heroDevicesHtml(p) ? ' has-phone' : '')+(heroGlow(p) ? ' has-glow' : '')+'" style="background:'+heroBackground(p)+'">'+
         (heroDevicesHtml(p) ? heroDevicesHtml(p) + ((p.heroNote || (p.heroPhone && p.heroPhone.note)) ? '<div class="hero-note">'+(p.heroNote || p.heroPhone.note)+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
-      metaHtml + linksHtml +
+      metaHtml + linksHtml + glanceHtml(p.glance) +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
       researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml;
 
