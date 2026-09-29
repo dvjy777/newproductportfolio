@@ -82,7 +82,7 @@
     transition:color .2s ease;
   }
   .brand:hover .name, .brand:focus-visible .name{ color:var(--accent); }
-  .brand .name .scr, .card h3 .scr, .case-title .scr{ color:var(--accent); opacity:.75; }
+  .brand .name .scr{ color:var(--accent); opacity:.75; }
   .brand .role{
     font-family:'Geist Mono', monospace;
     font-size:12px; letter-spacing:.06em; color:var(--text-muted);
@@ -467,6 +467,29 @@
       #07080b; }
   .thumb.has-glow .phone-mock{ box-shadow:inset 0 0 0 1.5px #2b303b, 0 0 60px rgba(var(--g), calc(var(--ga) * .7)), 0 20px 40px rgba(0,0,0,.5); }
 
+  /* project cards: hover dims the recording and reveals a short summary */
+  .thumb-hover{
+    position:absolute; inset:0; z-index:3; display:flex; flex-direction:column; justify-content:flex-end;
+    padding:clamp(18px,3vw,30px); color:#fff; pointer-events:none;
+    background:linear-gradient(to top, rgba(6,8,12,.9) 0%, rgba(6,8,12,.62) 55%, rgba(6,8,12,.45) 100%);
+    opacity:0; transition:opacity .35s ease;
+  }
+  .thumb-hover p{
+    margin:0; max-width:34ch; font-family:'General Sans',sans-serif; font-weight:500; font-size:clamp(17px,2.2vw,24px); line-height:1.35;
+    transform:translateY(10px); transition:transform .45s cubic-bezier(.2,.7,.2,1);
+  }
+  .thumb-hover span{
+    margin-top:14px; font-family:'Geist Mono',monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.7);
+    transform:translateY(10px); transition:transform .45s cubic-bezier(.2,.7,.2,1) .05s;
+  }
+  .card:hover .thumb-hover, .card:focus-visible .thumb-hover{ opacity:1; }
+  .card:hover .thumb-hover p, .card:hover .thumb-hover span, .card:focus-visible .thumb-hover p, .card:focus-visible .thumb-hover span{ transform:none; }
+  .thumb .tag{ transition:opacity .25s ease; }
+  .card:hover .thumb.has-devices .tag, .card:focus-visible .thumb.has-devices .tag{ opacity:0; }
+  .card h3{ transition:color .3s ease; }
+  .card:hover h3, .card:focus-visible h3{ color:var(--card-accent, var(--accent)); }
+  @media (hover:none){ .thumb-hover{ display:none; } }
+
   .hero-note{
     position:absolute; left:18px; bottom:14px; right:18px;
     font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
@@ -711,6 +734,8 @@
       ],
       heroBg:'radial-gradient(ellipse 42% 70% at 30% 55%, rgba(232,69,107,.34), rgba(232,69,107,0) 72%), radial-gradient(ellipse 42% 70% at 70% 45%, rgba(245,185,110,.28), rgba(245,185,110,0) 72%), #120d0f',
       heroNote:'Two visitors, one shared prompt',
+      accent:'#d23c68',
+      blurb:'A matching experiment where strangers get to know each other by sketching together, not by swiping through profiles.',
       gradient:'linear-gradient(135deg,#12213f,#1d5fff 55%,#9db8ff)',
       role:'Product designer', timeline:'8 weeks', team:'Supervised by Carla Gannis',
       tools:'Claude, Gemini, Vercel, Railway, HTML, CSS',
@@ -762,6 +787,7 @@
     {
       slug:'ekpyrosis', company:'Ekpyrosis', tagline:'IMMERSIVE INSTALLATION · 2026',
       title:'An installation where emotions become light and space', word:'Ekpyrosis',
+      blurb:'You name a feeling on your phone, and the room answers in light. A three-zone installation about letting emotions transform.',
       heroPhone:{src:'images/ekpyrosis/ekpyrosis-demo.mp4', poster:'images/ekpyrosis/ekpyrosis-demo-poster.jpg', alt:'Screen recording of the Ekpyrosis phone app: choosing exhaustion, letting go, arriving at peace', statusBg:'#0a0a0a',
         note:'The projected light follows the visitor\'s choice',
         // [seconds into the recording, colour, brightness, seconds to fade in]
@@ -822,6 +848,8 @@
     {
       slug:'animi', company:'ANIMI', tagline:'AR EXPERIENCE · 2025',
       title:'An AR guided meditation experience', word:'ANIMI',
+      accent:'#00838f',
+      blurb:'A breathing ritual right in the browser, where a glass lotus opens and closes with every breath.',
       heroBg:'radial-gradient(ellipse 50% 70% at 38% 55%, rgba(0,229,255,.34), rgba(0,229,255,0) 72%), radial-gradient(ellipse 34% 60% at 80% 48%, rgba(29,233,182,.3), rgba(29,233,182,0) 72%), linear-gradient(160deg, #03171a, #0a3438)',
       heroLaptop:{src:'images/animi/animi-desktop.mp4', poster:'images/animi/animi-desktop-poster.jpg', alt:'Screen recording of ANIMI on a desktop browser: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
       heroPhone:{statusBg:'#c6f0f4', statusInk:'dark', src:'images/animi/animi-demo.mp4', poster:'images/animi/animi-demo-poster.jpg', alt:'Screen recording of ANIMI on a phone: choosing the Balance breathing mode and following two breaths as the glass lotus opens and closes'},
@@ -961,11 +989,13 @@
     }
     var a = document.createElement('a');
     a.className = 'card'; a.href = '#work/'+p.slug;
+    if(p.accent) a.style.setProperty('--card-accent', p.accent);
     var devices = heroDevicesHtml(p);
     a.innerHTML =
       '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+'" style="background:'+(devices ? heroBackground(p) : (p.coverBg || p.gradient))+'">'+
         (devices ? '<div class="thumb-stage">'+devices+'</div>' : '')+
         (p.cover && !devices ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
+        (p.blurb ? '<div class="thumb-hover"><p>'+p.blurb+'</p><span>View case study →</span></div>' : '')+
         '<span class="tag">'+p.company+'</span></div>'+
       '<h3>'+p.title+'</h3>'+
       '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
@@ -1111,7 +1141,6 @@
       researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml;
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
-    decryptTitle(caseView.querySelector('.case-title'));
     if(heroGlow(p)) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
     syncDuo(caseView);
     // Videos play only while on screen (saves battery and data on phones).
@@ -1151,6 +1180,7 @@
     if(!video) return;
     function rgb(hex){ var n = parseInt(hex.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
     var ks = keys.map(function(k){ return { t:k[0], c:rgb(k[1]), a:k[2], fade:k[3] }; });
+    var card = hero.closest('.card');
     function frame(){
       if(!document.body.contains(hero)) return;          // project page was left
       var t = video.currentTime, i = 0;
@@ -1159,6 +1189,7 @@
       var f = Math.min(1, (t - k.t) / k.fade);
       var c = k.c.map(function(v, j){ return Math.round(prev.c[j] + (v - prev.c[j]) * f); });
       hero.style.setProperty('--g', c.join(','));
+      if(card) card.style.setProperty('--card-accent', 'rgb(' + c.map(function(v){ return Math.round(v * 0.62); }).join(',') + ')');
       hero.style.setProperty('--ga', (prev.a + (k.a - prev.a) * f).toFixed(3));
       requestAnimationFrame(frame);
     }
@@ -1251,31 +1282,11 @@
     }, speed);
   }
   var NAME_GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%*+=/?';
-  var TITLE_GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%*+=/?';
   function decryptName(el){ decrypt(el, 20, 40, NAME_GLYPHS); }
-  function decryptTitle(el){ decrypt(el, 42, 50, TITLE_GLYPHS); }
-
-  // a project opened directly by URL rendered before this was set up
-  if(caseView.classList.contains('active')) decryptTitle(caseView.querySelector('.case-title'));
 
   var brandName = document.querySelector('.brand .name');
   setTimeout(function(){ decryptName(brandName); }, 250);
   document.getElementById('homeLink').addEventListener('mouseenter', function(){ decryptName(brandName); });
-
-  // Project card titles decode the first time they scroll into view, and
-  // again whenever their card is hovered.
-  Array.prototype.forEach.call(document.querySelectorAll('#workGrid .card'), function(card){
-    var title = card.querySelector('h3');
-    card.addEventListener('mouseenter', function(){ decryptTitle(title); });
-  });
-  if('IntersectionObserver' in window){
-    var titleObserver = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting){ decryptTitle(entry.target); titleObserver.unobserve(entry.target); }
-      });
-    }, { threshold:0.6 });
-    Array.prototype.forEach.call(document.querySelectorAll('#workGrid .card h3'), function(h){ titleObserver.observe(h); });
-  }
 
   // Local time in New York, kept current while the page is open.
   var nycTime = document.getElementById('nycTime');
