@@ -283,23 +283,31 @@
     .exp-layout{ grid-template-columns:minmax(0,680px) minmax(0,1fr); gap:clamp(40px,6vw,96px); align-items:start; }
     .ethos{ position:sticky; top:110px; }
   }
-  .ethos-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:18px; }
-  .ethos-count{ font-size:12px; color:var(--text-muted); letter-spacing:.06em; }
-  .ethos-stage{ display:grid; }
+  .ethos-head{ margin-bottom:18px; }
+  /* spatial transitions: words drift forward out of blur, then recede into depth */
+  .ethos-stage{ display:grid; perspective:900px; transform-style:preserve-3d;
+    transform:rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg)); transition:transform 1.2s cubic-bezier(.16,1,.3,1); }
   .ethos-line{
     grid-area:1/1; margin:0; font-family:'General Sans',sans-serif; font-weight:500;
     font-size:clamp(22px,2.3vw,30px); line-height:1.3; color:var(--text); text-wrap:balance;
-    opacity:0; transform:translateY(10px); filter:blur(4px);
-    transition:opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1), filter .9s ease;
+    transform-style:preserve-3d; pointer-events:none;
   }
-  .ethos-line.active{ opacity:1; transform:none; filter:none; }
-  .ethos-dots{ display:flex; gap:8px; margin-top:22px; }
-  .ethos-dots span{ width:22px; height:3px; background:var(--border); transition:background .4s ease, width .4s ease; }
-  .ethos-dots span.on{ background:var(--accent); width:36px; }
+  .ethos-line .w{
+    display:inline-block; opacity:0; filter:blur(12px);
+    transform:translate3d(0,.4em,40px) scale(1.04);
+    transition:opacity 1.1s ease, filter 1.3s cubic-bezier(.16,1,.3,1), transform 1.5s cubic-bezier(.16,1,.3,1);
+    transition-delay:calc(var(--i) * 60ms + 150ms);
+  }
+  .ethos-line.active .w{ opacity:1; filter:blur(0); transform:none; }
+  .ethos-line.leaving .w{
+    opacity:0; filter:blur(10px); transform:translate3d(0,-.25em,-80px) scale(.94);
+    transition-duration:.9s, 1s, 1.1s; transition-timing-function:ease, ease, cubic-bezier(.5,0,.75,0);
+    transition-delay:calc(var(--i) * 25ms);
+  }
   @media (prefers-reduced-motion: reduce){
-    .ethos-stage{ gap:14px; }
-    .ethos-line{ grid-area:auto; opacity:1; transform:none; filter:none; font-size:20px; }
-    .ethos-dots, .ethos-count{ display:none; }
+    .ethos-stage{ gap:14px; transform:none; }
+    .ethos-line{ grid-area:auto; font-size:20px; }
+    .ethos-line .w{ opacity:1; filter:none; transform:none; transition:none; }
   }
   .timeline-row{
     display:grid; grid-template-columns:74px 1fr; gap:18px;
@@ -696,13 +704,12 @@
     <div class="exp-layout">
       <div id="timeline" class="prose"></div>
       <aside class="ethos" id="ethos" aria-label="My ethos">
-        <div class="ethos-head"><span class="label">My ethos</span><span class="ethos-count mono" aria-hidden="true"><span id="ethosNum">01</span> / 03</span></div>
+        <div class="ethos-head"><span class="label">My ethos</span></div>
         <div class="ethos-stage">
           <p class="ethos-line active">I go from 0 to 1 with rapid AI prototyping, then keep iterating on user feedback.</p>
           <p class="ethos-line">I make assumptions, then test them thoroughly with data and concrete evidence.</p>
           <p class="ethos-line">I start from personal problems and widen them to more people, looking for the common thread.</p>
         </div>
-        <div class="ethos-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
       </aside>
     </div>
   </section>
@@ -1380,21 +1387,35 @@
   setTimeout(function(){ decryptName(brandName); }, 250);
   document.getElementById('homeLink').addEventListener('mouseenter', function(){ decryptName(brandName); });
 
-  // My ethos: one line at a time, fading through the three
+  // My ethos: one line at a time. Words drift forward out of blur and later
+  // recede into depth; the panel tilts slightly toward the cursor.
   (function(){
-    var lines = document.querySelectorAll('.ethos-line'), dots = document.querySelectorAll('.ethos-dots span');
-    var num = document.getElementById('ethosNum'), box = document.getElementById('ethos');
-    if(!lines.length || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
-    var i = 0, paused = false;
+    var box = document.getElementById('ethos');
+    var lines = box ? box.querySelectorAll('.ethos-line') : [];
+    if(!lines.length) return;
+    lines.forEach(function(l){
+      l.innerHTML = l.textContent.split(' ').map(function(w, i){ return '<span class="w" style="--i:'+i+'">'+w+'</span>'; }).join(' ');
+    });
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      lines.forEach(function(l){ l.classList.add('active'); });
+      return;
+    }
+    var stage = box.querySelector('.ethos-stage'), i = 0, paused = false;
+    box.addEventListener('mousemove', function(e){
+      var r = box.getBoundingClientRect();
+      stage.style.setProperty('--ty', (((e.clientX - r.left) / r.width - .5) * 8).toFixed(2) + 'deg');
+      stage.style.setProperty('--tx', ((.5 - (e.clientY - r.top) / r.height) * 6).toFixed(2) + 'deg');
+    });
     box.addEventListener('mouseenter', function(){ paused = true; });
-    box.addEventListener('mouseleave', function(){ paused = false; });
+    box.addEventListener('mouseleave', function(){ paused = false; stage.style.removeProperty('--tx'); stage.style.removeProperty('--ty'); });
     setInterval(function(){
       if(paused || document.hidden) return;
-      lines[i].classList.remove('active'); dots[i].classList.remove('on');
+      var out = lines[i];
+      out.classList.remove('active'); out.classList.add('leaving');
+      setTimeout(function(){ out.classList.remove('leaving'); }, 1400);
       i = (i + 1) % lines.length;
-      lines[i].classList.add('active'); dots[i].classList.add('on');
-      num.textContent = '0' + (i + 1);
-    }, 4500);
+      setTimeout(function(){ lines[i].classList.add('active'); }, 450);
+    }, 5500);
   })();
 
   // Local time in New York, kept current while the page is open.
