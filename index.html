@@ -266,6 +266,15 @@
   .hero h1 .w{ display:inline-block; white-space:nowrap; }
   .hero h1 .ch{ display:inline-block; transition:transform .35s cubic-bezier(.34,1.56,.64,1); will-change:transform; }
   .hero h1.split .w{ animation:wordIn .8s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * 70ms + 150ms); }
+  /* the two keywords: "AI" resolves out of noise, "spatial" is a turning 3D object */
+  .hero h1 .kw-ai .ch{ text-align:center; transition:color .3s ease; }
+  .hero h1 .kw-ai.thinking .ch{ color:var(--accent); opacity:.85; }
+  .hero h1 .kw-ai{ cursor:default; }
+  .hero h1 .kw-sp{
+    transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+    transform-style:preserve-3d;
+  }
+  .hero h1 .kw-sp .ch{ transition:none; text-shadow:0 .08em .14em rgba(29,95,255,.16); }
   @keyframes wordIn{
     from{ opacity:0; transform:translateY(.45em); filter:blur(6px); }
     to{ opacity:1; transform:none; filter:blur(0); }
@@ -1474,26 +1483,74 @@
     })(heroTitle);
     heroTitle.classList.add('split');
 
-    var heroChars = heroTitle.querySelectorAll('.ch');
-    var charCenters = [];
-    heroTitle.addEventListener('mouseenter', function(){
-      charCenters = Array.prototype.map.call(heroChars, function(ch){
-        var r = ch.getBoundingClientRect();
-        return { x: r.left + r.width/2, y: r.top + r.height/2 };
+    // Only the two words the sentence is about move.
+    var kwAI = null, kwSp = null;
+    heroTitle.querySelectorAll('.w').forEach(function(w){
+      if(w.textContent === 'AI') kwAI = w;
+      if(w.textContent === 'spatial') kwSp = w;
+    });
+
+    // "AI" resolves out of noise, like a model settling on its answer.
+    var NOISE = '01<>/{}[]#*+=~';
+    function resolveAI(){
+      if(!kwAI || kwAI.classList.contains('thinking')) return;
+      kwAI.classList.add('thinking');
+      var chs = kwAI.querySelectorAll('.ch');
+      chs.forEach(function(ch){ if(!ch.style.width) ch.style.width = ch.getBoundingClientRect().width + 'px'; });
+      var start = performance.now();
+      (function step(now){
+        var done = 0;
+        chs.forEach(function(ch, i){
+          var settle = 520 + i * 260;
+          if(now - start >= settle){ ch.textContent = ch.dataset.c; done++; }
+          else ch.textContent = NOISE[Math.floor(Math.random() * NOISE.length)];
+        });
+        if(done < chs.length) setTimeout(function(){ requestAnimationFrame(step); }, 55);
+        else kwAI.classList.remove('thinking');
+      })(start);
+    }
+    if(kwAI){
+      kwAI.classList.add('kw-ai');
+      kwAI.querySelectorAll('.ch').forEach(function(ch){ ch.dataset.c = ch.textContent; });
+      setTimeout(resolveAI, 150 + 70 * +kwAI.style.getPropertyValue('--i'));
+      kwAI.addEventListener('mouseenter', resolveAI);
+    }
+
+    // "spatial" is a small 3D object: its letters sit at different depths and
+    // the word turns toward the cursor, or sways on its own on touch screens.
+    if(kwSp){
+      kwSp.classList.add('kw-sp');
+      var spChs = kwSp.querySelectorAll('.ch');
+      spChs.forEach(function(ch, i){
+        var d = Math.sin((i / (spChs.length - 1)) * Math.PI) * 7;
+        ch.style.transform = 'translateZ(' + d.toFixed(1) + 'px)';
       });
-    });
-    heroTitle.addEventListener('mousemove', function(e){
-      heroChars.forEach(function(ch, i){
-        var c = charCenters[i];
-        if(!c) return;
-        var d = Math.hypot(e.clientX - c.x, e.clientY - c.y);
-        var pull = Math.max(0, 1 - d / 90);
-        ch.style.transform = pull ? 'translateY(' + (-10 * pull).toFixed(1) + 'px)' : '';
+      kwSp.addEventListener('animationend', function(){ kwSp.style.animation = 'none'; });
+      var tgt = { x:0, y:0 }, cur = { x:0, y:0 }, lastMove = -1e9, heroOn = true;
+      document.addEventListener('mousemove', function(e){
+        var r = kwSp.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width/2)) / window.innerWidth;
+        var dy = (e.clientY - (r.top + r.height/2)) / window.innerHeight;
+        tgt.x = Math.max(-1, Math.min(1, dx * 2.2));
+        tgt.y = Math.max(-1, Math.min(1, dy * 2.2));
+        lastMove = performance.now();
       });
-    });
-    heroTitle.addEventListener('mouseleave', function(){
-      heroChars.forEach(function(ch){ ch.style.transform = ''; });
-    });
+      if('IntersectionObserver' in window){
+        new IntersectionObserver(function(es){ heroOn = es[0].isIntersecting; if(heroOn) requestAnimationFrame(tick); }).observe(heroTitle);
+      }
+      function tick(now){
+        if(now - lastMove > 2500){             // no cursor: a slow idle sway
+          tgt.x = Math.sin(now / 1900) * .7;
+          tgt.y = Math.sin(now / 2600) * .35;
+        }
+        cur.x += (tgt.x - cur.x) * .07;
+        cur.y += (tgt.y - cur.y) * .07;
+        kwSp.style.setProperty('--ry', (cur.x * 16).toFixed(2) + 'deg');
+        kwSp.style.setProperty('--rx', (-cur.y * 12).toFixed(2) + 'deg');
+        if(heroOn) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
   }
 
   var workHint = document.createElement('a');
