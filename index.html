@@ -167,7 +167,61 @@
   .menu-btn .dot.revealed{ box-shadow:inset 0 -2px 4px rgba(60,0,10,.25), 0 7px 9px -5px rgba(140,20,30,.55); }
   .menu-btn .dot.revealed::before, .menu-btn .dot.revealed::after{ z-index:1; }
 
-  .menu-wrap{ position:relative; }
+  .menu-wrap{ position:relative; display:flex; align-items:center; gap:6px; }
+
+  /* the hint beside the mascot: a shimmer across the words, an arrow nudging toward
+     the mascot, and a ring that shrinks into it to show the press-and-hold */
+  .hold-hint{
+    margin:0; display:flex; align-items:center; gap:8px; text-align:right;
+    font-family:'Geist Mono', monospace; font-size:11px; line-height:1.4; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--text-muted); transition:opacity .35s ease, transform .35s ease;
+  }
+  .hh-text{
+    background:linear-gradient(100deg, var(--text-muted) 0 38%, var(--accent) 47%, #6f9bff 50%, var(--accent) 53%, var(--text-muted) 62% 100%);
+    background-size:260% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:hhShimmer 2.8s linear infinite;
+  }
+  .hh-busy{ display:none; }
+  .hold-hint.holding .hh-idle{ display:none; }
+  .hold-hint.holding .hh-busy{ display:inline; }
+  .hold-hint.holding .hh-text{ animation:none; background:none; color:#c62828; }
+  .hh-arrow{ color:var(--accent); font-size:14px; animation:hhNudge 1.4s ease-in-out infinite; }
+  .hold-hint.holding .hh-arrow{ color:#c62828; animation:none; }
+  @keyframes hhShimmer{ from{ background-position:100% 0; } to{ background-position:-60% 0; } }
+  @keyframes hhNudge{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(5px); } }
+  .menu-btn{ position:relative; }
+  .menu-btn::after{
+    content:''; position:absolute; left:50%; top:50%; width:26px; height:26px; margin:-13px 0 0 -13px;
+    border-radius:50%; border:2px solid var(--accent); opacity:0; pointer-events:none;
+    animation:hhRing 2.8s cubic-bezier(.4,0,.6,1) infinite;
+  }
+  .menu-btn:active::after, .menu-wrap:has(.dot.holding) .menu-btn::after{ animation:none; opacity:0; }
+  @keyframes hhRing{
+    0%{ transform:scale(1.9); opacity:0; }
+    25%{ opacity:.65; }
+    70%{ transform:scale(1); opacity:0; }
+    100%{ transform:scale(1); opacity:0; }
+  }
+  /* on phones there's no room beside the name, so the hint becomes a small bubble under the mascot */
+  @media (max-width:640px){
+    .hold-hint{
+      position:absolute; right:4px; top:calc(100% + 6px); width:min(230px, calc(100vw - 40px));
+      background:var(--bg); border:1px solid rgba(29,95,255,.28); border-radius:10px; padding:8px 11px;
+      box-shadow:0 8px 22px rgba(29,95,255,.14); font-size:10px; z-index:2;
+    }
+    .hold-hint::before{
+      content:''; position:absolute; right:17px; top:-6px; width:10px; height:10px; background:var(--bg);
+      border-left:1px solid rgba(29,95,255,.28); border-top:1px solid rgba(29,95,255,.28); transform:rotate(45deg);
+    }
+    .hold-hint{ text-align:left; }
+    .hold-hint br{ display:none; }
+    .hh-arrow{ display:none; }
+    .hold-hint.away{ opacity:0; transform:translateY(-6px); pointer-events:none; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hh-text{ animation:none; background:none; color:var(--accent); }
+    .hh-arrow, .menu-btn::after{ animation:none; }
+  }
 
   /* ---------- nav overlay ---------- */
   .overlay{
@@ -706,7 +760,8 @@
     <div class="role">PRODUCT DESIGNER + PROTOTYPER</div>
   </a>
   <div class="menu-wrap">
-    <button class="menu-btn" id="menuBtn" aria-label="Open menu"><span class="dot"><span class="eye eye-l"></span><span class="eye eye-r"></span></span></button>
+    <p class="hold-hint" id="holdHint"><span class="hh-text"><span class="hh-idle"><span class="hh-verb">Click</span> and hold the mascot <br>for the design/branding projects</span><span class="hh-busy">Keep holding…</span></span><span class="hh-arrow" aria-hidden="true">→</span></p>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-describedby="holdHint"><span class="dot"><span class="eye eye-l"></span><span class="eye eye-r"></span></span></button>
   </div>
 </header>
 
@@ -736,7 +791,7 @@
       <aside class="ethos" id="ethos" aria-label="My ethos">
         <div class="ethos-head"><span class="label">My ethos</span></div>
         <div class="ethos-stage">
-          <p class="ethos-line active">I go from 0 to 1 with rapid AI prototyping, then keep iterating on user feedback.</p>
+          <p class="ethos-line active">I go from 0 to 1 with rapid AI (MCP) prototyping, then keep iterating on user feedback.</p>
           <p class="ethos-line">I make assumptions, then test them thoroughly with data and concrete evidence.</p>
           <p class="ethos-line">I start from personal observations and widen them to more people, looking for the common thread.</p>
         </div>
@@ -1595,9 +1650,19 @@
   var holdTimer = null;
   var heldLong = false;
 
+  var holdHint = document.getElementById('holdHint');
+  if(window.matchMedia && window.matchMedia('(hover: none)').matches){
+    holdHint.querySelector('.hh-verb').textContent = 'Tap';
+  }
+  // on phones the bubble steps aside once you start scrolling
+  window.addEventListener('scroll', function(){
+    holdHint.classList.toggle('away', window.scrollY > 120);
+  }, { passive:true });
+
   function startHold(e){
     if(e.button !== 0) return;
     heldLong = false;
+    holdHint.classList.add('holding');
     menuDot.style.setProperty('--hold', HOLD_MS + 'ms');
     menuDot.classList.add('holding');
     holdTimer = setTimeout(function(){
@@ -1609,6 +1674,7 @@
   }
   function cancelHold(){
     clearTimeout(holdTimer);
+    if(!heldLong) holdHint.classList.remove('holding');
     if(!heldLong) menuDot.classList.remove('holding');
   }
   menuBtn.addEventListener('pointerdown', startHold);
@@ -1618,7 +1684,7 @@
   menuBtn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   // coming back with the browser's Back button restores the page as it was left
   window.addEventListener('pageshow', function(e){
-    if(e.persisted){ heldLong = false; menuDot.classList.remove('holding', 'revealed'); }
+    if(e.persisted){ heldLong = false; menuDot.classList.remove('holding', 'revealed'); holdHint.classList.remove('holding'); }
   });
 
   menuBtn.addEventListener('click', function(e){
