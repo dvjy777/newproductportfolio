@@ -443,6 +443,23 @@
   .card.coming-soon:hover .thumb .soon-badge{ opacity:1; }
   .card.coming-soon h3, .card.coming-soon .meta{ color:var(--text-muted); }
 
+  /* a project shown by its logo (the Claude redesign), with an in-progress pill */
+  .thumb-logo{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .thumb-logo svg{ width:30%; max-width:150px; height:auto; transition:transform .6s cubic-bezier(.2,.7,.2,1); }
+  .card:hover .thumb-logo svg{ transform:rotate(30deg) scale(1.05); }
+  .thumb.light .tag{ color:#3D3929; }
+  .progress-pill{
+    position:absolute; top:16px; right:16px; z-index:2;
+    font-family:'Geist Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:#9A4A2E; background:rgba(217,119,87,.14); border:1px solid rgba(217,119,87,.35);
+    padding:5px 10px; border-radius:999px;
+  }
+  .case-hero .hero-logo{ display:flex; align-items:center; justify-content:center; }
+  .case-hero .hero-logo svg{ width:clamp(90px,16vw,170px); height:auto; }
+  .case-block.planned p{ color:var(--text-muted); font-style:italic; }
+  .case-hero .hero-logo ~ .hero-note{ color:rgba(61,57,41,.62); }
+  @media (prefers-reduced-motion: reduce){ .card:hover .thumb-logo svg{ transform:none; } }
+
   /* ---------- about / fun ---------- */
   .about-body{ font-size:16px; line-height:1.7; max-width:62ch; }
   .stack-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
@@ -858,7 +875,30 @@
       desc:'I worked with the early founding team at Bondit to serve US college students, helping them schedule classes, connect with other students on campus, and find cool events. Our team helped design their mascots, too!' }
   ];
 
+  // The Claude spark, drawn as uneven rounded rays around a centre
+  function sparkSvg(color){
+    var lens = [40, 33, 44, 30, 42, 35, 46, 31, 41, 37, 44], rays = '';
+    lens.forEach(function(l, i){
+      var a = (i / lens.length) * Math.PI * 2 + (i % 2 ? .06 : -.04) - Math.PI / 2;
+      rays += '<line x1="'+(50 + Math.cos(a) * 5).toFixed(1)+'" y1="'+(50 + Math.sin(a) * 5).toFixed(1)+'" x2="'+(50 + Math.cos(a) * l).toFixed(1)+'" y2="'+(50 + Math.sin(a) * l).toFixed(1)+'"/>';
+    });
+    return '<svg viewBox="0 0 100 100" role="img" aria-label="Claude logo"><g stroke="'+color+'" stroke-width="8.5" stroke-linecap="round">'+rays+'</g></svg>';
+  }
+
   var projects = [
+    {
+      slug:'claude', company:'Claude', tagline:'PRODUCT REDESIGN · IN PROGRESS',
+      title:'Redesigning Claude', word:'Claude',
+      inProgress:true, coverLight:true,
+      logo:sparkSvg('#D97757'),
+      accent:'#C15F3C',
+      coverBg:'radial-gradient(ellipse 55% 75% at 50% 50%, rgba(217,119,87,.20), rgba(217,119,87,0) 70%), #F4F1EA',
+      blurb:'A redesign of Claude, Anthropic\'s AI assistant. Work in progress.',
+      heroNote:'Personal concept · not affiliated with Anthropic',
+      timeline:'In progress, 2026',
+      overview:'A redesign of Claude, Anthropic\'s AI assistant. This case study is in progress, and the sections below fill in as the work does.',
+      planned:['Problem statement', 'How might we', 'Success metrics', 'Research', 'Design process', 'Outcomes']
+    },
     {
       comingSoon:true,
       company:'Chance AI x AStudio', tagline:'DESIGN LEAD · COMING SOON',
@@ -1169,9 +1209,11 @@
     if(p.accent) a.style.setProperty('--card-accent', p.accent);
     var devices = heroDevicesHtml(p);
     a.innerHTML =
-      '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+'" style="background:'+(devices ? heroBackground(p) : (p.coverBg || p.gradient))+'">'+
+      '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+(p.coverLight ? ' light' : '')+'" style="background:'+(devices ? heroBackground(p) : (p.coverBg || p.gradient))+'">'+
         (devices ? '<div class="thumb-stage">'+devices+'</div>' : '')+
         (p.cover && !devices ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
+        (p.logo && !devices ? '<div class="thumb-logo">'+p.logo+'</div>' : '')+
+        (p.inProgress ? '<span class="progress-pill">In progress</span>' : '')+
         (p.blurb ? '<div class="thumb-hover"><p>'+p.blurb+'</p><span>View case study →</span></div>' : '')+
         '<span class="tag">'+p.company+'</span></div>'+
       '<h3>'+p.title+'</h3>'+
@@ -1323,10 +1365,12 @@
       '<h1 class="case-title">'+p.title+'</h1>'+
       '<div class="case-hero'+(heroDevicesHtml(p) ? ' has-phone' : '')+(heroGlow(p) ? ' has-glow' : '')+'" style="background:'+heroBackground(p)+'">'+
         (heroDevicesHtml(p) ? heroDevicesHtml(p) + ((p.heroNote || (p.heroPhone && p.heroPhone.note)) ? '<div class="hero-note">'+(p.heroNote || p.heroPhone.note)+'</div>' : '') :
+         p.logo ? '<div class="hero-logo">'+p.logo+'</div>' + (p.heroNote ? '<div class="hero-note">'+p.heroNote+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
       metaHtml + linksHtml + glanceHtml(p.glance, p.glanceTint) +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
-      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml;
+      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml +
+      (p.planned || []).map(function(t){ return '<div class="case-block planned"><h4 class="label">'+t+'</h4><p class="body-text">Coming soon.</p></div>'; }).join('');
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     if(heroGlow(p)) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
