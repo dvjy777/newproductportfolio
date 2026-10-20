@@ -1151,10 +1151,37 @@
       ]
     },
     {
-      comingSoon:true,
-      company:'Chance AI x AStudio', tagline:'DESIGN LEAD · COMING SOON',
-      title:'Visual Skills Search, an AI agent', word:'Chance AI',
-      gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)'
+      slug:'chance-ai', company:'Chance AI x AStudio', tagline:'PRODUCT DESIGN · 2026 · IN PROGRESS',
+      title:'Making visual skills easier to find and create', word:'Chance AI',
+      inProgress:true,
+      accent:'#1d5fff',
+      gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)',
+      blurb:'Redesigning how people find and create visual skills in Chance AI, an agent that analyzes images. Work in progress.',
+      role:'Product designer', timeline:'2 months, 2026', team:'AStudio team, with Chance AI',
+      glanceTint:{ accent:'#1d5fff', line:'rgba(29,95,255,.22)', bg:'linear-gradient(120deg, rgba(29,95,255,.08), rgba(157,184,255,.12))' },
+      glance:{
+        problem:'Chance AI\'s image analysis is strong, but there\'s no easy way to browse or create skills. The app feels too broad and doesn\'t adapt to each person, which can lead to choice paralysis.',
+        role:'Product designer on the AStudio team. I focused on Create Visual Skill and the home screen.',
+        decision:'Replace the empty chat with a guided flow of suggestions, while keeping free prompting one tap away.'
+      },
+      overview:'Chance AI is a general-purpose agent, built on a visual language model, that analyzes images. Its core feature, Create Visual Skill, lets you build your own dedicated agent for a specific kind of analysis, and you can also browse preset skills made by other users. Chance AI asked our team at AStudio to redesign three parts of the app: Create Visual Skill, which currently runs as a linear chat; the home screen, so key skills are easier to reach; and the result page, so answers are easier to read and navigate. I focused on Create Visual Skill and the home screen.',
+      statements:[
+        {label:'Problem statement', quote:'Chance AI\'s visual language model is its strength, and the team positions it ahead of general tools like Gemini and ChatGPT for image analysis. But the app offers no easy way to browse or create skills, so users are left to work out their own intent. The experience lacks context and doesn\'t adapt to each person\'s taste, so it feels too broad, which can lead to choice paralysis.'},
+        {label:'How might we · Create Visual Skill', quote:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?'},
+        {label:'How might we · Home screen', quote:'How might we redesign the home screen so the skills people return to are easy to reach, and creating a new skill is one tap away?'},
+        {label:'How might we · Visual design', quote:'How might we make the app feel more cohesive and inviting, and less AI-generated?', note:'This led to new skill artwork in place of the round icons.'}
+      ],
+      research:[
+        '<strong>App audit.</strong> Before designing, I walked through the app screen by screen and noted where people get stuck.',
+        {table:{compact:true, head:['Area', 'What I found', 'Direction'], rows:[
+          ['Home screen', 'Too many choices at once (Hick\'s law), and no direct way to create a visual skill', 'Put Create Visual Skill on the home screen, and show skills as cards with minimal graphics and warm lighting so they\'re easier to recognize'],
+          ['Create Visual Skill', 'A basic chat with no personalized example prompts, and a loading card that says little. Improving and publishing are simple, but stuck in one linear thread.', 'Suggest topics and skills in a connected flow, with free prompting still at hand. Add prompt suggestions, a summary of what will be built, and loading messages in plain language.']
+        ]}, caption:'From the app audit'}
+      ],
+      journey:[
+        '<strong>Key decision: a guided flow for creating skills.</strong> Instead of starting from an empty chat, Create Visual Skill opens with a flow of suggestions, and free prompting is still available from the first screen. For first-time users it works like onboarding. For regular users, it builds on the skills they\'ve used and the topics they care about to suggest what to make next.'
+      ],
+      planned:['Designs', 'Outcomes', 'Reflection']
     },
     {
       slug:'inyun', company:'INYUN', tagline:'PRODUCT DESIGN · 2026',
