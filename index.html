@@ -866,6 +866,10 @@
   }
   #case-view .glance-head{ font-size:clamp(19px,2.3vw,23px); font-weight:500; letter-spacing:-.005em; text-transform:none; }
   #case-view .case-block .body-text{ font-size:17px; line-height:1.7; }
+  /* problem statement and how might we: one large quoted line each */
+  #case-view .statement-quote{ margin:0 0 18px; max-width:30em; font-size:clamp(22px,2.9vw,31px); font-weight:500; line-height:1.32; letter-spacing:-.01em; color:var(--text); text-wrap:pretty; text-indent:-.45em; }
+  #case-view .statement-quote .qm{ color:var(--nav-accent, var(--accent)); }
+  #case-view .statement .body-text{ color:var(--text-muted); }
   #case-view .case-fig figcaption{ font-size:13.5px; letter-spacing:0; }
   #case-view .win h5, #case-view .lesson h5{ font-size:18px; font-weight:500; }
   #case-view .win p, #case-view .lesson p{ font-size:15.5px; }
@@ -1053,8 +1057,11 @@
         stats:[['3','user interviews'], ['15','products compared'], ['7','timed tasks in the test prototype']]
       },
       overview:'Claude already branches: editing a message quietly creates a new version behind small ‹ 1/2 › arrows, but almost nobody knows it\'s there. Anchored branching makes it visible. Select any words in an answer, ask about them on the side, and decide afterwards what to keep. The main conversation never moves.',
+      statements:[
+        {label:'Problem statement', quote:'Branching exists in Claude, but it\'s too buried to use. So people take side questions to new chats that pile up, lose their context, and rarely get revisited.', note:'Chat is linear, but curiosity isn\'t. A follow-up about one phrase lands at the bottom of the thread and buries the original question, and going back means scrolling.'},
+        {label:'How might we', quote:'How might we let people explore a side question from the exact phrase that raised it, without leaving the conversation, and decide afterwards what to keep?', note:'One rule guided everything: build on the Claude people already know, instead of changing the layout they rely on.'}
+      ],
       research:[
-        '<strong>The problem.</strong> Chat is linear, but curiosity isn\'t. A follow-up about one phrase lands at the bottom of the thread and buries the original question. The escape is a new chat, which forgets the context. So chats pile up, going back means scrolling, and starting over becomes the default.',
         '<strong>Branching exists, but it\'s buried.</strong> People have even built Chrome extensions just to see the branch tree Claude already stores.',
         {table:{compact:true, head:['Today', 'How it branches', 'The catch'], rows:[
           ['Claude', 'Edit a message to create a version', 'Hidden, and it replaces the answer instead of exploring it'],
@@ -1080,7 +1087,6 @@
         ]}, caption:'From interviews to design'}
       ],
       journey:[
-        '<strong>How might we</strong> let people explore a side question from the exact phrase that raised it, without leaving the conversation, and decide afterwards what to keep? One rule guided everything: build on the Claude people already know.',
         '<strong>Early sketches.</strong> I started in grayscale, wireframing every flow on mobile first and then on desktop. The first example chats were about p5.js coding. Later I switched them to everyday search questions.',
         {sketches:[
           {src:'images/claude/sketch-mobile-07.jpg', title:'Block highlighting', d:'Hold an answer to split it into blocks'},
@@ -1619,6 +1625,10 @@
         '<iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
         (p.demo.caption ? '<figcaption>'+p.demo.caption+'</figcaption>' : '') + '</figure>' : '') +
       '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
+      (p.statements || []).map(function(s){
+        return '<div class="case-block statement"><h4 class="label">'+s.label+'</h4><blockquote class="statement-quote"><span class="qm">“</span>'+s.quote+'<span class="qm">”</span></blockquote>' +
+          (s.note ? '<p class="body-text">'+s.note+'</p>' : '') + '</div>';
+      }).join('')+
       researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml +
       (p.planned || []).map(function(t){ return '<div class="case-block planned"><h4 class="label">'+t+'</h4><p class="body-text">Coming soon.</p></div>'; }).join('');
 
