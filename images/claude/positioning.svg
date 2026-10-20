@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 596 1760 1124" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t">
+<title id="t">Positioning map: exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.</title>
+<rect x="100" y="596" width="1760" height="1124" fill="#ffffff"/>
+<rect x="230" y="616" width="1500" height="1000" fill="#F5F5F5"/>
+<rect x="230" y="616" width="690" height="360" fill="#E9E9E9"/>
+<text x="254" y="652" font-size="21" fill="#666">Opportunity: deep exploration, low disruption</text>
+<line x1="230" y1="1116" x2="1730" y2="1116" stroke="#E0E0E0" stroke-width="2"/>
+<line x1="980" y1="616" x2="980" y2="1616" stroke="#E0E0E0" stroke-width="2"/>
+<line x1="230" y1="1616" x2="1730" y2="1616" stroke="#C9C9C9" stroke-width="2"/>
+<line x1="230" y1="616" x2="230" y2="1616" stroke="#C9C9C9" stroke-width="2"/>
+<line x1="695" y1="1334" x2="695" y2="812" stroke="#8A8A8A" stroke-width="2.5"/>
+<path d="M684 826 L695 810 L706 826" fill="none" stroke="#8A8A8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="350.0" cy="1256.0" r="30.0" fill="#4285F4"/>
+<text x="394" y="1256" font-size="25" font-weight="400" fill="#333" text-anchor="start">Google Docs comments</text>
+<circle cx="410.0" cy="1156.0" r="30.0" fill="#611F69"/>
+<text x="454" y="1156" font-size="25" font-weight="400" fill="#333" text-anchor="start">Slack threads</text>
+<circle cx="620.0" cy="1096.0" r="21.0" fill="#A259FF"/>
+<text x="585" y="1096" font-size="25" font-weight="400" fill="#333" text-anchor="end">Figma comments</text>
+<circle cx="740.0" cy="1036.0" r="21.0" fill="#111111"/>
+<text x="775" y="1036" font-size="25" font-weight="400" fill="#333" text-anchor="start">Notion</text>
+<circle cx="515.0" cy="956.0" r="30.0" fill="#10A37F"/>
+<text x="471" y="956" font-size="25" font-weight="400" fill="#333" text-anchor="end">ChatGPT branching</text>
+<circle cx="980.0" cy="966.0" r="21.0" fill="#1A73E8"/>
+<text x="1015" y="966" font-size="25" font-weight="400" fill="#333" text-anchor="start">NotebookLM</text>
+<circle cx="1250.0" cy="886.0" r="21.0" fill="#20808D"/>
+<text x="1285" y="886" font-size="25" font-weight="400" fill="#333" text-anchor="start">Perplexity Comet</text>
+<circle cx="1520.0" cy="716.0" r="14.0" fill="#7A7A7A"/>
+<text x="1548" y="716" font-size="25" font-weight="400" fill="#333" text-anchor="start">Heptabase</text>
+<circle cx="1490.0" cy="1056.0" r="14.0" fill="#7A7A7A"/>
+<text x="1518" y="1056" font-size="25" font-weight="400" fill="#333" text-anchor="start">HeyClicky</text>
+<circle cx="1580.0" cy="1196.0" r="14.0" fill="#EA4335"/>
+<text x="1608" y="1196" font-size="25" font-weight="400" fill="#333" text-anchor="start">Google Magic Pointer</text>
+<circle cx="860.0" cy="1176.0" r="21.0" fill="#D97757"/>
+<text x="895" y="1176" font-size="25" font-weight="400" fill="#333" text-anchor="start">Claude Code side chats</text>
+<circle cx="695.0" cy="1366.0" r="30.0" fill="#D97757"/>
+<text x="739" y="1366" font-size="27" font-weight="600" fill="#111" text-anchor="start">Claude today</text>
+<circle cx="695.0" cy="776.0" r="30.0" fill="#E8C4B8"/>
+<text x="739" y="776" font-size="27" font-weight="600" fill="#111" text-anchor="start">Claude + anchored branches</text>
+<text x="212" y="637" font-size="21" fill="#777" text-anchor="end">Spatial</text>
+<text x="212" y="1612" font-size="21" fill="#777" text-anchor="end">Linear</text>
+<text x="150" y="1116" font-size="24" fill="#444" text-anchor="middle" transform="rotate(-90 150 1116)">Exploration depth</text>
+<text x="230" y="1656" font-size="21" fill="#777">Familiar, low disruption</text>
+<text x="1730" y="1656" font-size="21" fill="#777" text-anchor="end">New paradigm, high disruption</text>
+<text x="980" y="1700" font-size="24" fill="#444" text-anchor="middle">Disruption to existing habits</text>
+</svg>

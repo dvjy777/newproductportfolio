@@ -897,6 +897,8 @@
   @media(min-width:760px){ .demo-row{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
   .demo-item .proto-screen{ width:100%; border-radius:clamp(16px,2.6vw,26px); box-shadow:0 14px 34px rgba(61,57,41,.18), 0 0 0 1px rgba(61,57,41,.12); }
   .demo-label{ margin-top:12px; }
+  .sketch-row{ background:#fff; }
+  .sketch-screen{ display:block; width:100%; height:auto; }
   .demo-label b{ display:block; font-size:14px; font-weight:600; color:var(--text); }
   .demo-label span{ display:block; margin-top:2px; font-size:12.5px; line-height:1.45; color:var(--text-muted); }
 
@@ -1061,7 +1063,7 @@
           ['Claude Code', '/btw and /fork side chats', 'Typed commands, for developers only']
         ]}, caption:'Everyone branches from the message. Nobody branches from the phrase.'},
         '<strong>Where Claude fits.</strong> I compared 15 products by how deep they let you explore and how much they disrupt existing habits. Comment threads in Docs, Slack and Figma are familiar but don\'t explore with AI. AI-native canvases go deep but ask you to learn something new. The gap is deep exploration with low disruption.',
-        {media:[{src:'images/claude/positioning.jpg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
+        {media:[{src:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
         '<strong>What people already do.</strong> On Reddit, Claude users say long chats get "chaotic" after 30 to 40 messages, so they restart and keep context in notes apps. And finding things again is normal behavior, not an edge case: in Yahoo\'s search logs, up to 40% of queries were attempts to re-find something [[1]].',
         '<strong>User interviews.</strong> I talked with three regular Claude users, had each walk me through a recent chat, and saved the concept for last.',
         {quotes:[
@@ -1079,6 +1081,14 @@
       ],
       journey:[
         '<strong>How might we</strong> let people explore a side question from the exact phrase that raised it, without leaving the conversation, and decide afterwards what to keep? One rule guided everything: build on the Claude people already know.',
+        '<strong>Early sketches.</strong> I started in grayscale, wireframing every flow on mobile first and then on desktop. The first example chats were about p5.js coding. Later I switched them to everyday search questions.',
+        {sketches:[
+          {src:'images/claude/sketch-mobile-07.jpg', title:'Block highlighting', d:'Hold an answer to split it into blocks'},
+          {src:'images/claude/sketch-mobile-09.jpg', title:'Mini chat', d:'Swipe the tray up to ask about the selection'},
+          {src:'images/claude/sketch-mobile-05.jpg', title:'Branches', d:'Swipe left for every branch in the chat'},
+          {src:'images/claude/sketch-mobile-04.jpg', title:'Collapsed chat', d:'One card per question, tap to jump back'}
+        ], caption:'Low-fi mobile sketches'},
+        {media:[{src:'images/claude/sketch-desktop-side-chat.jpg', alt:'Low-fi desktop wireframe: selecting a phrase brings up a toolbar with Side chat, Reply, color dots and Copy'}, {src:'images/claude/sketch-desktop-collapse.jpg', alt:'Low-fi desktop wireframe: the collapsed overview with a summary by topic and one card per question'}], caption:'Low-fi desktop: selecting a phrase, and the collapsed overview'},
         '<strong>Anchor, explore, decide.</strong> Select words in an answer and a side chat opens, anchored to them, while the main chat stays put. When you\'re done, pick one of four endings.',
         {demos:[
           {src:'claude-prototype/?embed=1&demo=5', title:'Merge into main', d:'Folds back under the answer it came from'},
@@ -1487,6 +1497,12 @@
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
       if(t.flow) return flowHtml(t);
+      // a row of low-fi sketch screens
+      if(t.sketches) return '<figure class="case-fig demo-grid"><div class="demo-row sketch-row">' +
+        t.sketches.map(function(d){
+          return '<div class="demo-item"><img class="sketch-screen" src="'+d.src+'" alt="Low-fi sketch: '+d.title+'" loading="lazy">' +
+            '<div class="demo-label"><b>'+d.title+'</b><span>'+d.d+'</span></div></div>';
+        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // a row of prototype screens, each looping one interaction
       if(t.demos) return '<figure class="case-fig demo-grid"><div class="demo-row">' +
         t.demos.map(function(d){
