@@ -1,0 +1,1233 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Anchored Branching Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap">
+<style>
+:root{
+  /* Layout: phone stage on the left, a narrow control rail on the right; on a real phone the app fills the screen */
+  --page:#141312; --app:#1F1E1D; --surface:#2A2927; --raised:#353431; --line:#3A3936;
+  --ink:#F5F4EF; --muted:#A6A39A; --faint:#75726B; --accent:#D97757; --accent-soft:rgba(217,119,87,.16);
+  --glass:rgba(255,255,255,.075); --glass-strong:rgba(46,45,42,.68); --glass-line:rgba(255,255,255,.16);
+  --hl-coral:#D97757; --hl-amber:#E3A857; --hl-green:#7BBF8A; --hl-blue:#6FA3E0; --hl-violet:#A98BE0;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --slow:1; color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0}
+img{max-width:100%}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cin:focus-visible,.mcomp input:focus-visible,.search input:focus-visible{outline:none}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;max-width:1120px;margin:0 auto;padding-block:28px 40px;align-items:start}
+@media (max-width:880px){.app{grid-template-columns:minmax(0,1fr);gap:24px}}
+.stage{display:flex;flex-direction:column;align-items:center;gap:16px;min-width:0}
+#phoneWrap{width:100%;position:relative}
+.caption{min-height:48px;max-width:440px;text-align:center;font:400 15px/22px var(--serif);color:var(--muted);text-wrap:balance;transition:opacity .25s}
+.caption b{color:var(--ink);font-weight:500}
+
+/* iPhone frame */
+.phone{box-sizing:border-box;position:absolute;top:0;left:50%;width:419px;height:878px;padding:13px;border-radius:70px;background:#050505;box-shadow:0 0 0 1.5px #57544F,0 0 0 4px #24231F,0 0 0 5px #3E3C38,0 40px 90px rgba(0,0,0,.6);transform-origin:top center}
+.phone::before{content:"";position:absolute;left:-7px;top:168px;width:3px;height:214px;border-radius:2px 0 0 2px;background:linear-gradient(#3E3C38 0 34px,transparent 34px 62px,#3E3C38 62px 128px,transparent 128px 148px,#3E3C38 148px 214px)}
+.phone::after{content:"";position:absolute;right:-7px;top:232px;width:3px;height:104px;border-radius:0 2px 2px 0;background:#3E3C38}
+.island{position:absolute;top:11px;left:50%;width:124px;height:36px;margin-left:-62px;border-radius:18px;background:#000;z-index:96;pointer-events:none}
+
+/* rail */
+.rail{display:flex;flex-direction:column;gap:22px;min-width:0;position:sticky;top:24px}
+.eyebrow{font:600 11px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.rail h1{font:500 30px/34px var(--serif);margin:6px 0 8px;text-wrap:balance}
+.rail p.lead{font:400 14px/21px var(--sans);color:var(--muted);margin:0}
+.list{display:flex;flex-direction:column;gap:2px}
+.item{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;text-align:left;padding:10px 12px;border-radius:12px;color:var(--muted)}
+.item .n{font:500 12px var(--sans);color:var(--faint);padding-top:2px;font-variant-numeric:tabular-nums}
+.item b{display:block;font:500 14px/19px var(--sans);color:var(--ink)}
+.item span.d{display:block;font:400 12.5px/17px var(--sans);margin-top:2px}
+.item:hover{background:rgba(255,255,255,.04)}
+.item.on{background:var(--surface)}
+.item.on .n{color:var(--accent)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:36px;padding:0 14px;border-radius:18px;background:var(--surface);border:1px solid var(--line);font:500 13px var(--sans);display:inline-flex;align-items:center;gap:6px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--app);border-color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.card h2{font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.task{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;align-items:start;padding:7px 0;font:400 13.5px/19px var(--sans)}
+.task .box{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--faint);display:grid;place-items:center;margin-top:1px}
+.task.done .box{background:var(--accent);border-color:var(--accent)}
+.task.done .t{color:var(--muted)}
+.task .time{font:500 12px var(--sans);color:var(--accent);font-variant-numeric:tabular-nums}
+.log{max-height:220px;overflow:auto;font:400 12px/18px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.log div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px}
+.log div span:first-child{color:var(--faint);font-variant-numeric:tabular-nums}
+details.card summary{cursor:pointer;font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+details.card ul{margin:10px 0 0;padding-left:18px;font:400 13px/20px var(--sans);color:var(--muted)}
+details.card li b{color:var(--ink);font-weight:500}
+
+/* ---------- phone screen ---------- */
+.screen{--top:58px;--bot:38px;position:relative;width:393px;height:852px;border-radius:57px;overflow:hidden;background:var(--app);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;isolation:isolate}
+.screen.demo *{pointer-events:none!important}
+.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.statusbar{position:absolute;inset:0 0 auto;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 52px;z-index:90;pointer-events:none}
+.statusbar .time{font:600 17px var(--sans);letter-spacing:-.01em}
+.sicons{display:flex;align-items:center;gap:6px;fill:var(--ink);color:var(--ink)}
+.homebar{position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--ink);z-index:90;pointer-events:none}
+.main{position:absolute;inset:0;transition:transform calc(420ms*var(--slow)) cubic-bezier(.2,.9,.25,1),filter calc(420ms*var(--slow))}
+.main::after{content:"";position:absolute;inset:0 0 auto;height:calc(var(--top) + 72px);background:linear-gradient(var(--app) 74%,rgba(31,30,29,0));z-index:19;pointer-events:none}
+.scroller{position:absolute;inset:0;overflow-y:auto;padding:calc(var(--top) + 70px) 16px 220px;scrollbar-width:none;touch-action:pan-y;overscroll-behavior:contain}
+.scroller::-webkit-scrollbar{display:none}
+.msg{transition:opacity calc(260ms*var(--slow))}
+.msg-user{display:flex;justify-content:flex-end;margin:0 0 22px}
+.bubble{max-width:272px;background:var(--raised);border-radius:22px;padding:12px 16px;font:400 16px/22px var(--sans)}
+.bubble .bq{font:400 13px/18px var(--sans);color:var(--muted);border-left:2px solid var(--accent);padding-left:8px;margin-bottom:6px}
+.msg-claude{margin:0 0 26px}
+.ctext{font:400 17px/26px var(--serif);color:var(--ink);transition:transform calc(500ms*var(--slow)) cubic-bezier(.2,.9,.25,1)}
+.ctext.pressing{transform:scale(.985)}
+.actions{display:flex;gap:22px;margin-top:12px;color:var(--muted)}
+.actions .ic{width:19px;height:19px}
+.anchor{text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:5px;cursor:pointer}
+.anchor sup{font:600 10px var(--sans);color:var(--accent);margin-left:2px}
+mark.hl{color:inherit;border-radius:4px;padding:1px 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.c-coral{--c:var(--hl-coral)}.c-amber{--c:var(--hl-amber)}.c-green{--c:var(--hl-green)}.c-blue{--c:var(--hl-blue)}.c-violet{--c:var(--hl-violet)}
+mark.hl{background:color-mix(in srgb,var(--c) 30%,transparent)}
+mark.hl.flash{animation:flash calc(1200ms*var(--slow)) ease-out}
+@keyframes flash{0%{background:color-mix(in srgb,var(--c) 85%,transparent)}100%{background:color-mix(in srgb,var(--c) 30%,transparent)}}
+.dimmed .msg:not(.focus){opacity:.32}
+.thread.blockpad{padding-bottom:460px}
+.ctext.blocks{line-height:22px}
+.blk{display:inline-block;margin:4px 1px;padding:4px 7px;border-radius:9px;background:transparent;transition:background calc(240ms*var(--slow)) ease,color calc(240ms*var(--slow)) ease,transform calc(240ms*var(--slow)) cubic-bezier(.2,1.4,.4,1);cursor:pointer}
+.blk.on{background:rgba(255,255,255,.075)}
+.blk.sel{background:var(--accent);color:#fff;transform:scale(1.03)}
+.artifact{margin:16px 0 0;border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.artifact canvas{display:block;width:100%;height:190px;background:#191817}
+.artifact .meta{display:flex;align-items:center;gap:10px;padding:12px 14px;color:var(--muted)}
+.artifact .meta b{display:block;font:500 14px var(--sans);color:var(--ink)}
+.artifact .meta small{font:400 12px var(--sans)}
+.merged{margin:-6px 0 26px;padding:12px 14px;border-radius:6px 16px 16px 6px;background:var(--accent-soft);border-left:3px solid var(--accent);overflow:hidden}
+.merged .ml{display:flex;align-items:center;gap:6px;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.merged .mq{font:400 13px/18px var(--sans);color:var(--muted);margin:6px 0 4px}
+.merged .mqq{font:500 14px/20px var(--sans)}
+.merged .ma{font:400 15px/22px var(--serif);margin-top:4px}
+.pulse{animation:pulse calc(1600ms*var(--slow)) ease-out}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,119,87,0)}25%{box-shadow:0 0 0 6px rgba(217,119,87,.35)}100%{box-shadow:0 0 0 14px rgba(217,119,87,0)}}
+.dots{display:inline-flex;gap:5px;padding:6px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+/* glass */
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(255,255,255,.04),0 18px 40px rgba(0,0,0,.45)}
+.glass.strong{background:var(--glass-strong)}
+.sheen{position:relative}
+.sheen::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,0) 38%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05))}
+.topbar{position:absolute;top:var(--top);left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:20}
+.gbtn{width:48px;height:48px;border-radius:24px;display:grid;place-items:center;flex:none}
+.gbtn.sm{width:40px;height:40px;border-radius:20px;box-shadow:none}
+.gpill{height:48px;border-radius:24px;display:flex;align-items:center;gap:6px;padding:0 18px 0 14px;font:500 15px var(--sans)}
+.ggroup{height:48px;width:96px;border-radius:24px;display:flex;align-items:center;justify-content:center;flex:none}
+.ggroup button{width:42px;height:42px;display:grid;place-items:center}
+.edge{position:absolute;right:0;top:47%;width:28px;padding:14px 0;border-radius:16px 0 0 16px;border-right:0;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:15;font:600 12px var(--sans);font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}
+.edge .ic{width:16px;height:16px}
+.composer{position:absolute;left:16px;right:16px;bottom:var(--bot);border-radius:30px;padding:14px 12px 12px;z-index:25;overflow:hidden}
+.qchip{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.06);border-radius:14px;padding:8px 10px;margin-bottom:10px}
+.qchip .bar{width:3px;align-self:stretch;background:var(--accent);border-radius:2px}
+.qtext{flex:1;min-width:0;font:400 13px/18px var(--sans);color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cin{display:block;width:100%;background:none;border:0;outline:0;color:var(--ink);font:400 18px var(--sans);padding:2px 4px 12px}
+.cin::placeholder{color:var(--muted)}
+.controls{display:flex;align-items:center;gap:8px}
+.cbtn{width:40px;height:40px;border-radius:20px;display:grid;place-items:center;background:rgba(255,255,255,.07);flex:none}
+.cbtn.solid{background:var(--ink);color:var(--app)}
+.model{height:40px;border-radius:20px;padding:0 14px;background:rgba(255,255,255,.06);font:500 14px var(--sans);display:flex;align-items:center;gap:5px}
+.model span{color:var(--muted)}
+.spacer{flex:1}
+
+/* selection tray */
+.tray{position:absolute;left:16px;right:16px;border-radius:26px;padding:12px 14px 14px 16px;z-index:24;touch-action:none;cursor:grab}
+.tray .th{display:flex;align-items:center;gap:6px;font:400 12px var(--sans);color:var(--muted);min-height:28px}
+.tray .th .ic{width:15px;height:15px}
+.tray .th .q{color:var(--accent)}
+.tlink{height:28px;padding:0 10px;border-radius:14px;background:rgba(255,255,255,.08);font:500 12.5px var(--sans);color:var(--ink)}
+#trayClose{width:28px;height:28px;display:grid;place-items:center}
+.ttext{font:400 16px/23px var(--serif);margin:6px 0 12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ttext.empty{color:var(--muted);font-style:italic}
+.needsel{display:flex;flex-direction:column;gap:10px;transition:opacity .2s}
+.tray.nosel .needsel{opacity:.35;pointer-events:none}
+.tools{display:flex;align-items:center;gap:8px}
+.tl{font:400 12px var(--sans);color:var(--muted)}
+.swatches{display:flex;gap:6px}
+.sw{width:24px;height:24px;border-radius:12px;background:var(--c);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2);transition:transform .15s}
+.sw:active{transform:scale(.85)}
+.tsave{height:30px;padding:0 12px 0 10px;border-radius:15px;background:rgba(255,255,255,.08);display:flex;align-items:center;gap:5px;font:500 12.5px var(--sans)}
+.tsave .ic{width:15px;height:15px}
+.hints{display:flex;gap:8px}
+.hint{flex:1;height:34px;border-radius:17px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;gap:6px;font:500 12.5px var(--sans);transition:background .2s,color .2s}
+.hint .ic{width:15px;height:15px;color:var(--muted)}
+.hint.active{background:var(--accent);color:#fff}
+.hint.active .ic{color:#fff}
+
+/* mini chat */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.34);z-index:28;opacity:0;pointer-events:none;transition:opacity calc(320ms*var(--slow))}
+.dim.on{opacity:1;pointer-events:auto}
+.mini{position:absolute;left:10px;right:10px;bottom:10px;border-radius:46px;z-index:30;padding:8px 0 12px;display:flex;flex-direction:column;gap:12px;background:rgba(44,43,40,.74)}
+.grab{height:22px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab}
+.grab i{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.28)}
+.mhead{display:flex;align-items:center;gap:10px;padding:0 14px 0 22px}
+.mhead .ic.a{color:var(--accent)}
+.mhead div{flex:1;min-width:0}
+.mhead b{display:block;font:600 17px var(--sans)}
+.mhead small{font:400 12px var(--sans);color:var(--muted)}
+.mquote{display:flex;gap:10px;margin:0 20px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.06)}
+.mquote .bar{width:3px;border-radius:2px;background:var(--accent);flex:none}
+.mquote p{margin:0;font:400 15px/21px var(--serif)}
+.mthread{margin:0 20px;max-height:236px;overflow:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:12px}
+.mthread:empty{display:none}
+.mthread .bubble{align-self:flex-end;font-size:15px;padding:10px 14px;background:rgba(255,255,255,.1)}
+.mthread .ans{font:400 16px/24px var(--serif)}
+.mdone{margin:0 20px;display:flex;flex-direction:column;gap:8px}
+.mdone small{font:400 12px var(--sans);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{height:40px;border-radius:20px;padding:0 16px 0 13px;display:inline-flex;align-items:center;gap:7px;font:500 14px var(--sans);background:rgba(255,255,255,.07);border:1px solid var(--glass-line)}
+.chip .ic{width:17px;height:17px}
+.chip.primary{background:var(--ink);color:var(--app);border-color:var(--ink)}
+.mcomp{display:flex;align-items:center;gap:8px;margin:2px 10px 0;padding:8px 8px 8px 18px;border-radius:30px;background:rgba(255,255,255,.07)}
+.mcomp input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:400 17px var(--sans)}
+.mcomp input::placeholder{color:var(--muted)}
+.goo{position:absolute;inset:0;z-index:29;pointer-events:none;filter:url(#goo);opacity:0}
+.blob{position:absolute;background:linear-gradient(180deg,#4A4844 0%,#363532 55%,#2F2E2B 100%);border-radius:30px}
+.fly{position:absolute;z-index:61;font:400 16px/23px var(--serif);color:var(--ink);white-space:nowrap;pointer-events:none;will-change:transform}
+
+/* collapsed cards */
+.search{height:44px;border-radius:22px;background:rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;padding:0 14px;margin-bottom:12px;color:var(--muted)}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:400 16px var(--sans)}
+.search input::placeholder{color:var(--muted)}
+.xcard{display:flex;width:100%;text-align:left;border-radius:20px;background:var(--surface);overflow:hidden;margin-bottom:10px}
+.xcard .ind{width:4px;flex:none}
+.xcard.cur{background:var(--raised)}
+.xcard.cur .ind{background:var(--accent)}
+.xcard .xb{flex:1;min-width:0;padding:14px 16px 14px 14px;display:flex;flex-direction:column;gap:6px}
+.xtop{display:flex;align-items:center;gap:8px}
+.xtop .i{font:400 12px var(--sans);color:var(--muted);font-variant-numeric:tabular-nums}
+.xtop b{flex:1;min-width:0;font:500 14px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px 0 7px;border-radius:11px;background:rgba(255,255,255,.07);font:500 12px var(--sans)}
+.badge .ic{width:13px;height:13px;color:var(--muted)}
+.hdots{display:inline-flex;gap:3px}
+.hdots i{width:8px;height:8px;border-radius:4px;background:var(--c)}
+.xs{font:400 12.5px/17px var(--sans);color:var(--muted)}
+.kws{display:flex;gap:5px;flex-wrap:wrap}
+.kws span{height:22px;padding:0 9px;border-radius:11px;background:rgba(255,255,255,.06);font:400 12px/22px var(--sans);color:var(--muted)}
+
+/* panels */
+.panel{position:absolute;inset:0;background:var(--app);z-index:40;transform:translateX(100%);transition:transform calc(420ms*var(--slow)) cubic-bezier(.2,.9,.25,1);will-change:transform}
+.panel .scroller{padding-top:calc(var(--top) + 72px);padding-bottom:60px}
+.panel .scroller.withbar{padding-bottom:150px}
+.phead{position:absolute;top:var(--top);left:0;right:0;height:56px;display:flex;align-items:center;gap:12px;padding:0 16px;z-index:5}
+.phead .tt{flex:1;min-width:0}
+.phead b{display:block;font:600 17px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phead small{font:400 12px var(--sans);color:var(--muted)}
+.panel::before{content:"";position:absolute;inset:0 0 auto;height:calc(var(--top) + 64px);background:linear-gradient(var(--app) 60%,rgba(31,30,29,0));z-index:4;pointer-events:none}
+.seg{display:flex;padding:3px;border-radius:20px;background:rgba(255,255,255,.06);margin-bottom:14px}
+.seg button{flex:1;height:34px;border-radius:17px;font:500 14px var(--sans);color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--raised);color:var(--ink);box-shadow:inset 0 0 0 1px var(--glass-line)}
+.screen.show-branches .main{transform:translateX(-30%);filter:brightness(.5)}
+.screen.show-branches #branches{transform:none}
+.screen.show-sub #branches{transform:translateX(-30%)}
+.screen.show-sub #sub{transform:none}
+.bcard{border-radius:22px;background:var(--surface);padding:16px;margin-bottom:10px;cursor:pointer;transition:background .2s,box-shadow .2s}
+.bcard.open{background:var(--raised);box-shadow:inset 0 0 0 1px var(--glass-line)}
+.btop{display:flex;gap:12px}
+.bnum{width:26px;height:26px;border-radius:13px;background:#55534F;display:grid;place-items:center;font:600 12px var(--sans);flex:none;transition:background .2s}
+.bcard.open .bnum{background:var(--accent)}
+.bbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.bquote{font:400 12px var(--sans);color:var(--accent)}
+.bq{font:400 16px/22px var(--sans)}
+.bmeta{display:flex;align-items:center;justify-content:space-between;gap:8px;font:400 12px var(--sans);color:var(--muted)}
+.bacts{display:grid;grid-template-rows:0fr;transition:grid-template-rows calc(300ms*var(--slow)) cubic-bezier(.2,.9,.25,1)}
+.bcard.open .bacts{grid-template-rows:1fr}
+.bacts>div{overflow:hidden}
+.bacts .chips{padding:12px 0 0 38px}
+.scard{display:flex;gap:12px;width:100%;text-align:left;border-radius:20px;background:var(--surface);padding:14px 16px;margin-bottom:10px}
+.scard .sbar{width:4px;border-radius:2px;background:var(--c);flex:none}
+.scard .st{display:block;font:400 16px/23px var(--serif)}
+.scard .ss{display:block;font:400 12px/17px var(--sans);color:var(--muted);margin-top:6px}
+.empty{font:400 15px/22px var(--serif);color:var(--muted);text-align:center;padding:50px 20px}
+.thr .anchorbox{display:flex;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.05);margin-bottom:18px}
+.thr .anchorbox .bar{width:3px;border-radius:2px;background:var(--accent);flex:none}
+.thr .anchorbox p{margin:0;font:400 15px/22px var(--serif);color:var(--muted)}
+.bcomp{position:absolute;left:16px;right:16px;bottom:var(--bot);z-index:6;display:flex;align-items:center;gap:8px;padding:8px 8px 8px 18px;border-radius:30px}
+.bcomp input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:400 17px var(--sans)}
+.bcomp input::placeholder{color:var(--muted)}
+.bcomp input:focus-visible{outline:none}
+.label{font:400 12px var(--sans);color:var(--muted);margin:4px 0 10px}
+
+/* toast + finger */
+.toast{position:absolute;left:50%;top:calc(var(--top) + 66px);transform:translate(-50%,-14px);opacity:0;z-index:70;border-radius:22px;padding:10px 12px 10px 16px;display:flex;gap:12px;align-items:center;font:500 14px var(--sans);white-space:nowrap;pointer-events:none;transition:opacity calc(240ms*var(--slow)),transform calc(240ms*var(--slow)) cubic-bezier(.2,1.2,.3,1)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{color:var(--accent);font-weight:600;padding:4px 6px}
+.finger{position:absolute;left:200px;top:500px;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.75);box-shadow:0 4px 18px rgba(0,0,0,.35);z-index:95;pointer-events:none;opacity:0;transition:opacity .2s,transform .25s}
+.finger.down{transform:scale(.78);background:rgba(255,255,255,.38)}
+.finger.press{animation:press calc(700ms*var(--slow)) ease-out}
+@keyframes press{0%{box-shadow:0 0 0 0 rgba(217,119,87,.6)}100%{box-shadow:0 0 0 26px rgba(217,119,87,0)}}
+
+/* on a real phone: the app fills the screen, no frame */
+html.native body{padding:0}
+html.native .app{display:block;padding:0;max-width:none}
+html.native .stage{gap:0}
+html.native .phone{left:0;top:0;width:393px;height:auto;padding:0;border-radius:0;background:none;box-shadow:none;transform-origin:top left}
+html.native .phone::before,html.native .phone::after,html.native .caption{display:none}
+html.native .screen{border-radius:0;--top:max(10px,env(safe-area-inset-top,0px));--bot:calc(12px + env(safe-area-inset-bottom,0px))}
+html.native .statusbar,html.native .island,html.native .homebar{display:none}
+html.native .rail{position:static;padding:28px 16px 40px}
+@media (prefers-reduced-motion:reduce){.pulse,.finger.press,mark.hl.flash{animation:none}}
+html.native .mini{bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+html.native,html.native body{overflow-x:hidden}
+html.native #phoneWrap{overflow:hidden;width:100%}
+
+/* deployed site on a computer: the app without a phone frame */
+html.bare .phone{position:relative;left:auto;top:auto;width:393px;height:auto;margin:0 auto;padding:0;border-radius:0;background:none;box-shadow:none;transform:none}
+html.bare .phone::before,html.bare .phone::after,html.bare .caption,html.bare .statusbar,html.bare .island,html.bare .homebar{display:none}
+html.bare .screen{border-radius:28px;box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(0,0,0,.45);--top:14px;--bot:16px}
+html.bare .mini{bottom:10px}
+html.native .rail{display:none}
+
+/* embedded on the portfolio: only the phone screen, no frame, rail or captions */
+html.embed,html.embed body{height:100%;overflow:hidden;background:#1F1E1D}
+html.embed body{padding:0}
+html.embed .app{display:block;padding:0;max-width:none}
+html.embed .stage{gap:0}
+html.embed .rail,html.embed .caption,html.embed .island{display:none}
+html.embed .phone{left:0;top:0;width:393px;height:852px;padding:0;border-radius:0;background:none;box-shadow:none;transform-origin:top left}
+html.embed .phone::before,html.embed .phone::after{display:none}
+html.embed .screen{border-radius:0}
+
+/* new chat that the mini chat expands into */
+.panel.nc{transform:none;z-index:45;transition:none}
+.nc .ncctx{display:flex;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,.05);margin-bottom:20px}
+.nc .ncctx .bar{width:3px;border-radius:2px;background:var(--accent);flex:none}
+.nc .ncctx p{margin:0;font:400 15px/22px var(--serif)}
+.nc .ncctx small{display:block;font:400 12px var(--sans);color:var(--muted);margin-bottom:4px}
+
+.composer .controls{gap:6px}
+.cbtn.ghost{background:none}
+.composer .cbtn.send{width:36px;height:36px;margin-left:2px}
+.mcomp .cbtn,.bcomp .cbtn{width:36px;height:36px}
+.cbtn.send{transition:opacity .2s,transform .2s}
+.cbtn.send:disabled{opacity:.35;cursor:default}
+.cbtn.send:not(:disabled):active{transform:scale(.9)}
+.model{white-space:nowrap;flex:none}
+
+/* merged side question: compact by default, expands to the full side conversation */
+.merged{cursor:pointer}
+.merged .msum .ma{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.merged .mthr{display:none;flex-direction:column;gap:10px;margin-top:6px}
+.merged.open .mthr{display:flex}
+.merged.open .msum{display:none}
+.merged .mt-u{align-self:flex-end;max-width:85%;background:rgba(255,255,255,.08);border-radius:16px;padding:8px 12px;font:400 14px/20px var(--sans)}
+.merged .mt-a{font:400 15px/22px var(--serif)}
+.merged .mfoot{display:flex;align-items:center;gap:4px;margin-top:10px;font:500 12px var(--sans);color:var(--accent)}
+.merged .mfoot .less,.merged.open .mfoot .more{display:none}
+.merged.open .mfoot .less{display:inline}
+.merged .mfoot .ic{transition:transform .25s}
+.merged.open .mfoot .ic{transform:rotate(180deg)}
+mark.mrg{color:inherit;background:rgba(217,119,87,.16);border-bottom:2px solid var(--accent);border-radius:3px 3px 0 0;padding:0 2px;cursor:pointer;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+mark.mrg.flash{animation:mrgflash calc(1300ms*var(--slow)) ease-out}
+@keyframes mrgflash{0%{background:rgba(217,119,87,.6)}100%{background:rgba(217,119,87,.16)}}
+/* search-style answers */
+.web{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:6px 10px 6px 9px;border-radius:14px;background:rgba(255,255,255,.05);font:500 12.5px var(--sans);color:var(--muted)}
+.web span{opacity:.6}
+.web .ic{width:14px;height:14px}
+.place{display:flex;align-items:stretch;margin:14px 0 0;border-radius:18px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.pimg{width:104px;flex:none;position:relative;background:radial-gradient(circle at 28% 30%,#e0763c 0 14%,transparent 34%),radial-gradient(circle at 70% 62%,#b8452a 0 12%,transparent 36%),radial-gradient(circle at 55% 18%,#e9b04d 0 9%,transparent 28%),linear-gradient(160deg,#5b3a22,#2f3b26 70%)}
+.pimg span{position:absolute;left:8px;bottom:8px;display:flex;align-items:center;gap:3px;padding:3px 7px 3px 5px;border-radius:10px;background:rgba(0,0,0,.45);font:500 11px var(--sans);color:#fff}
+.pimg .ic{width:12px;height:12px}
+.pinfo{padding:12px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.pinfo b{font:600 15px var(--sans);color:var(--ink)}
+.pinfo small{font:400 12.5px var(--sans);color:var(--muted)}
+/* bottom scrim so the thread fades out behind the prompt bar instead of peeking under it */
+.main::before{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--bot) + 70px);background:linear-gradient(rgba(31,30,29,0),var(--app) 55%);z-index:19;pointer-events:none}
+.panel:has(.bcomp)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--bot) + 60px);background:linear-gradient(rgba(31,30,29,0),var(--app) 55%);z-index:5;pointer-events:none}
+
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="goo" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="b"/>
+    <feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -11"/>
+  </filter>
+</svg>
+<div class="app">
+  <div class="stage">
+    <div id="phoneWrap">
+      <div class="phone" id="phone">
+        <div class="screen" id="screen">
+          <div class="main" id="main">
+            <div class="scroller thread" id="thread"></div>
+            <div class="scroller cards" id="cards" hidden></div>
+            <div class="topbar">
+              <div class="ggroup glass sheen"><button id="menuBtn" aria-label="Menu"><svg class="ic"><use href="#i-menu"/></svg></button><button id="deviceBtn" aria-label="Continue on another device"><svg class="ic"><use href="#i-laptop"/></svg></button></div>
+              <button class="gpill glass sheen" id="viewPill"><svg class="ic" id="pillIcon"><use href="#i-collapse"/></svg><span id="pillLabel">Collapse</span></button>
+              <div class="ggroup glass sheen"><button aria-label="Files" data-noop><svg class="ic"><use href="#i-document"/></svg></button><button aria-label="More" data-noop><svg class="ic"><use href="#i-more"/></svg></button></div>
+            </div>
+            <button class="edge glass" id="edgeTab" aria-label="Branches and saved highlights"><svg class="ic"><use href="#i-branch"/></svg><span id="branchCount">3</span><svg class="ic"><use href="#i-chevron-left"/></svg></button>
+            <div class="tray glass sheen" id="tray" hidden>
+              <div class="th"><svg class="ic q"><use href="#i-quote"/></svg><span id="trayCount">Tap blocks to select</span><span class="spacer"></span><button class="tlink" id="selAll">Select all</button><button id="trayClose" aria-label="Done"><svg class="ic"><use href="#i-close"/></svg></button></div>
+              <div class="ttext" id="trayText"></div>
+              <div class="needsel">
+                <div class="tools"><span class="tl">Save as</span><div class="swatches" id="swatches"></div><span class="spacer"></span><button class="tsave" id="saveSel"><svg class="ic"><use href="#i-bookmark"/></svg>Save</button></div>
+                <div class="hints"><button class="hint" id="hintUp"><svg class="ic"><use href="#i-swipe-up"/></svg>Mini chat</button><button class="hint" id="hintDown"><svg class="ic"><use href="#i-swipe-down"/></svg>Add to prompt</button></div>
+              </div>
+            </div>
+            <form class="composer glass strong sheen" id="composer" autocomplete="off">
+              <div class="qchip" id="qchip" hidden><span class="bar"></span><div class="qtext" id="qtext"></div><button type="button" id="qclear" aria-label="Remove quote"><svg class="ic" style="width:16px;height:16px;color:var(--muted)"><use href="#i-close"/></svg></button></div>
+              <input class="cin" id="cinput" placeholder="Reply to Claude" aria-label="Message Claude">
+              <div class="controls">
+                <button type="button" class="cbtn" data-noop aria-label="Add"><svg class="ic"><use href="#i-plus"/></svg></button>
+                <div class="model">Opus 5.5 <span>Medium</span></div>
+                <span class="spacer"></span>
+                <button type="button" class="cbtn ghost" data-noop aria-label="Dictate"><svg class="ic"><use href="#i-mic"/></svg></button>
+                <button type="submit" class="cbtn solid send" id="csend" aria-label="Send" disabled><svg class="ic"><use href="#i-arrow-up"/></svg></button>
+              </div>
+            </form>
+          </div>
+          <div class="dim" id="dim"></div>
+          <div class="goo" id="gooLayer"><div class="blob" id="blobA"></div><div class="blob" id="blobB"></div></div>
+          <div class="mini glass sheen" id="mini" hidden></div>
+          <section class="panel" id="branches" aria-label="Branches"></section>
+          <section class="panel" id="sub" aria-label="Branch detail"></section>
+          <section class="panel nc" id="nchat" aria-label="New chat" hidden></section>
+          <div class="toast glass strong" id="toast" role="status"><span id="toastText"></span><button id="toastBtn" hidden></button></div>
+          <div class="finger" id="finger"></div>
+          <div class="statusbar"><span class="time">9:41</span><span class="sicons">
+            <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true"><path d="M8 11.6 5.6 9.1a3.4 3.4 0 0 1 4.8 0z"/><path d="M3.3 6.8a6.6 6.6 0 0 1 9.4 0l-1.4 1.4a4.6 4.6 0 0 0-6.6 0z"/><path d="M1 4.5a9.9 9.9 0 0 1 14 0l-1.4 1.4a7.9 7.9 0 0 0-11.2 0z"/></svg>
+            <svg width="27" height="13" viewBox="0 0 27 13" aria-hidden="true"><rect x=".5" y=".5" width="23" height="12" rx="3.8" fill="none" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="17" height="9" rx="2.3"/><path d="M25 4.6v3.8a2 2 0 0 0 0-3.8z" opacity=".45"/></svg>
+          </span></div>
+          <div class="island" aria-hidden="true"></div>
+          <div class="homebar"></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption" id="caption" aria-live="polite"></div>
+  </div>
+  <aside class="rail" id="rail"></aside>
+</div>
+<script>
+// ?embed=1: just the phone screen, cycling through every demo (used on the portfolio page)
+const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+const MODE = EMBED || new URLSearchParams(location.search).get('mode') === 'present' ? 'present' : 'test';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let SLOW = 1;
+const D = (ms) => ms * SLOW * (RM ? 0.4 : 1);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let RUN = 0;
+class Abort extends Error {}
+async function wait(ms, tok) { await sleep(D(ms)); if (tok !== undefined && tok !== RUN) throw new Abort(); }
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const short = (s, n = 42) => (s.length > n ? s.slice(0, n - 1).trim() + '…' : s);
+const FRAMELESS = '0' === '1';
+const NATIVE = MODE === 'test' && Math.min(innerWidth, screen.width || innerWidth) < 540;
+const BARE = MODE === 'test' && FRAMELESS && !NATIVE;
+
+/* ---------- icons ---------- */
+const ICONS = {
+  menu: '<path d="M4 7h16M4 12h11M4 17h7"/>', collapse: '<path d="m7 10 5-5 5 5M7 19l5-5 5 5"/>', expand: '<path d="m7 5 5 5 5-5M7 14l5 5 5-5"/>',
+  laptop: '<rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M3 19h18"/>', bookmark: '<path d="M7 4h10v16l-5-3.6L7 20z"/>',
+  document: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>', more: '<circle cx="5" cy="12" r=".9"/><circle cx="12" cy="12" r=".9"/><circle cx="19" cy="12" r=".9"/>',
+  branch: '<circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7"/>',
+  'chevron-left': '<path d="m15 6-6 6 6 6"/>', 'chevron-down': '<path d="m6 9 6 6 6-6"/>', 'chevron-right': '<path d="m9 6 6 6-6 6"/>', quote: '<path d="M6 7h5v5H8a2 2 0 0 0-2 2v3M14 7h5v5h-3a2 2 0 0 0-2 2v3"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>', 'swipe-up': '<path d="M12 20V6M8 10l4-4 4 4"/>', 'swipe-down': '<path d="M12 4v14M8 14l4 4 4-4"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>', voice: '<path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/>',
+  'arrow-up': '<path d="M12 19V5M6 11l6-6 6 6"/>', copy: '<rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h2"/>',
+  play: '<path d="M7 5v14l11-7z"/>', 'thumbs-up': '<path d="M7 11v9H4v-9zM7 11l4-7c1.5 0 2.5 1 2 3l-1 3h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 16.8 20H7"/>',
+  'thumbs-down': '<path d="M7 13V4H4v9zM7 13l4 7c1.5 0 2.5-1 2-3l-1-3h6a2 2 0 0 0 2-2.3l-1.2-6A2 2 0 0 0 16.8 4H7"/>', retry: '<path d="M19 12a7 7 0 1 1-2-4.9M19 4v4h-4"/>',
+  merge: '<path d="M6 4v5c0 3 6 4 6 8v3M18 4v5c0 3-6 4-6 8M9 17l3 3 3-3"/>', dissolve: '<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',
+  'new-chat': '<path d="M12 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M16 19h6M19 16v6"/>', anchor: '<circle cx="12" cy="5" r="2"/><path d="M12 7v14M5 13a7 7 0 0 0 14 0M8 11h8"/>',
+  search: '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>', code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>', check: '<path d="m5 12 4.5 4.5L19 7"/>', globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.5 5.2 3.5 8.5s-1.1 6.1-3.5 8.5c-2.4-2.4-3.5-5.2-3.5-8.5s1.1-6.1 3.5-8.5z"/>', pin: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+};
+document.body.insertAdjacentHTML('afterbegin', '<svg width="0" height="0" style="position:absolute" aria-hidden="true">' + Object.entries(ICONS).map(([k, v]) => `<symbol id="i-${k}" viewBox="0 0 24 24">${v}</symbol>`).join('') + '</svg>');
+const ic = (n, s = 20, cls = '') => `<svg class="ic ${cls}" style="width:${s}px;height:${s}px"><use href="#i-${n}"/></svg>`;
+const COLORS = [['coral', 'Coral'], ['amber', 'Amber'], ['green', 'Green'], ['blue', 'Blue'], ['violet', 'Violet']];
+
+/* ---------- data ---------- */
+function chunk(text) { const out = []; let cur = []; for (const w of text.split(/\s+/)) { cur.push(w); if (/[,.;:?!]$/.test(w) || cur.length >= 3 || cur.join(' ').length >= 20) { out.push(cur.join(' ')); cur = []; } } if (cur.length) out.push(cur.join(' ')); return out; }
+const INIT = () => {
+  const s = {
+    msgs: [
+      { id: 'm1', role: 'user', text: 'Is mid-November a good time to visit Kyoto?' },
+      { id: 'm2', role: 'claude', web: 6, text: 'Yes. Mid to late November is peak autumn color in Kyoto, usually from about the 15th to the end of the month. It’s also the busiest stretch of the year, so book rooms now and expect lines at the famous temples.' },
+      { id: 'm3', role: 'user', text: 'Where can I see the leaves without huge crowds?' },
+      { id: 'm4', role: 'claude', web: 8, text: 'Go early or go out of the center. Tofuku-ji is packed by mid-morning, so arrive when the gates open at 8:30. For quieter color, take the bus to Ohara, where Sanzen-in sits in a mossy valley, or walk the lanes behind Shinnyo-do.', place: { name: 'Sanzen-in', sub: 'Temple · Ohara, Kyoto', meta: 'Opens 8:30 · ¥700 · 1 hr by bus' } },
+      { id: 'm5', role: 'user', text: 'How do I get to Kyoto from Osaka?' },
+      { id: 'm6', role: 'claude', web: 5, text: 'Take the JR Special Rapid from Osaka Station. It takes about 30 minutes and costs ¥580, with trains every 15 minutes or so. From Kyoto Station, buses and the subway reach most temples.' },
+      { id: 'm7', role: 'user', text: 'What should I eat while I’m there?' },
+      { id: 'm8', role: 'claude', web: 7, text: 'Try yudofu, a simmered tofu dish served around Nanzen-ji. Nishiki Market is good for snacks on the go, and Uji, about 20 minutes south by train, is the place for matcha sweets.' },
+    ],
+    pairs: [
+      { u: 'm1', c: 'm2', summary: 'Mid to late November is peak color and peak crowds. Book rooms now.', kw: ['peak color', 'Nov 15–30', 'book early'] },
+      { u: 'm3', c: 'm4', summary: 'Arrive at opening, or head to Ohara and Shinnyo-do instead.', kw: ['Tofuku-ji', 'Ohara', '8:30'] },
+      { u: 'm5', c: 'm6', summary: 'JR Special Rapid from Osaka Station, about 30 minutes, ¥580.', kw: ['JR Special Rapid', '30 min', '¥580'] },
+      { u: 'm7', c: 'm8', summary: 'Yudofu near Nanzen-ji, snacks at Nishiki, matcha in Uji.', kw: ['yudofu', 'Nishiki', 'Uji'] },
+    ],
+    branches: [
+      { id: 'b1', n: 1, quote: 'Tofuku-ji', src: 'm4', q: 'Is Tofuku-ji worth the crowds?', a: 'Yes, if you go at opening. The view from Tsutenkyo Bridge over a valley of maples is the reason people come. Photos aren’t allowed on the bridge in peak season, so shoot from the side corridors.', meta: '6 messages · 1 hr ago', subs: [{ quote: 'Tsutenkyo Bridge', q: 'Is there a separate ticket for the bridge?', meta: '3 messages · 50 min ago' }, { quote: 'peak season', q: 'Is a weekday really quieter?', meta: '2 messages · 45 min ago' }] },
+      { id: 'b2', n: 2, quote: 'yudofu', src: 'm8', q: 'Where’s a good yudofu place near Nanzen-ji?', a: 'Okutan, just outside Nanzen-ji, has served yudofu for centuries. It’s a set course, usually cash only, and the garden seats fill up by noon.', meta: '3 messages · 25 min ago', subs: [{ quote: 'cash only', q: 'Do most Kyoto restaurants take cards now?', meta: '2 messages · 20 min ago' }] },
+      { id: 'b3', n: 3, quote: 'JR Special Rapid', src: 'm6', q: 'Is the JR Pass worth it for one day trip?', a: 'No. A round trip on the Special Rapid is about ¥1,160. The cheapest JR Pass costs far more, so it only pays off if you’re also riding the shinkansen.', meta: '2 messages · 10 min ago', subs: [] },
+    ],
+    highlights: [], collapsed: false, block: null, mini: null, quote: null, nextN: 4, mainReplies: 0, tab: 'branches',
+  };
+  s.branches.forEach((b) => (b.msgs = [{ role: 'user', text: b.q }, { role: 'claude', text: b.a }]));
+  const m6 = chunk(s.msgs[5].text); const i = m6.findIndex((c) => /^It takes about/.test(c));
+  if (i >= 0) s.highlights.push({ id: 'h0', src: 'm6', idx: [i, i + 1, i + 2], color: 'blue', text: m6.slice(i, i + 3).join(' ').replace(/[,.]$/, ''), when: 'Yesterday' });
+  return s;
+};
+let S = INIT();
+
+/* ---------- elements ---------- */
+const scr = $('#screen'), main = $('#main'), thread = $('#thread'), cards = $('#cards'), tray = $('#tray'), composer = $('#composer'), cinput = $('#cinput'), mini = $('#mini'), goo = $('#gooLayer'), blobA = $('#blobA'), blobB = $('#blobB'), dim = $('#dim'), branchesEl = $('#branches'), subEl = $('#sub'), nchat = $('#nchat'), finger = $('#finger'), caption = $('#caption');
+let SC = 1;
+const SH = () => scr.offsetHeight;
+function rel(el) { const r = el.getBoundingClientRect(), s = scr.getBoundingClientRect(); return { x: (r.left - s.left) / SC, y: (r.top - s.top) / SC, w: r.width / SC, h: r.height / SC }; }
+const center = (el) => { const r = rel(el); return { x: r.x + r.w / 2, y: r.y + r.h / 2 }; };
+function to(el, props, ms, easing = 'cubic-bezier(.2,.9,.25,1)', delay = 0) {
+  const cs = getComputedStyle(el); const from = {}; for (const k in props) from[k] = cs[k];
+  const a = el.animate([from, props], { duration: D(ms), delay: D(delay), easing, fill: 'forwards' });
+  return a.finished.then(() => { Object.assign(el.style, props); a.cancel(); }).catch(() => {});
+}
+const msgById = (id) => S.msgs.find((m) => m.id === id);
+const msgEl = (id) => thread.querySelector(`[data-id="${id}"]`);
+$('#swatches').innerHTML = COLORS.map(([c, n]) => `<button class="sw c-${c}" data-color="${c}" aria-label="Save in ${n}"></button>`).join('');
+
+/* ---------- logging / tasks ---------- */
+const T0 = performance.now(); const LOG = [];
+const TASKS = [
+  { text: 'Collapse the conversation, then jump back to the question about getting there from Osaka.', match: (e, d) => e === 'Jumped from card' && /osaka/i.test(d) },
+  { text: 'Ask a side question about “packed by mid-morning” without leaving the chat.', match: (e) => e === 'Mini chat message sent' },
+  { text: 'Keep that side question to come back to later.', match: (e) => e === 'Saved as branch' },
+  { text: 'Open one of your branches and ask it a follow-up question.', match: (e) => e === 'Branch message sent' },
+  { text: 'Find your branches and merge one into the main chat.', match: (e) => e === 'Branch merged' },
+  { text: 'Save a phrase in a color, then find it again later.', match: (e) => e === 'Saved highlight opened' },
+  { text: 'Quote part of an answer in your next message to Claude.', match: (e, d) => e === 'Main message sent' && /quote/.test(d) },
+];
+const done = {};
+function log(evt, detail = '') {
+  if (MODE !== 'test') return;
+  const t = ((performance.now() - T0) / 1000).toFixed(1);
+  LOG.push({ t, evt, detail });
+  TASKS.forEach((k, i) => { if (!done[i] && k.match(evt, detail)) done[i] = t; });
+  renderRail();
+}
+
+/* ---------- rendering ---------- */
+function anchored(m) {
+  let html;
+  const hs = S.highlights.filter((h) => h.src === m.id);
+  if (hs.length) {
+    const ch = chunk(m.text); const col = ch.map(() => null);
+    hs.forEach((h) => h.idx.forEach((i) => (col[i] = h)));
+    const parts = []; let k = 0;
+    while (k < ch.length) { if (!col[k]) { parts.push(esc(ch[k])); k++; continue; } const h = col[k]; const grp = []; while (k < ch.length && col[k] === h) grp.push(esc(ch[k++])); parts.push(`<mark class="hl c-${h.color}" data-h="${h.id}">${grp.join(' ')}</mark>`); }
+    html = parts.join(' ');
+  } else html = esc(m.text);
+  S.msgs.filter((x) => x.role === 'merged' && x.src === m.id).forEach((x) => {
+    const q = esc(x.quote.split(' … ')[0].replace(/[.,;:]$/, '')); const i = html.indexOf(q);
+    if (i >= 0 && q.length > 2) html = html.slice(0, i) + `<mark class="mrg" data-m="${x.id}">${q}</mark>` + html.slice(i + q.length);
+  });
+  S.branches.filter((b) => b.src === m.id && !b.gone).forEach((b) => {
+    const q = esc(b.quote); const i = html.indexOf(q);
+    if (i >= 0) html = html.slice(0, i) + `<span class="anchor" data-b="${b.id}">${q}<sup>${b.n}</sup></span>` + html.slice(i + q.length);
+  });
+  return html;
+}
+const actionsHTML = `<div class="actions">${['copy', 'play', 'thumbs-up', 'thumbs-down', 'retry'].map((n) => ic(n, 19)).join('')}</div>`;
+function msgHTML(m) {
+  if (m.role === 'user') return `<div class="msg msg-user" data-id="${m.id}"><div class="bubble">${m.quote ? `<div class="bq">${esc(short(m.quote, 80))}</div>` : ''}${esc(m.text)}</div></div>`;
+  if (m.role === 'merged') { const msgs = m.msgs && m.msgs.length ? m.msgs : [m.q && { role: 'user', text: m.q }, m.a && { role: 'claude', text: m.a }].filter(Boolean); const n = msgs.length;
+    return `<div class="msg merged" data-id="${m.id}" role="button" tabindex="0" aria-expanded="false"><div class="ml">${ic('merge', 14)}Merged from a side question</div><div class="mq">“${esc(short(m.quote, 70))}”</div>
+    <div class="msum">${m.q ? `<div class="mqq">${esc(m.q)}</div>` : ''}${m.a ? `<div class="ma">${esc(m.a)}</div>` : ''}</div>
+    <div class="mthr">${msgs.map((x) => (x.role === 'user' ? `<div class="mt-u">${esc(x.text)}</div>` : `<div class="mt-a">${esc(x.text)}</div>`)).join('')}</div>
+    ${n ? `<div class="mfoot"><span class="more">Show full side conversation · ${n} message${n > 1 ? 's' : ''}</span><span class="less">Collapse</span>${ic('chevron-down', 14)}</div>` : ''}</div>`; }
+  return `<div class="msg msg-claude" data-id="${m.id}">${m.web ? `<div class="web">${ic('globe', 14)}Searched the web<span>·</span>${m.web} sources${ic('chevron-right', 13)}</div>` : ''}<div class="ctext">${m.typing ? '<span class="dots"><i></i><i></i><i></i></span>' : anchored(m)}</div>${m.place && !m.typing ? `<div class="place"><div class="pimg"><span>${ic('pin', 14)}${esc(m.place.sub.split(' · ')[1] || '')}</span></div><div class="pinfo"><b>${esc(m.place.name)}</b><small>${esc(m.place.sub)}</small><small>${esc(m.place.meta)}</small></div></div>` : ''}${m.typing ? '' : actionsHTML}</div>`;
+}
+function renderThread() { const st = thread.scrollTop; thread.innerHTML = S.msgs.map(msgHTML).join(''); thread.scrollTop = st; }
+function updateText(id) { const el = msgEl(id); if (el) el.querySelector('.ctext').innerHTML = anchored(msgById(id)); }
+function updateCount() { const n = S.branches.filter((b) => !b.gone).length; $('#branchCount').textContent = n; }
+const padTop = () => parseFloat(getComputedStyle(thread).paddingTop) || 128;
+function scrollToMsg(id, top) { const el = msgEl(id); if (top === undefined) top = padTop() + 4; else top = top - 128 + padTop(); if (el) thread.scrollTop = Math.max(0, el.offsetTop - top); }
+function setPill() { $('#pillLabel').textContent = S.collapsed ? 'Expand' : 'Collapse'; $('#pillIcon use').setAttribute('href', S.collapsed ? '#i-expand' : '#i-collapse'); }
+
+/* ---------- toast ---------- */
+let toastTimer = 0, toastFn = null;
+function toast(text, btn, fn) {
+  $('#toastText').textContent = text; const b = $('#toastBtn'); b.hidden = !btn; b.textContent = btn || ''; toastFn = fn || null;
+  const t = $('#toast'); t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), D(btn ? 4200 : 2400));
+}
+$('#toastBtn').addEventListener('click', () => { $('#toast').classList.remove('show'); const f = toastFn; toastFn = null; f && f(); });
+
+/* ---------- liquid helpers ---------- */
+function setBlob(b, r, rad) { b.getAnimations().forEach((a) => a.cancel()); Object.assign(b.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px', borderRadius: rad + 'px', opacity: '1' }); }
+function gooOn(ms = 150) { goo.hidden = false; goo.getAnimations().forEach((a) => a.cancel()); goo.animate([{ opacity: 0 }, { opacity: 0.92 }], { duration: D(ms), fill: 'forwards' }); }
+async function gooOff(ms = 260) { const a = goo.animate([{ opacity: 0.92 }, { opacity: 0 }], { duration: D(ms), fill: 'forwards' }); await a.finished.catch(() => {}); goo.getAnimations().forEach((x) => x.cancel()); goo.hidden = true; blobA.style.opacity = blobB.style.opacity = '1'; }
+
+/* ---------- block highlighting ---------- */
+function enterBlock(id, pt) {
+  if (S.block) exitBlock(false);
+  if (S.collapsed) return;
+  const m = msgById(id); const el = msgEl(id); if (!m || !el) return;
+  const chunks = chunk(m.text); const ct = el.querySelector('.ctext');
+  ct.classList.remove('pressing'); ct.classList.add('blocks');
+  ct.innerHTML = chunks.map((c, i) => `<span class="blk" data-i="${i}">${esc(c)}</span>`).join(' ');
+  thread.classList.add('dimmed', 'blockpad'); el.classList.add('focus');
+  S.block = { id, chunks, sel: new Set() };
+  const blks = $$('.blk', ct);
+  blks.forEach((b) => { const c = center(b); const d = pt ? Math.hypot(c.x - pt.x, c.y - pt.y) : 0; b.style.transitionDelay = D(d * 0.9) + 'ms'; });
+  requestAnimationFrame(() => blks.forEach((b) => b.classList.add('on')));
+  setTimeout(() => blks.forEach((b) => (b.style.transitionDelay = '')), D(700));
+  el.animate([{ transform: 'scale(1)' }, { transform: 'scale(.985)' }, { transform: 'scale(1)' }], { duration: D(260), easing: 'ease-out' });
+  showTray(); log('Block mode', id);
+}
+function exitBlock(anim = true) {
+  if (!S.block) return; const { id } = S.block; const el = msgEl(id);
+  S.block = null; thread.classList.remove('dimmed', 'blockpad');
+  if (el) { el.classList.remove('focus'); const ct = el.querySelector('.ctext'); ct.classList.remove('blocks'); ct.innerHTML = anchored(msgById(id)); if (anim) ct.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: D(260) }); }
+  hideTray();
+}
+function paintSel() { const el = msgEl(S.block.id); $$('.blk', el).forEach((b) => b.classList.toggle('sel', S.block.sel.has(+b.dataset.i))); updateTray(); }
+function toggleBlock(i) { if (!S.block) return; const s = S.block.sel; s.has(i) ? s.delete(i) : s.add(i); paintSel(); log('Block ' + (s.has(i) ? 'selected' : 'cleared'), S.block.chunks[i]); }
+function selectAll() { if (!S.block) return; const all = S.block.sel.size === S.block.chunks.length; S.block.sel = all ? new Set() : new Set(S.block.chunks.map((_, i) => i)); paintSel(); log(all ? 'Selection cleared' : 'Selected all'); }
+function selectionText() { if (!S.block) return ''; const idx = [...S.block.sel].sort((a, b) => a - b); let out = ''; idx.forEach((i, k) => { out += (k && idx[k - 1] !== i - 1 ? ' … ' : k ? ' ' : '') + S.block.chunks[i]; }); return out; }
+
+/* ---------- tray ---------- */
+function placeTray() { tray.style.bottom = SH() - composer.offsetTop + 12 + 'px'; }
+// Keep the selected answer clear of the tray: scroll it up so it sits between the top bar and the tray.
+function keepVisible(smooth = true) {
+  if (!S.block || tray.hidden) return; const el = msgEl(S.block.id); if (!el) return;
+  const ct = el.querySelector('.ctext'); const r = rel(ct);
+  const top = rel($('.topbar')).y + 64, bottom = SH() - (parseFloat(tray.style.bottom) || 0) - tray.offsetHeight - 14;
+  let delta = 0;
+  if (r.h <= bottom - top) { if (r.y + r.h > bottom) delta = r.y + r.h - bottom; else if (r.y < top) delta = r.y - top; }
+  else delta = r.y - top;
+  if (Math.abs(delta) > 2) thread.scrollBy({ top: delta, behavior: smooth && !RM ? 'smooth' : 'auto' });
+}
+function updateTray() {
+  if (!S.block) return; const n = S.block.sel.size; const q = selectionText();
+  $('#trayCount').textContent = n ? `${n} block${n > 1 ? 's' : ''} selected` : 'Tap blocks to select';
+  $('#selAll').textContent = n === S.block.chunks.length ? 'Clear' : 'Select all';
+  const tt = $('#trayText'); tt.classList.toggle('empty', !n);
+  tt.innerHTML = n ? q.split(/\s+/).map((w) => `<span class="tw">${esc(w)}</span>`).join(' ') : 'Tap phrases, or select the whole paragraph.';
+  tray.classList.toggle('nosel', !n); placeTray(); requestAnimationFrame(() => keepVisible());
+}
+function showTray() {
+  updateTray();
+  if (tray.hidden) { tray.hidden = false; Object.assign(tray.style, { opacity: '', filter: '', transform: '' }); placeTray(); tray.animate([{ opacity: 0, transform: 'translateY(18px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: D(380), easing: 'cubic-bezier(.2,1.3,.3,1)' }); }
+}
+function hideTray() { if (tray.hidden) return; const a = tray.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(12px)' }], { duration: D(200) }); a.finished.then(() => { if (!S.block) tray.hidden = true; }).catch(() => {}); }
+function setTrayDrag(dy) { tray.style.transform = `translateY(${dy < 0 ? -Math.pow(-dy, 0.85) : Math.pow(dy, 0.85)}px)`; $('#hintUp').classList.toggle('active', dy < -56); $('#hintDown').classList.toggle('active', dy > 56); }
+function resetTrayDrag() { $('#hintUp').classList.remove('active'); $('#hintDown').classList.remove('active'); }
+
+/* ---------- save + color code ---------- */
+function saveHighlight(color = 'coral', tok) {
+  if (!S.block || !S.block.sel.size) return;
+  const h = { id: 'h' + Date.now(), src: S.block.id, idx: [...S.block.sel].sort((a, b) => a - b), color, text: selectionText(), when: 'Just now' };
+  S.highlights = S.highlights.filter((x) => !(x.src === h.src && x.idx.some((i) => h.idx.includes(i))));
+  S.highlights.push(h); log('Highlight saved', color + ' · ' + h.text);
+  exitBlock(false); updateText(h.src);
+  const mk = msgEl(h.src).querySelector(`mark[data-h="${h.id}"]`); if (mk) mk.classList.add('flash');
+  toast('Saved to Highlights', 'View', () => openBranches('saved'));
+}
+
+/* ---------- droplet: tray + prompt bar fuse into the mini chat ---------- */
+function renderMini() {
+  const m = S.mini;
+  mini.innerHTML = `<div class="grab" id="grab"><i></i></div>
+  <div class="mhead">${ic('anchor', 20, 'a')}<div><b>Mini chat</b><small>Anchored to your selection</small></div><button class="gbtn sm glass" id="miniClose" aria-label="Close">${ic('close', 18)}</button></div>
+  <div class="mquote"><span class="bar"></span><p>${esc(m.quote)}</p></div>
+  <div class="mthread" id="mthread">${m.msgs.map((x) => (x.role === 'user' ? `<div class="bubble">${esc(x.text)}</div>` : `<div class="ans">${esc(x.text)}</div>`)).join('')}</div>
+  <div class="mdone"><small>When you’re done</small><div class="chips">
+    <button class="chip primary" data-mact="merge">${ic('merge', 17)}Merge into main</button>
+    <button class="chip" data-mact="branch">${ic('branch', 17)}Make a branch</button>
+    <button class="chip" data-mact="newchat">${ic('new-chat', 17)}New chat</button>
+    <button class="chip" data-mact="dissolve">${ic('dissolve', 17)}Dissolve</button></div></div>
+  <form class="mcomp" id="mform" autocomplete="off"><input id="minput" placeholder="Ask about this selection" aria-label="Ask about this selection"><button class="cbtn solid" aria-label="Send">${ic('arrow-up', 18)}</button></form>`;
+}
+async function toMini(tok, via = 'swipe') {
+  if (!S.block || !S.block.sel.size || S.mini) return;
+  const quote = selectionText(); const src = S.block.id;
+  log('Mini chat opened', via);
+  const tr = rel(tray), cr = rel(composer);
+  S.mini = { quote, src, msgs: [] }; renderMini();
+  mini.hidden = false; Object.assign(mini.style, { visibility: 'hidden', opacity: '0', transform: 'none', filter: 'none' });
+  const mh = mini.offsetHeight; const mr = rel(mini);
+  setBlob(blobA, tr, 26); setBlob(blobB, cr, 30); gooOn(150);
+  tray.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(150), fill: 'forwards' });
+  composer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(150), fill: 'forwards' });
+  await wait(150, tok);
+  tray.getAnimations().forEach((a) => a.cancel()); composer.getAnimations().forEach((a) => a.cancel());
+  tray.hidden = true; tray.style.transform = ''; resetTrayDrag(); composer.style.visibility = 'hidden';
+  exitBlock(true); dim.classList.add('on');
+  // 1. the tray drips down into the prompt bar; the bar swells up to meet it
+  to(blobA, { top: cr.y - tr.h * 0.5 + 'px', left: cr.x + cr.w * 0.05 + 'px', width: cr.w * 0.9 + 'px' }, 280, 'cubic-bezier(.55,0,.8,.3)');
+  to(blobB, { top: cr.y - 16 + 'px', height: cr.h + 16 + 'px' }, 280, 'cubic-bezier(.55,0,.8,.3)');
+  await wait(260, tok);
+  // 2. one droplet swells into the card
+  const p = { left: mr.x + 'px', top: mr.y + 'px', width: mr.w + 'px', height: mh + 'px', borderRadius: '46px' };
+  to(blobA, p, 520, 'cubic-bezier(.2,1.22,.32,1)'); to(blobB, p, 520, 'cubic-bezier(.2,1.22,.32,1)', 40);
+  await wait(430, tok);
+  // 3. glass card resolves out of the droplet
+  Object.assign(mini.style, { visibility: '', opacity: '1' });
+  mini.animate([{ opacity: 0, transform: 'scale(.985)' }, { opacity: 1, transform: 'none' }], { duration: D(260), easing: 'ease-out' });
+  [...mini.children].forEach((c, i) => c.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: D(320), delay: D(60 + i * 40), easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }));
+  await gooOff(260);
+  if (tok === undefined && matchMedia('(pointer:fine)').matches) $('#minput').focus({ preventScroll: true });
+}
+function showComposer() {
+  composer.style.visibility = ''; composer.style.opacity = '';
+  composer.animate([{ opacity: 0, transform: 'translateY(26px) scale(.94)' }, { opacity: 1, transform: 'none' }], { duration: D(460), easing: 'cubic-bezier(.2,1.3,.3,1)' });
+}
+function reopenMini(m) {
+  S.mini = m; renderMini(); mini.hidden = false; Object.assign(mini.style, { visibility: '', opacity: '1', transform: 'none', filter: 'none' });
+  composer.style.visibility = 'hidden'; dim.classList.add('on');
+  mini.animate([{ opacity: 0, transform: 'translateY(40px)' }, { opacity: 1, transform: 'none' }], { duration: D(380), easing: 'cubic-bezier(.2,1.2,.3,1)' });
+  log('Undo dissolve');
+}
+async function stream(el, text, tok) { el.textContent = ''; const words = text.split(' '); for (let i = 0; i < words.length; i++) { el.textContent += (i ? ' ' : '') + words[i]; if (i % 2 === 0) await wait(28, tok); } }
+async function sendMini(text, tok) {
+  if (!S.mini || !text.trim()) return; const m = S.mini;
+  m.msgs.push({ role: 'user', text }); log('Mini chat message sent', text);
+  const th = $('#mthread'); th.insertAdjacentHTML('beforeend', `<div class="bubble">${esc(text)}</div>`);
+  th.lastElementChild.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: D(260) });
+  th.insertAdjacentHTML('beforeend', '<div class="ans"><span class="dots"><i></i><i></i><i></i></span></div>'); const ans = th.lastElementChild; th.scrollTop = th.scrollHeight;
+  await wait(700, tok);
+  const reply = miniReply(m.quote, text); m.msgs.push({ role: 'claude', text: reply });
+  await stream(ans, reply, tok); th.scrollTop = th.scrollHeight;
+}
+function miniReply(q, ask) {
+  const s = (q + ' ' + ask).toLowerCase(); const k = ask.toLowerCase();
+  if (/plan|itinerary|schedule|morning around/.test(k)) return 'Try this: Tofuku-ji at 8:30 and out by 10. Take the JR one stop to Inari for the lower gates of Fushimi Inari, then an early lunch near Kyoto Station before the crowds peak.';
+  if (/saturday|sunday|weekend/.test(k)) return 'Then be there before the gates open. Weekend lines start forming early, and tour groups arrive from mid-morning.';
+  if (/simpl|short|tl;?dr|summar/.test(k)) return 'In short: go at opening time, or go somewhere smaller.';
+  if (/book|ticket|slot|reserv/.test(s)) return 'There’s no timed entry. Tickets are sold at the gate, so the only way to skip the line is to arrive before it forms.';
+  if (/weekday|quiet|crowd|busy|packed|mid-morning|gate|open|8:30|early/.test(s)) return 'Yes. Weekday mornings are the calmest. Crowds build once tour groups arrive, usually from about 10, and stay heavy until mid-afternoon.';
+  if (/tofuku|bridge|tsutenkyo|peak season/.test(s)) return 'The Tsutenkyo Bridge view over the maple valley is the highlight. Go there first, then see the gardens.';
+  if (/ohara|sanzen|shinnyo|moss/.test(s)) return 'Ohara is about an hour from Kyoto Station by Kyoto Bus. Pair Sanzen-in with Hosen-in next door and you can do both in a morning.';
+  if (/jr|rapid|train|osaka|station|pass|minutes|¥/.test(s)) return 'The Special Rapid needs no reservation. Tap in with an IC card like ICOCA and take the next one.';
+  if (/cash|card|pay/.test(s)) return 'Cards are much more common than they were, but small temples, food stalls and older restaurants are often cash only. Carry some yen.';
+  if (/yudofu|tofu|eat|food|nishiki|matcha|uji/.test(s)) return 'Yudofu is tofu simmered in kelp broth, dipped in soy and citrus. It’s mild and warming, good for a cold November day.';
+  if (/peak|color|leaves|november|book/.test(s)) return 'Color usually peaks in the last two weeks of November, but it shifts year to year. Check a leaf forecast about a week before you go.';
+  return 'Short version: that phrase is the key detail. Ask a follow-up and I’ll dig in here without changing your main chat.';
+}
+
+/* ---------- mini chat exits ---------- */
+async function closeMini(kind, tok) {
+  const m = S.mini; if (!m) return; const r = rel(mini);
+  const q = m.msgs.find((x) => x.role === 'user'), a = m.msgs.find((x) => x.role === 'claude');
+  if (kind === 'dissolve') {
+    // the card condenses into a droplet that falls back into the prompt bar
+    log('Mini chat dissolved');
+    const cr = rel(composer); const cx = cr.x + cr.w / 2;
+    setBlob(blobA, r, 46); setBlob(blobB, { x: cx - 30, y: cr.y + cr.h / 2 - 18, w: 60, h: 36 }, 18); blobB.style.opacity = '0'; gooOn(120);
+    mini.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(160), fill: 'forwards' });
+    dim.classList.remove('on');
+    await wait(120, tok);
+    await to(blobA, { left: cx - 42 + 'px', top: r.y + r.h * 0.42 + 'px', width: '84px', height: '84px', borderRadius: '42px' }, 420, 'cubic-bezier(.5,0,.25,1)');
+    blobB.style.opacity = '1';
+    to(blobA, { left: cx - 26 + 'px', top: cr.y - 34 + 'px', width: '52px', height: '56px', borderRadius: '26px' }, 300, 'cubic-bezier(.6,0,.9,.4)');
+    to(blobB, { left: cr.x + 'px', top: cr.y + 'px', width: cr.w + 'px', height: cr.h + 'px', borderRadius: '30px' }, 520, 'cubic-bezier(.2,1.25,.3,1)', 120);
+    await wait(260, tok);
+    to(blobA, { left: cx - 20 + 'px', top: cr.y + 6 + 'px', width: '40px', height: '30px' }, 220, 'ease-out');
+    await wait(330, tok);
+    finishMini(true, false); composer.style.visibility = ''; composer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D(200) });
+    await gooOff(240);
+    toast('Mini chat dissolved', 'Undo', () => reopenMini(m));
+  } else if (kind === 'newchat') {
+    log('Mini chat moved to new chat');
+    await openNewChat(m, r, tok);
+  } else if (kind === 'merge') {
+    log('Mini chat merged into main');
+    const srcEl = msgEl(m.src); scrollToMsg(m.src, 150);
+    const sr = rel(srcEl); const tx = sr.x + sr.w / 2 - (r.x + r.w / 2), ty = Math.min(sr.y + sr.h, SH() - 250) - (r.y + r.h / 2);
+    to(mini, { transform: `translate(${tx}px,${ty}px) scale(.12)`, opacity: '0' }, 520, 'cubic-bezier(.6,0,.3,1)');
+    dim.classList.remove('on');
+    await wait(360, tok);
+    insertMerged(m.src, { quote: m.quote, q: q ? q.text : '', a: a ? a.text : '', msgs: m.msgs.slice() });
+    await wait(200, tok); finishMini(true);
+    toast('Merged into the main chat');
+  } else if (kind === 'branch') {
+    log('Saved as branch', m.quote);
+    const et = rel($('#edgeTab'));
+    setBlob(blobA, r, 46); blobB.style.opacity = '0'; gooOn(10);
+    mini.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(160), fill: 'forwards' });
+    dim.classList.remove('on');
+    await wait(120, tok);
+    await to(blobA, { left: et.x - 8 + 'px', top: et.y + et.h / 2 - 22 + 'px', width: '44px', height: '44px', borderRadius: '22px' }, 560, 'cubic-bezier(.5,0,.15,1)');
+    await to(blobA, { left: et.x + 16 + 'px', top: et.y + et.h / 2 - 8 + 'px', width: '16px', height: '16px', opacity: '0' }, 200, 'ease-in');
+    const b = { id: 'b' + S.nextN, n: S.nextN++, quote: m.quote, src: m.src, q: q ? q.text : 'Saved highlight', a: a ? a.text : '', meta: `${m.msgs.length} messages · just now`, subs: [], msgs: m.msgs.slice() };
+    S.branches.push(b); updateCount(); updateText(m.src);
+    $('#edgeTab').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: D(420), easing: 'cubic-bezier(.2,1.6,.4,1)' });
+    goo.getAnimations().forEach((x) => x.cancel()); goo.hidden = true; blobB.style.opacity = '1';
+    finishMini();
+    toast(`Saved as branch ${b.n}`, 'View', () => openBranches());
+  }
+}
+function finishMini(skipDim, withComposer = true) {
+  mini.getAnimations().forEach((a) => a.cancel()); mini.hidden = true; Object.assign(mini.style, { opacity: '', filter: '', transform: '', visibility: '' });
+  S.mini = null; if (!skipDim) dim.classList.remove('on'); if (withComposer) showComposer();
+}
+function insertMerged(src, d) {
+  const id = 'x' + Math.random().toString(36).slice(2, 7); const m = { id, role: 'merged', src, ...d };
+  let idx = S.msgs.findIndex((x) => x.id === src); while (S.msgs[idx + 1] && S.msgs[idx + 1].role === 'merged') idx++;
+  S.msgs.splice(idx + 1, 0, m);
+  const after = msgEl(S.msgs[idx].id); after.insertAdjacentHTML('afterend', msgHTML(m)); const el = msgEl(id);
+  const h = el.offsetHeight;
+  el.animate([{ height: '0px', opacity: 0, marginBottom: '0px', paddingTop: '0px', paddingBottom: '0px' }, { height: h + 'px', opacity: 1 }], { duration: D(420), easing: 'cubic-bezier(.2,1,.3,1)' });
+  el.classList.add('pulse'); updateText(src);
+  const mk = msgEl(src) && msgEl(src).querySelector(`mark.mrg[data-m="${id}"]`); if (mk) { mk.classList.add('flash'); }
+  return id;
+}
+
+
+/* ---------- new chat: the mini chat card expands into a full conversation ---------- */
+function ncMsgs(msgs) { return msgs.map((x) => (x.role === 'user' ? `<div class="msg-user"><div class="bubble">${esc(x.text)}</div></div>` : `<div class="msg-claude"><div class="ctext">${esc(x.text)}</div></div>`)).join(''); }
+async function openNewChat(m, r, tok) {
+  const src = S.pairs.find((p) => p.c === m.src); const from = src ? msgById(src.u).text : 'your chat';
+  S.nc = { quote: m.quote, msgs: m.msgs.slice(), from };
+  nchat.innerHTML = `<div class="scroller withbar" id="ncthr"><div class="ncctx"><span class="bar"></span><div><small>Started from a selection in “${esc(short(from, 40))}”</small><p>${esc(m.quote)}</p></div></div><div id="ncmsgs">${ncMsgs(S.nc.msgs)}</div></div>
+  <div class="phead"><button class="gbtn glass sheen" id="ncBack" aria-label="Back to the original chat">${ic('chevron-left')}</button><div class="tt"><b>${esc(short((m.msgs.find((x) => x.role === 'user') || { text: m.quote }).text, 30))}</b><small>New chat</small></div><button class="gbtn glass sheen" data-noop aria-label="More">${ic('more')}</button></div>
+  <form class="bcomp glass strong sheen" id="ncform" autocomplete="off"><input id="ncinput" placeholder="Reply to Claude" aria-label="Reply in the new chat"><button class="cbtn solid" aria-label="Send">${ic('arrow-up', 18)}</button></form>`;
+  const W = scr.offsetWidth, H = SH(); const rad = parseFloat(getComputedStyle(scr).borderTopLeftRadius) || 0;
+  nchat.hidden = false; nchat.style.transform = 'none';
+  const from_ = `inset(${r.y}px ${W - r.x - r.w}px ${H - r.y - r.h}px ${r.x}px round 46px)`;
+  nchat.animate([{ clipPath: from_ }, { clipPath: `inset(0px 0px 0px 0px round ${rad}px)` }], { duration: D(620), easing: 'cubic-bezier(.2,.9,.22,1)' });
+  mini.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(1.03)' }], { duration: D(220), fill: 'forwards' });
+  [...nchat.querySelectorAll('.phead,.ncctx,#ncmsgs,.bcomp')].forEach((el, i) => el.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: D(380), delay: D(220 + i * 60), easing: 'cubic-bezier(.2,.9,.25,1)', fill: 'backwards' }));
+  await wait(260, tok); finishMini(false, true);
+  await wait(360, tok);
+  if (tok === undefined && matchMedia('(pointer:fine)').matches) $('#ncinput').focus({ preventScroll: true });
+}
+async function sendNew(text, tok) {
+  if (!S.nc || !text.trim()) return; log('New chat message sent', text);
+  S.nc.msgs.push({ role: 'user', text }); const box = $('#ncmsgs'); const sc = $('#ncthr');
+  box.insertAdjacentHTML('beforeend', `<div class="msg-user"><div class="bubble">${esc(text)}</div></div><div class="msg-claude"><div class="ctext"><span class="dots"><i></i><i></i><i></i></span></div></div>`);
+  sc.scrollTo({ top: sc.scrollHeight, behavior: RM ? 'auto' : 'smooth' });
+  await wait(700, tok); const reply = miniReply(S.nc.quote, text); S.nc.msgs.push({ role: 'claude', text: reply });
+  await stream(box.lastElementChild.querySelector('.ctext'), reply, tok); sc.scrollTo({ top: sc.scrollHeight, behavior: RM ? 'auto' : 'smooth' });
+}
+async function closeNewChat(tok) {
+  if (nchat.hidden) return; log('Back from new chat');
+  const a = nchat.animate([{ transform: 'none' }, { transform: 'translateX(100%)' }], { duration: D(400), easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+  await a.finished.catch(() => {}); a.cancel(); nchat.hidden = true; S.nc = null;
+  toast('Back in your main chat. The new chat is in your sidebar.');
+}
+nchat.addEventListener('click', (e) => { if (e.target.closest('#ncBack')) closeNewChat(); });
+nchat.addEventListener('submit', (e) => { e.preventDefault(); const i = $('#ncinput'); const v = i.value; i.value = ''; sendNew(v); });
+
+/* ---------- drop merge: tray melts into the prompt bar, its words flow in ---------- */
+async function toPrompt(tok, via = 'swipe') {
+  if (!S.block || !S.block.sel.size) return;
+  const quote = selectionText(); log('Selection added to prompt', via);
+  const words = $$('.tw', tray); const tr = rel(tray), cr = rel(composer);
+  const flies = words.map((w) => { const r = rel(w); const f = document.createElement('span'); f.className = 'fly'; f.textContent = w.textContent; f.style.left = r.x + 'px'; f.style.top = r.y + 'px'; scr.appendChild(f); return { f, r }; });
+  setBlob(blobA, tr, 26); setBlob(blobB, cr, 30); gooOn(140);
+  tray.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(140), fill: 'forwards' });
+  composer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(140), fill: 'forwards' });
+  await wait(140, tok);
+  tray.getAnimations().forEach((a) => a.cancel()); tray.hidden = true; Object.assign(tray.style, { transform: '' }); resetTrayDrag();
+  composer.getAnimations().forEach((a) => a.cancel()); composer.style.visibility = 'hidden';
+  // lay out the final prompt bar (invisible) so we know where the quote lands
+  $('#qchip').hidden = false; $('#qtext').textContent = quote; $('#qtext').style.opacity = '0';
+  const fr = rel(composer); const qr = rel($('#qtext'));
+  // 1. the tray drop stretches down and touches the bar
+  to(blobA, { top: cr.y - tr.h * 0.42 + 'px', height: tr.h * 0.7 + 'px', left: cr.x + cr.w * 0.1 + 'px', width: cr.w * 0.8 + 'px', borderRadius: '30px' }, 300, 'cubic-bezier(.55,0,.85,.35)');
+  const n = flies.length;
+  flies.forEach(({ f, r }, i) => {
+    const tx = qr.x + Math.min(qr.w - 40, (i / Math.max(1, n - 1)) * Math.min(qr.w - 40, n * 22)); const ty = qr.y + (i % 2) * 6;
+    const dx = tx - r.x, dy = ty - r.y;
+    f.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${dx * 0.5}px,${dy * 0.5 + 10}px) scale(.9)`, opacity: 1, offset: 0.5 }, { transform: `translate(${dx}px,${dy}px) scale(.74)`, opacity: 0 }], { duration: D(760), delay: D(60 + i * 26), easing: 'cubic-bezier(.5,0,.25,1)', fill: 'forwards' });
+  });
+  await wait(270, tok);
+  // 2. both drops become one bar, a little taller to hold the quote
+  const p = { left: fr.x + 'px', top: fr.y + 'px', width: fr.w + 'px', height: fr.h + 'px', borderRadius: '30px' };
+  to(blobA, p, 520, 'cubic-bezier(.2,1.25,.3,1)'); to(blobB, p, 520, 'cubic-bezier(.2,1.25,.3,1)', 30);
+  await wait(Math.max(420, 300 + n * 26), tok);
+  composer.style.visibility = ''; composer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D(220) });
+  $('#qtext').style.opacity = '1'; $('#qtext').animate([{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }, { opacity: 1, clipPath: 'inset(0 0 0 0)' }], { duration: D(380), easing: 'ease-out' });
+  gooOff(260); await wait(160, tok);
+  flies.forEach(({ f }) => f.remove());
+  S.quote = quote; exitBlock(true);
+  cinput.placeholder = 'Ask about this…';
+  if (tok === undefined && matchMedia('(pointer:fine)').matches) cinput.focus({ preventScroll: true });
+}
+function clearQuote() { S.quote = null; $('#qchip').hidden = true; cinput.placeholder = 'Reply to Claude'; }
+
+/* ---------- main chat send ---------- */
+async function sendMain(text, tok) {
+  if (!text.trim()) return; exitBlock(false);
+  const u = { id: 'u' + Date.now(), role: 'user', text, quote: S.quote }; const quote = S.quote;
+  log('Main message sent', quote ? 'with quote' : 'plain');
+  clearQuote(); cinput.value = ''; updateSend();
+  S.msgs.push(u); thread.insertAdjacentHTML('beforeend', msgHTML(u));
+  const c = { id: 'c' + Date.now(), role: 'claude', text: '', typing: true }; S.msgs.push(c); thread.insertAdjacentHTML('beforeend', msgHTML(c));
+  thread.scrollTo({ top: thread.scrollHeight, behavior: RM ? 'auto' : 'smooth' });
+  await wait(800, tok);
+  const reply = quote ? `About “${short(quote, 60)}”: ${miniReply(quote, text)}` : ['Good plan. Keep the first morning for Tofuku-ji at opening, then spend the afternoon somewhere quieter like Ohara.', 'Check a leaf forecast about a week before you go. Color can shift by a week or more from year to year.', 'That works. Load an IC card like ICOCA and use it for the train, buses and the subway.'][S.mainReplies++ % 3];
+  c.text = reply; c.typing = false; const el = msgEl(c.id);
+  el.outerHTML = msgHTML({ ...c, text: '' }); const ct = msgEl(c.id).querySelector('.ctext');
+  await stream(ct, reply, tok); ct.innerHTML = anchored(c);
+  thread.scrollTo({ top: thread.scrollHeight, behavior: RM ? 'auto' : 'smooth' });
+}
+function updateSend() { $('#csend').disabled = !cinput.value.trim(); }
+
+/* ---------- collapse / expand ---------- */
+function currentPair() { const mid = thread.scrollTop + 260; let best = 0, bd = 1e9; S.pairs.forEach((p, i) => { const el = msgEl(p.u); if (!el) return; const d = Math.abs(el.offsetTop - mid); if (d < bd) { bd = d; best = i; } }); return best; }
+function renderCards(filter = '') {
+  const cur = currentPair(); const f = filter.toLowerCase();
+  cards.innerHTML = `<label class="search">${ic('search', 18)}<input id="csearch" placeholder="Search in this chat" value="${esc(filter)}" aria-label="Search in this chat"></label>` +
+    S.pairs.map((p, i) => {
+      const u = msgById(p.u), c = msgById(p.c); if (f && !(u.text + ' ' + c.text + ' ' + p.kw.join(' ')).toLowerCase().includes(f)) return '';
+      const nb = S.branches.filter((b) => b.src === p.c && !b.gone).length; const hs = S.highlights.filter((h) => h.src === p.c);
+      return `<button class="xcard ${i === cur ? 'cur' : ''}" data-i="${i}"><span class="ind"></span><span class="xb"><span class="xtop"><span class="i">${String(i + 1).padStart(2, '0')}</span><b>${esc(u.text)}</b>${hs.length ? `<span class="hdots">${hs.map((h) => `<i class="c-${h.color}"></i>`).join('')}</span>` : ''}${nb ? `<span class="badge">${ic('branch', 13)}${nb}</span>` : ''}</span><span class="xs">${esc(p.summary)}</span><span class="kws">${p.kw.map((k) => `<span>${esc(k)}</span>`).join('')}</span></span></button>`;
+    }).join('');
+}
+async function collapse(tok) {
+  if (S.collapsed) return; exitBlock(false); S.collapsed = true; setPill(); log('Collapsed');
+  renderCards(); cards.hidden = false; cards.scrollTop = 0;
+  $$('.xcard', cards).forEach((c, k) => { const p = S.pairs[+c.dataset.i]; const u = msgEl(p.u); const ur = rel(u), cr = rel(c); c.animate([{ transform: `translateY(${ur.y - cr.y}px) scale(.94)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: D(560), delay: D(80 + k * 50), easing: 'cubic-bezier(.2,1.15,.3,1)', fill: 'backwards' }); });
+  $('.search', cards).animate([{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'none' }], { duration: D(320), delay: D(160), fill: 'backwards' });
+  await to(thread, { opacity: '0', transform: 'scale(.96)' }, 260, 'ease-in');
+  thread.style.visibility = 'hidden';
+}
+async function expandTo(i, tok) {
+  if (!S.collapsed) return; S.collapsed = false; setPill();
+  const p = S.pairs[i]; log('Jumped from card', msgById(p.u).text);
+  thread.style.visibility = ''; scrollToMsg(p.u);
+  const u = msgEl(p.u); const ur = rel(u); const card = cards.querySelector(`.xcard[data-i="${i}"]`);
+  $$('.xcard,.search', cards).forEach((c) => { if (c !== card) c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D(200), fill: 'forwards' }); });
+  if (card) { const cr = rel(card); card.animate([{ transform: 'none', opacity: 1 }, { transform: `translateY(${ur.y - cr.y}px) scale(.96)`, opacity: 0 }], { duration: D(420), easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }); }
+  thread.style.opacity = '0'; thread.style.transform = 'scale(.96)';
+  to(thread, { opacity: '1', transform: 'none' }, 420, 'cubic-bezier(.2,.9,.25,1)', 140);
+  await wait(460, tok);
+  cards.hidden = true; cards.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+  const bub = u.querySelector('.bubble'); bub.classList.remove('pulse'); void bub.offsetWidth; bub.classList.add('pulse');
+}
+
+/* ---------- branches + saved panel ---------- */
+function branchCard(b) {
+  return `<div class="bcard" data-b="${b.id}" role="button" tabindex="0"><div class="btop"><span class="bnum">${b.n}</span><div class="bbody"><span class="bquote">“${esc(short(b.quote, 40))}”</span><span class="bq">${esc(b.q)}</span><span class="bmeta"><span>${esc(b.meta)}</span>${b.subs.length ? `<button class="badge" data-subs="${b.id}">${ic('branch', 13)}${b.subs.length} ${ic('chevron-right', 13)}</button>` : ''}</span></div></div>
+  <div class="bacts"><div><div class="chips"><button class="chip primary" data-bact="open">${ic('chevron-right', 17)}Open</button><button class="chip" data-bact="merge">${ic('merge', 17)}Merge</button><button class="chip" data-bact="dissolve">${ic('dissolve', 17)}Dissolve</button></div></div></div></div>`;
+}
+function savedCard(h) { const p = S.pairs.find((x) => x.c === h.src); const u = p ? msgById(p.u).text : ''; return `<button class="scard c-${h.color}" data-h="${h.id}"><span class="sbar"></span><span><span class="st">“${esc(short(h.text, 110))}”</span><span class="ss">${esc(h.when)} · from “${esc(short(u, 44))}”</span></span></button>`; }
+function renderBranches() {
+  const live = S.branches.filter((b) => !b.gone); const saved = S.highlights.slice().reverse();
+  const body = S.tab === 'saved'
+    ? (saved.length ? saved.map(savedCard).join('') : '<p class="empty">Nothing saved yet. Hold an answer, pick a phrase, then tap a color or Save.</p>')
+    : (live.length ? live.map(branchCard).join('') : '<p class="empty">No branches yet. Hold an answer, pick a phrase and swipe the tray up to start one.</p>');
+  branchesEl.innerHTML = `<div class="scroller" id="blist"><div class="seg" role="tablist"><button role="tab" data-tab="branches" aria-selected="${S.tab === 'branches'}">Branches · ${live.length}</button><button role="tab" data-tab="saved" aria-selected="${S.tab === 'saved'}">Saved · ${saved.length}</button></div>${body}</div>
+  <div class="phead"><button class="gbtn glass sheen" data-back="branches" aria-label="Back">${ic('chevron-left')}</button><div class="tt"><b>${S.tab === 'saved' ? 'Saved highlights' : 'Branches'}</b><small>In this chat</small></div><button class="gbtn glass sheen" data-noop aria-label="Search">${ic('search')}</button></div>`;
+}
+function openBranches(tab) { if (S.block) exitBlock(false); if (tab) S.tab = tab; renderBranches(); scr.classList.add('show-branches'); clearDrag(); log('Branches opened', S.tab); }
+function closeBranches() { scr.classList.remove('show-branches', 'show-sub'); clearDrag(); log('Branches closed'); }
+function toggleCard(id) { $$('.bcard', branchesEl).forEach((c) => c.classList.toggle('open', c.dataset.b === id && !c.classList.contains('open'))); }
+function openSubs(b) {
+  subEl.innerHTML = `<div class="scroller"><p class="label">Parent branch</p><div class="bcard" style="cursor:default"><div class="btop"><span class="bnum">${b.n}</span><div class="bbody"><span class="bquote">“${esc(b.quote)}”</span><span class="bq">${esc(b.q)}</span></div></div></div><p class="label">Sub-branches</p>${b.subs.map((s, i) => `<div class="bcard" data-subitem="${i}"><div class="btop"><span class="bnum">${i + 1}</span><div class="bbody"><span class="bquote">“${esc(s.quote)}”</span><span class="bq">${esc(s.q)}</span><span class="bmeta"><span>${esc(s.meta)}</span></span></div></div></div>`).join('')}</div>
+  <div class="phead"><button class="gbtn glass sheen" data-back="sub" aria-label="Back to branches">${ic('chevron-left')}</button><div class="tt"><b>Sub-branches</b><small>of “${esc(short(b.quote, 30))}”</small></div></div>`;
+  scr.classList.add('show-sub'); log('Sub-branches opened', b.quote);
+}
+let openB = null;
+function threadMsgs(b) { return b.msgs.map((x) => (x.role === 'user' ? `<div class="msg-user"><div class="bubble">${esc(x.text)}</div></div>` : `<div class="msg-claude"><div class="ctext">${esc(x.text)}</div></div>`)).join(''); }
+function openThread(b) {
+  openB = b;
+  subEl.innerHTML = `<div class="scroller thr withbar" id="bthr"><div class="anchorbox"><span class="bar"></span><p>From the main chat: “${esc(short(b.quote, 120))}”</p></div><div id="bmsgs">${threadMsgs(b)}</div>
+  <div class="chips" style="margin-top:2px"><button class="chip primary" data-tact="merge">${ic('merge', 17)}Merge into main</button><button class="chip" data-tact="dissolve">${ic('dissolve', 17)}Dissolve</button></div></div>
+  <div class="phead"><button class="gbtn glass sheen" data-back="sub" aria-label="Back to branches">${ic('chevron-left')}</button><div class="tt"><b>Branch ${b.n}</b><small>“${esc(short(b.quote, 34))}”</small></div></div>
+  <form class="bcomp glass strong sheen" id="bform" autocomplete="off"><input id="binput" placeholder="Reply in this branch" aria-label="Reply in this branch"><button class="cbtn solid" aria-label="Send">${ic('arrow-up', 18)}</button></form>`;
+  scr.classList.add('show-sub'); log('Branch opened', b.quote);
+}
+async function sendBranch(text, tok) {
+  const b = openB; if (!b || !text.trim()) return; log('Branch message sent', text);
+  b.msgs.push({ role: 'user', text }); const box = $('#bmsgs'); const sc = $('#bthr');
+  box.insertAdjacentHTML('beforeend', `<div class="msg-user"><div class="bubble">${esc(text)}</div></div><div class="msg-claude"><div class="ctext"><span class="dots"><i></i><i></i><i></i></span></div></div>`);
+  sc.scrollTo({ top: sc.scrollHeight, behavior: RM ? 'auto' : 'smooth' });
+  await wait(700, tok); const reply = miniReply(b.quote, text); b.msgs.push({ role: 'claude', text: reply });
+  b.meta = `${b.msgs.length} messages · just now`;
+  await stream(box.lastElementChild.querySelector('.ctext'), reply, tok); sc.scrollTo({ top: sc.scrollHeight, behavior: RM ? 'auto' : 'smooth' });
+}
+function collapseCard(el) { if (!el) return Promise.resolve(); const h = el.offsetHeight; return el.animate([{ height: h + 'px', opacity: 1, transform: 'none' }, { height: '0px', opacity: 0, transform: 'scale(.92)', paddingTop: '0px', paddingBottom: '0px', marginBottom: '0px' }], { duration: D(360), easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }).finished.catch(() => {}); }
+async function mergeBranch(b, fromThread) {
+  log('Branch merged', b.quote);
+  if (fromThread) scr.classList.remove('show-sub');
+  await collapseCard(branchesEl.querySelector(`.bcard[data-b="${b.id}"]`));
+  b.gone = 'merged'; updateCount(); renderBranches(); updateText(b.src);
+  const last = b.msgs.filter((x) => x.role === 'claude').pop();
+  const id = insertMerged(b.src, { quote: b.quote, q: b.q, a: last ? last.text : b.a, msgs: b.msgs.slice() });
+  toast('Merged into the main chat', 'View', () => { closeBranches(); setTimeout(() => { scrollToMsg(id, 260); const el = msgEl(id); el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }, D(300)); });
+}
+async function dissolveBranch(b, fromThread) {
+  log('Branch dissolved', b.quote);
+  if (fromThread) scr.classList.remove('show-sub');
+  await collapseCard(branchesEl.querySelector(`.bcard[data-b="${b.id}"]`)); b.gone = 'dissolved'; updateCount(); renderBranches(); updateText(b.src);
+  toast(`Branch ${b.n} dissolved`, 'Undo', () => { b.gone = false; updateCount(); renderBranches(); updateText(b.src); log('Undo branch dissolve'); });
+}
+function openSaved(h) {
+  log('Saved highlight opened', h.text); closeBranches();
+  setTimeout(() => { scrollToMsg(h.src, 200); const mk = msgEl(h.src).querySelector(`mark[data-h="${h.id}"]`); if (mk) { mk.classList.remove('flash'); void mk.offsetWidth; mk.classList.add('flash'); } }, D(280));
+}
+
+/* ---------- horizontal drag (swipe left for branches) ---------- */
+function clearDrag() { main.style.transition = branchesEl.style.transition = ''; main.style.transform = main.style.filter = branchesEl.style.transform = ''; }
+function setDrag(p) { main.style.transition = branchesEl.style.transition = 'none'; main.style.transform = `translateX(${-30 * p}%)`; main.style.filter = `brightness(${1 - 0.5 * p})`; branchesEl.style.transform = `translateX(${100 * (1 - p)}%)`; }
+
+/* ---------- interaction wiring ---------- */
+let press = null, hdrag = null, suppressClick = false;
+function local(e) { const s = scr.getBoundingClientRect(); return { x: (e.clientX - s.left) / SC, y: (e.clientY - s.top) / SC }; }
+main.addEventListener('pointerdown', (e) => {
+  if (S.mini || e.target.closest('.composer,.tray,.topbar,.edge')) return;
+  const pt = local(e); hdrag = { x0: pt.x, y0: pt.y, active: false };
+  const ct = e.target.closest('.msg-claude .ctext');
+  if (ct && !S.block && !S.collapsed) {
+    const id = ct.closest('.msg').dataset.id; ct.classList.add('pressing');
+    press = { id, pt, ct, timer: setTimeout(() => { enterBlock(id, pt); suppressClick = true; press = null; if (navigator.vibrate) navigator.vibrate(12); }, 480) };
+  }
+});
+main.addEventListener('pointermove', (e) => {
+  if (!hdrag) return; const pt = local(e); const dx = pt.x - hdrag.x0, dy = pt.y - hdrag.y0;
+  if (press && Math.hypot(dx, dy) > 8) { clearTimeout(press.timer); press.ct.classList.remove('pressing'); press = null; }
+  if (!hdrag.active && dx < -14 && Math.abs(dx) > Math.abs(dy) * 1.4 && !S.block) { hdrag.active = true; renderBranches(); try { main.setPointerCapture(e.pointerId); } catch (_) {} }
+  if (hdrag.active) setDrag(Math.max(0, Math.min(1, -dx / 300)));
+});
+function endPress() { if (press) { clearTimeout(press.timer); press.ct.classList.remove('pressing'); press = null; } }
+main.addEventListener('pointerup', (e) => { endPress(); if (hdrag && hdrag.active) { const dx = local(e).x - hdrag.x0; clearDrag(); if (dx < -90) openBranches(); suppressClick = true; } hdrag = null; });
+main.addEventListener('pointercancel', () => { endPress(); if (hdrag && hdrag.active) clearDrag(); hdrag = null; });
+scr.addEventListener('click', (e) => { if (suppressClick) { suppressClick = false; e.stopPropagation(); e.preventDefault(); } }, true);
+scr.addEventListener('contextmenu', (e) => e.preventDefault());
+
+thread.addEventListener('click', (e) => {
+  const blk = e.target.closest('.blk'); if (blk && S.block) return toggleBlock(+blk.dataset.i);
+  if (S.block) return exitBlock();
+  const an = e.target.closest('.anchor'); if (an) { const b = S.branches.find((x) => x.id === an.dataset.b); S.tab = 'branches'; renderBranches(); scr.classList.add('show-branches'); openThread(b); return; }
+  const mk = e.target.closest('mark.mrg'); if (mk) { openMerged(mk.dataset.m, true); return; }
+  const mg = e.target.closest('.merged'); if (mg) { toggleMerged(mg); return; }
+  if (e.target.closest('.place')) toast('Place card: tap opens it in Maps'); if (e.target.closest('.web')) toast('Sources: tap lists the pages Claude read');
+});
+thread.addEventListener('keydown', (e) => { const mg = e.target.closest && e.target.closest('.merged'); if (mg && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggleMerged(mg); } });
+function toggleMerged(el, force) {
+  const open = force !== undefined ? force : !el.classList.contains('open'); if (open === el.classList.contains('open')) return;
+  const h0 = el.offsetHeight; el.classList.toggle('open', open); el.setAttribute('aria-expanded', open); const h1 = el.offsetHeight;
+  el.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: D(380), easing: 'cubic-bezier(.2,.9,.25,1)' });
+  const inner = el.querySelector(open ? '.mthr' : '.msum'); if (inner) inner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D(300), delay: D(80), fill: 'backwards' });
+  log(open ? 'Merged card expanded' : 'Merged card collapsed');
+  if (open) { const m = msgById(el.dataset.id); const mk = m && msgEl(m.src) && msgEl(m.src).querySelector(`mark.mrg[data-m="${m.id}"]`); if (mk) { mk.classList.remove('flash'); void mk.offsetWidth; mk.classList.add('flash'); } }
+}
+function openMerged(id, scroll) {
+  const el = msgEl(id); if (!el) return; log('Merged anchor tapped');
+  if (scroll) { const top = el.offsetTop - 200; thread.scrollTo({ top, behavior: RM ? 'auto' : 'smooth' }); }
+  setTimeout(() => toggleMerged(el, true), D(scroll ? 320 : 0));
+}
+cards.addEventListener('click', (e) => { const c = e.target.closest('.xcard'); if (c) expandTo(+c.dataset.i); });
+cards.addEventListener('input', (e) => { if (e.target.id === 'csearch') { const v = e.target.value; const pos = e.target.selectionStart; renderCards(v); const i = $('#csearch'); i.focus(); i.setSelectionRange(pos, pos); } });
+$('#viewPill').addEventListener('click', () => (S.collapsed ? expandTo(currentCard()) : collapse()));
+function currentCard() { const c = cards.querySelector('.xcard.cur') || cards.querySelector('.xcard'); return c ? +c.dataset.i : 0; }
+$('#edgeTab').addEventListener('click', () => openBranches());
+$('#menuBtn').addEventListener('click', () => toast('The sidebar is unchanged in this prototype'));
+$('#deviceBtn').addEventListener('click', () => toast('Continue this chat on your computer'));
+scr.addEventListener('click', (e) => { if (e.target.closest('[data-noop]')) toast('Not part of this prototype'); });
+$('#trayClose').addEventListener('click', () => { exitBlock(); log('Block mode closed'); });
+$('#selAll').addEventListener('click', selectAll);
+$('#swatches').addEventListener('click', (e) => { const s = e.target.closest('[data-color]'); if (s) saveHighlight(s.dataset.color); });
+$('#saveSel').addEventListener('click', () => saveHighlight('coral'));
+$('#hintUp').addEventListener('click', () => toMini(undefined, 'tap'));
+$('#hintDown').addEventListener('click', () => toPrompt(undefined, 'tap'));
+let tdrag = null;
+tray.addEventListener('pointerdown', (e) => { if (e.target.closest('button') || !S.block || !S.block.sel.size) return; tdrag = { y0: local(e).y }; tray.setPointerCapture(e.pointerId); });
+tray.addEventListener('pointermove', (e) => { if (tdrag) setTrayDrag(local(e).y - tdrag.y0); });
+tray.addEventListener('pointerup', (e) => {
+  if (!tdrag) return; const dy = local(e).y - tdrag.y0; tdrag = null;
+  if (dy < -56) toMini(undefined, 'swipe'); else if (dy > 56) toPrompt(undefined, 'swipe');
+  else { tray.animate([{ transform: tray.style.transform }, { transform: 'none' }], { duration: D(320), easing: 'cubic-bezier(.2,1.4,.4,1)' }); tray.style.transform = ''; resetTrayDrag(); }
+});
+composer.addEventListener('submit', (e) => { e.preventDefault(); sendMain(cinput.value); });
+cinput.addEventListener('input', updateSend);
+$('#qclear').addEventListener('click', clearQuote);
+dim.addEventListener('click', () => S.mini && toast('Choose where the mini chat goes, or drag it down to dissolve'));
+mini.addEventListener('click', (e) => { const a = e.target.closest('[data-mact]'); if (a) closeMini(a.dataset.mact); if (e.target.closest('#miniClose')) closeMini('dissolve'); });
+mini.addEventListener('submit', (e) => { e.preventDefault(); const i = $('#minput'); const v = i.value; i.value = ''; sendMini(v); });
+let gdrag = null;
+mini.addEventListener('pointerdown', (e) => { if (!e.target.closest('#grab')) return; gdrag = { y0: local(e).y }; e.target.closest('#grab').setPointerCapture(e.pointerId); });
+mini.addEventListener('pointermove', (e) => { if (gdrag) { const dy = Math.max(0, local(e).y - gdrag.y0); mini.style.transform = `translateY(${dy}px)`; } });
+mini.addEventListener('pointerup', (e) => { if (!gdrag) return; const dy = local(e).y - gdrag.y0; gdrag = null; if (dy > 110) closeMini('dissolve'); else { mini.animate([{ transform: mini.style.transform }, { transform: 'none' }], { duration: D(300), easing: 'cubic-bezier(.2,1.4,.4,1)' }); mini.style.transform = ''; } });
+branchesEl.addEventListener('click', (e) => {
+  if (e.target.closest('[data-back]')) return closeBranches();
+  const tab = e.target.closest('[data-tab]'); if (tab) { S.tab = tab.dataset.tab; renderBranches(); log('Panel tab', S.tab); return; }
+  const sv = e.target.closest('.scard'); if (sv) return openSaved(S.highlights.find((h) => h.id === sv.dataset.h));
+  const sb = e.target.closest('[data-subs]'); if (sb) { e.stopPropagation(); return openSubs(S.branches.find((b) => b.id === sb.dataset.subs)); }
+  const act = e.target.closest('[data-bact]'); const card = e.target.closest('.bcard'); if (!card) return; const b = S.branches.find((x) => x.id === card.dataset.b);
+  if (act) { const k = act.dataset.bact; if (k === 'open') openThread(b); else if (k === 'merge') mergeBranch(b); else dissolveBranch(b); return; }
+  toggleCard(b.id); log('Branch tapped', b.quote);
+});
+subEl.addEventListener('click', (e) => {
+  if (e.target.closest('[data-back]')) { scr.classList.remove('show-sub'); renderBranches(); return; }
+  const t = e.target.closest('[data-tact]'); if (t && openB) { t.dataset.tact === 'merge' ? mergeBranch(openB, true) : dissolveBranch(openB, true); return; }
+  if (e.target.closest('[data-subitem]')) toast('Sub-branches open the same way as branches');
+});
+subEl.addEventListener('submit', (e) => { e.preventDefault(); const i = $('#binput'); const v = i.value; i.value = ''; sendBranch(v); });
+let pdrag = null;
+branchesEl.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; const p = local(e); pdrag = { x0: p.x, y0: p.y, active: false }; });
+branchesEl.addEventListener('pointermove', (e) => { if (!pdrag) return; const p = local(e); const dx = p.x - pdrag.x0, dy = p.y - pdrag.y0; if (!pdrag.active && dx > 14 && dx > Math.abs(dy) * 1.4 && !scr.classList.contains('show-sub')) { pdrag.active = true; try { branchesEl.setPointerCapture(e.pointerId); } catch (_) {} } if (pdrag.active) setDrag(Math.max(0, Math.min(1, 1 - dx / 300))); });
+branchesEl.addEventListener('pointerup', (e) => { if (pdrag && pdrag.active) { const dx = local(e).x - pdrag.x0; clearDrag(); if (dx > 90) closeBranches(); suppressClick = true; } pdrag = null; });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!nchat.hidden) closeNewChat(); else if (S.mini) closeMini('dissolve'); else if (scr.classList.contains('show-sub')) scr.classList.remove('show-sub'); else if (scr.classList.contains('show-branches')) closeBranches(); else if (S.block) exitBlock(); } });
+
+/* ---------- reset ---------- */
+function reset() {
+  RUN++;
+  document.getAnimations().forEach((a) => { if (!(a instanceof CSSAnimation)) a.cancel(); });
+  $$('.fly').forEach((f) => f.remove());
+  S = INIT(); openB = null;
+  for (const el of [tray, mini, composer, goo, blobA, blobB, main, branchesEl, thread, cards, finger]) el.removeAttribute('style');
+  tray.hidden = true; mini.hidden = true; goo.hidden = true; cards.hidden = true; nchat.hidden = true; nchat.removeAttribute('style'); dim.classList.remove('on');
+  scr.classList.remove('show-branches', 'show-sub'); thread.classList.remove('dimmed', 'blockpad');
+  clearQuote(); cinput.value = ''; updateSend(); setPill(); updateCount(); $('#toast').classList.remove('show'); finger.classList.remove('down', 'press');
+  renderThread(); scrollToMsg('m3');
+}
+
+/* ---------- presentation: finger + scripted demos ---------- */
+async function fingerTo(p, ms, tok) { if (getComputedStyle(finger).opacity === '0') Object.assign(finger.style, { left: p.x + 'px', top: p.y + 40 + 'px' }); finger.style.opacity = '1'; await to(finger, { left: p.x + 'px', top: p.y + 'px' }, ms, 'cubic-bezier(.4,0,.2,1)'); if (tok !== RUN) throw new Abort(); }
+async function tap(p, tok) { await fingerTo(p, 420, tok); finger.classList.add('down'); await wait(140, tok); finger.classList.remove('down'); await wait(120, tok); }
+async function hold(p, tok) { await fingerTo(p, 420, tok); finger.classList.add('down', 'press'); await wait(650, tok); finger.classList.remove('down', 'press'); }
+async function drag(from, toP, ms, onMove, tok) { await fingerTo(from, 380, tok); finger.classList.add('down'); await wait(120, tok); const t0 = performance.now(), dur = D(ms); await new Promise((res) => { const f = (now) => { if (tok !== RUN) return res(); const k = Math.min(1, (now - t0) / dur); const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; const x = from.x + (toP.x - from.x) * e, y = from.y + (toP.y - from.y) * e; finger.style.left = x + 'px'; finger.style.top = y + 'px'; onMove && onMove(e, x, y); k < 1 ? requestAnimationFrame(f) : res(); }; requestAnimationFrame(f); }); if (tok !== RUN) throw new Abort(); finger.classList.remove('down'); }
+function hideFinger() { finger.style.opacity = '0'; }
+async function say(t, tok) { caption.style.opacity = '0'; await sleep(180); caption.innerHTML = t; caption.style.opacity = '1'; if (tok !== undefined && tok !== RUN) throw new Abort(); }
+async function typeIn(input, text, tok) { input.value = ''; for (const ch of text) { input.value += ch; input.dispatchEvent(new Event('input')); await wait(38, tok); } }
+const blkFor = (id, re) => $$('.blk', msgEl(id)).filter((b) => re.test(b.textContent));
+async function quickSelect(tok, animate = true) {
+  const ct = msgEl('m4').querySelector('.ctext'); const r = rel(ct); const pt = { x: r.x + 150, y: r.y + 40 };
+  if (animate) { await say('Press and hold an answer. It splits into <b>blocks</b>.', tok); await hold(pt, tok); }
+  enterBlock('m4', pt); await wait(animate ? 700 : 300, tok);
+  for (const b of blkFor('m4', /^(by mid-morning|so arrive when|the gates open|at 8:30)/)) { if (animate) await tap(center(b), tok); toggleBlock(+b.dataset.i); if (!animate) await wait(60, tok); }
+  await wait(animate ? 500 : 200, tok);
+}
+async function trayDrag(dir, tok) { const c = center($('.ttext', tray)); await drag(c, { x: c.x, y: c.y + dir * 120 }, 520, (e) => setTrayDrag(dir * 120 * e), tok); }
+async function openMiniFast(tok, ask = true) { await quickSelect(tok, false); await toMini(tok, 'demo'); if (ask) { const i = $('#minput'); await typeIn(i, 'Is a weekday really quieter?', tok); await sendMini(i.value, tok); i.value = ''; } await wait(400, tok); }
+const chipIn = (sel) => center(mini.querySelector(sel));
+const DEMOS = [
+  { title: 'Collapse and jump back', d: 'The chat folds into one card per prompt. Tap a card to land on that spot.', run: async (tok) => {
+    await say('Tap <b>Collapse</b> to fold the conversation into cards.', tok); await tap(center($('#viewPill')), tok); await collapse(tok); hideFinger(); await wait(1300, tok);
+    await say('Each card shows the topic, a short summary and keywords pulled from the answer.', tok); await wait(1700, tok);
+    await say('Tap a card to jump straight back to that spot.', tok); await tap(center(cards.querySelector('.xcard[data-i="2"]')), tok); await expandTo(2, tok); hideFinger(); await wait(1800, tok); } },
+  { title: 'Block highlighting', d: 'Press and hold an answer; it splits into tappable blocks, or select it all.', run: async (tok) => {
+    const ct = msgEl('m4').querySelector('.ctext'); const r = rel(ct); const pt = { x: r.x + 150, y: r.y + 40 };
+    await say('Press and hold an answer. It splits into <b>blocks</b>.', tok); await hold(pt, tok); enterBlock('m4', pt); hideFinger(); await wait(900, tok);
+    await say('<b>Select all</b> grabs the whole paragraph at once…', tok); await tap(center($('#selAll')), tok); selectAll(); await wait(1300, tok);
+    await say('…or clear it and tap just the phrases you want.', tok); await tap(center($('#selAll')), tok); selectAll(); await wait(400, tok);
+    for (const b of blkFor('m4', /^(by mid-morning|so arrive when|the gates open|at 8:30)/)) { await tap(center(b), tok); toggleBlock(+b.dataset.i); }
+    hideFinger(); await say('The selection collects in a <b>glass tray</b> above the prompt bar.', tok); await wait(1800, tok); } },
+  { title: 'Save and color-code', d: 'Tap a color to keep a phrase; find it later under Saved.', run: async (tok) => {
+    await quickSelect(tok, false); await say('Tap a <b>color</b> to save the selection as a highlight.', tok); await tap(center($('.sw.c-green')), tok); saveHighlight('green', tok); hideFinger(); await wait(1500, tok);
+    await say('Later, swipe left and open <b>Saved</b> to find it again.', tok); renderBranches(); await drag({ x: 330, y: 470 }, { x: 70, y: 470 }, 560, (e) => setDrag(e), tok); clearDrag(); openBranches(); await wait(500, tok);
+    await tap(center(branchesEl.querySelector('[data-tab="saved"]')), tok); S.tab = 'saved'; renderBranches(); await wait(1100, tok);
+    await say('Tap one to jump straight to it in the conversation.', tok); await tap(center(branchesEl.querySelector('.scard')), tok); openSaved(S.highlights[S.highlights.length - 1]); hideFinger(); await wait(2200, tok); } },
+  { title: 'Swipe up: droplet into mini chat', d: 'Tray and prompt bar fuse like two droplets into one glass card.', run: async (tok) => {
+    await quickSelect(tok, false); await say('Swipe the tray <b>up</b>…', tok); await trayDrag(-1, tok); hideFinger();
+    await say('…and the tray and prompt bar fuse like <b>droplets</b> into a mini chat.', tok); await toMini(tok, 'demo'); await wait(900, tok);
+    await say('Ask about just this phrase. The main chat stays where it is.', tok); const i = $('#minput'); await typeIn(i, 'Is a weekday really quieter?', tok); await sendMini(i.value, tok); i.value = ''; await wait(1800, tok); } },
+  { title: 'Swipe down: drop into the prompt', d: 'The tray melts into the prompt bar and carries its words with it.', run: async (tok) => {
+    await quickSelect(tok, false); await say('Swipe the tray <b>down</b>…', tok); await trayDrag(1, tok); hideFinger();
+    await say('…it melts into the prompt bar like a drop, and its <b>words flow in</b> as a quote.', tok); await toPrompt(tok, 'demo'); await wait(900, tok);
+    await say('Ask your follow-up in the main chat, with the quote attached.', tok); await typeIn(cinput, 'What if I can only go on Saturday?', tok); await wait(500, tok); await sendMain(cinput.value, tok); await wait(1800, tok); } },
+  { title: 'Mini chat: merge into main', d: 'The answer folds back into the conversation under its source.', run: async (tok) => {
+    await say('A side question, answered in the mini chat.', tok); await openMiniFast(tok); await say('<b>Merge into main</b> folds it back under the paragraph it came from.', tok);
+    await tap(chipIn('[data-mact="merge"]'), tok); hideFinger(); await closeMini('merge', tok); await wait(1200, tok);
+    await say('The source phrase stays highlighted. Tap the card to see the <b>full side conversation</b>…', tok); const mg = thread.querySelector('.merged'); await tap(center(mg.querySelector('.mq')), tok); toggleMerged(mg, true); hideFinger(); await wait(1900, tok);
+    await say('…and tap again to fold it back.', tok); await tap(center(mg.querySelector('.mfoot')), tok); toggleMerged(mg, false); hideFinger(); await wait(1500, tok); } },
+  { title: 'Mini chat: keep as a branch', d: 'The card drips into the branches tab; the phrase gets an anchor.', run: async (tok) => {
+    await say('Not ready to merge? Keep it for later.', tok); await openMiniFast(tok); await say('<b>Make a branch</b>: the card drips into the branches tab…', tok);
+    await tap(chipIn('[data-mact="branch"]'), tok); hideFinger(); await closeMini('branch', tok); await say('…and the phrase is underlined as an anchor you can tap later.', tok); await wait(2200, tok); } },
+  { title: 'Mini chat: expand into a new chat', d: 'The card grows into a full conversation that carries the question with it.', run: async (tok) => {
+    await openMiniFast(tok); await say('<b>New chat</b> expands the mini chat into a conversation of its own…', tok); await tap(chipIn('[data-mact="newchat"]'), tok); hideFinger(); await closeMini('newchat', tok); await wait(900, tok);
+    await say('…with your selection and the side question already in it. Keep going here.', tok); const ni = $('#ncinput'); await tap(center(ni), tok); hideFinger(); await typeIn(ni, 'Plan a morning around this', tok); await sendNew(ni.value, tok); ni.value = ''; await wait(1400, tok);
+    await say('<b>Back</b> returns you to the original chat, right where you left it.', tok); await tap(center($('#ncBack')), tok); hideFinger(); await closeNewChat(tok); await wait(1800, tok); } },
+  { title: 'Mini chat: dissolve', d: 'Drag the card down; it condenses into a drop and falls back into the prompt bar.', run: async (tok) => {
+    await openMiniFast(tok, false); await say('Done with it? Drag the card <b>down</b>…', tok); const g = center($('#grab'));
+    await drag(g, { x: g.x, y: g.y + 140 }, 480, (e) => { mini.style.transform = `translateY(${140 * e}px)`; }, tok); hideFinger();
+    await say('…it condenses into a <b>drop</b> and merges back into the prompt bar. Undo brings it back.', tok); await closeMini('dissolve', tok); await wait(2200, tok); } },
+  { title: 'Swipe left: branches', d: 'Tap a branch to reveal its actions; sub-branches get their own page.', run: async (tok) => {
+    await say('Swipe <b>left</b> to see this chat’s branches.', tok); renderBranches(); await drag({ x: 330, y: 470 }, { x: 60, y: 470 }, 620, (e) => setDrag(e), tok); clearDrag(); openBranches('branches'); hideFinger(); await wait(900, tok);
+    await say('Tap a branch to reveal <b>Open, Merge and Dissolve</b>. Nothing appears on hover.', tok); await tap(center(branchesEl.querySelector('.bcard[data-b="b1"] .bq')), tok); toggleCard('b1'); hideFinger(); await wait(1600, tok);
+    await say('Sub-branches open on their own page, so the list never nests.', tok); await tap(center(branchesEl.querySelector('[data-subs="b1"]')), tok); openSubs(S.branches[0]); hideFinger(); await wait(1700, tok);
+    await tap(center(subEl.querySelector('[data-back]')), tok); scr.classList.remove('show-sub'); await wait(500, tok); await tap(center(branchesEl.querySelector('[data-back]')), tok); closeBranches(); hideFinger(); await wait(900, tok); } },
+  { title: 'Chat inside a branch, then merge', d: 'Tap an anchor, keep talking in the branch, merge it in place.', run: async (tok) => {
+    await say('Underlined phrases are <b>anchors</b>. Tap one to reopen its branch.', tok); const an = thread.querySelector('.anchor[data-b="b1"]'); await tap(center(an), tok); S.tab = 'branches'; renderBranches(); scr.classList.add('show-branches'); openThread(S.branches[0]); hideFinger(); await wait(1200, tok);
+    await say('The branch has its own <b>prompt bar</b>, so you can keep exploring there.', tok); const bi = $('#binput'); await tap(center(bi), tok); hideFinger(); await typeIn(bi, 'Is there a separate ticket?', tok); await sendBranch(bi.value, tok); bi.value = ''; await wait(1200, tok);
+    await say('When it’s useful, <b>Merge into main</b> puts it right under its source.', tok); await tap(center(subEl.querySelector('[data-tact="merge"]')), tok); hideFinger(); await mergeBranch(S.branches[0], true); await wait(700, tok);
+    closeBranches(); await wait(450, tok); const m = thread.querySelector('.merged'); if (m) { scrollToMsg(m.dataset.id, 300); m.classList.remove('pulse'); void m.offsetWidth; m.classList.add('pulse'); } await wait(2000, tok); } },
+];
+let current = 0, loop = !EMBED, playing = false;
+async function play(i) {
+  current = i; reset(); const tok = RUN; playing = true; scr.classList.add('demo'); renderRail();
+  try {
+    await wait(500, tok); await DEMOS[i].run(tok); hideFinger(); await wait(600, tok);
+    if (tok === RUN && playing) play(loop ? i : (i + 1) % DEMOS.length);
+  } catch (e) { if (!(e instanceof Abort)) console.error(e); }
+}
+function stopDemo() { playing = false; RUN++; scr.classList.remove('demo'); hideFinger(); renderRail(); caption.innerHTML = 'Your turn: hold an answer, swipe the tray, swipe left for branches.'; }
+
+/* ---------- rail ---------- */
+function renderRail() {
+  const rail = $('#rail');
+  if (MODE === 'present') {
+    rail.innerHTML = `<div><div class="eyebrow">Motion study</div><h1>Anchored branching</h1><p class="lead">Every action in the mobile redesign, played on a loop. Turn on slow motion for recording.</p></div>
+    <div class="list">${DEMOS.map((d, i) => `<button class="item ${i === current && playing ? 'on' : ''}" data-demo="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span><b>${d.title}</b><span class="d">${d.d}</span></span></button>`).join('')}</div>
+    <div class="row"><button class="btn" id="slowBtn" aria-pressed="${SLOW > 1}">Slow motion</button><button class="btn" id="loopBtn" aria-pressed="${loop}">Loop this action</button><button class="btn" id="tryBtn">${playing ? 'Try it yourself' : 'Resume playback'}</button></div>`;
+  } else {
+    const n = Object.keys(done).length;
+    rail.innerHTML = `<div><div class="eyebrow">Usability test</div><h1>Anchored branching</h1><p class="lead">Hand the phone to the participant and read each task aloud. Tasks tick themselves off when completed.</p></div>
+    <div class="card"><h2>Tasks · ${n} of ${TASKS.length}</h2>${TASKS.map((k, i) => `<div class="task ${done[i] ? 'done' : ''}"><span class="box">${done[i] ? ic('check', 14) : ''}</span><span class="t">${esc(k.text)}</span><span class="time">${done[i] ? done[i] + 's' : ''}</span></div>`).join('')}</div>
+    <div class="card"><h2>Event log</h2><div class="log" id="logBox">${LOG.length ? LOG.map((l) => `<div><span>${l.t}s</span><span>${esc(l.evt)}${l.detail ? ' · ' + esc(short(l.detail, 48)) : ''}</span></div>`).join('') : '<div><span>–</span><span>Waiting for the first interaction</span></div>'}</div></div>
+    <div class="row"><button class="btn" id="copyBtn">Copy log</button><button class="btn" id="resetBtn">Reset session</button></div>
+    <details class="card"><summary>Gesture reference for the moderator</summary><ul>
+      <li><b>Press and hold</b> an answer to split it into blocks; tap blocks, or <b>Select all</b>.</li>
+      <li>Tap a <b>color</b> or <b>Save</b> to keep a selection; it appears under <b>Saved</b> in the branches panel.</li>
+      <li><b>Swipe the tray up</b> for a mini chat, <b>down</b> to quote it in the prompt bar. The tray buttons do the same.</li>
+      <li><b>Swipe left</b> on the chat, or tap the edge tab, for branches. Open a branch to chat inside it.</li>
+      <li><b>Collapse</b> in the top bar folds the chat into cards.</li>
+      <li>Drag the mini chat’s handle <b>down</b> to dissolve it.</li></ul></details>`;
+    const lb = $('#logBox'); lb.scrollTop = lb.scrollHeight;
+  }
+}
+$('#rail').addEventListener('click', (e) => {
+  const d = e.target.closest('[data-demo]'); if (d) return play(+d.dataset.demo);
+  if (e.target.id === 'slowBtn') { SLOW = SLOW > 1 ? 1 : 2.5; document.documentElement.style.setProperty('--slow', SLOW); renderRail(); }
+  if (e.target.id === 'loopBtn') { loop = !loop; renderRail(); }
+  if (e.target.id === 'tryBtn') { playing ? stopDemo() : play(current); }
+  if (e.target.id === 'resetBtn') { reset(); LOG.length = 0; for (const k in done) delete done[k]; renderRail(); }
+  if (e.target.id === 'copyBtn') { const txt = LOG.map((l) => `${l.t}s\t${l.evt}\t${l.detail}`).join('\n'); navigator.clipboard.writeText(txt).then(() => toast('Log copied')).catch(() => { const r = document.createRange(); r.selectNodeContents($('#logBox')); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Press Ctrl+C or ⌘C to copy'); }); }
+});
+
+/* ---------- layout ---------- */
+function fit() {
+  const wrap = $('#phoneWrap'); const ph = $('#phone');
+  if (EMBED) {
+    document.documentElement.classList.add('embed');
+    SC = Math.min(innerWidth / 393, innerHeight / 852); ph.style.transform = `scale(${SC})`; wrap.style.height = 852 * SC + 'px'; return;
+  }
+  if (NATIVE) {
+    document.documentElement.classList.add('native');
+    const vw = document.documentElement.clientWidth || innerWidth; SC = vw / 393; scr.style.height = innerHeight / SC + 'px';
+    ph.style.transform = `scale(${SC})`; wrap.style.height = innerHeight + 'px'; return;
+  }
+  if (BARE) {
+    document.documentElement.classList.add('bare');
+    SC = 1; scr.style.height = Math.max(640, Math.min(900, innerHeight - 56)) + 'px'; wrap.style.height = 'auto'; return;
+  }
+  const narrow = innerWidth < 520;
+  const availW = wrap.clientWidth, availH = Math.max(420, innerHeight - (narrow ? 90 : 120));
+  SC = Math.min(availW / 419, availH / 878, 1);
+  ph.style.transform = `translateX(-50%) scale(${SC})`; ph.style.transformOrigin = 'top center'; ph.style.left = '50%';
+  wrap.style.height = 878 * SC + 'px';
+}
+addEventListener('resize', () => { fit(); if (S.block) placeTray(); });
+fit(); reset(); renderRail();
+if (MODE === 'present') play(0); else caption.innerHTML = 'Try it: hold an answer, swipe the tray, swipe left for branches.';
+
+</script>
+
+</body></html>
