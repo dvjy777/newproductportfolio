@@ -851,12 +851,13 @@
   .win p, .lesson p{ margin:0; font-size:14.5px; color:var(--text-muted); line-height:1.6; }
 
   /* ---------- case study typography ----------
-     Everything on a case page is set in General Sans, the case title's typeface.
+     Everything on a case page, the title included, is set in Helvetica.
      Section headings are large, one step below the title. */
   #case-view, #case-view .label, #case-view .case-fig figcaption, #case-view .refs,
   #case-view .case-table, #case-view .outcome .num, #case-view .glance-stat .num{
-    font-family:'General Sans', -apple-system, "Segoe UI", sans-serif;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
   }
+  #case-view .case-title{ font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; font-weight:500; letter-spacing:-.02em; }
   #case-view .label{ letter-spacing:.06em; font-size:12.5px; font-weight:500; }
   #case-view .case-block h4.label{
     font-size:clamp(23px,3.1vw,31px); font-weight:500; line-height:1.2;
@@ -869,8 +870,8 @@
   #case-view .win h5, #case-view .lesson h5{ font-size:18px; font-weight:500; }
   #case-view .win p, #case-view .lesson p{ font-size:15.5px; }
   #case-view .glance-cell p{ font-size:16px; }
-  #case-view .back-link{ font-family:'General Sans', sans-serif; }
-  #case-view .case-table th, #case-view .case-table td{ font-family:'General Sans', sans-serif; }
+  #case-view .back-link{ font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; }
+  #case-view .case-table th, #case-view .case-table td{ font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; }
   #case-view .case-table thead th{ letter-spacing:.04em; }
 
   /* interview quotes, stacked in one spot and faded in turn */
