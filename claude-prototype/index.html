@@ -414,6 +414,8 @@ mark.mrg.flash{animation:mrgflash calc(1300ms*var(--slow)) ease-out}
 <script>
 // ?embed=1: just the phone screen, cycling through every demo (used on the portfolio page)
 const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+// &demo=N loops just that one demo; without it the embed cycles through all of them
+const ONE = EMBED && /^\d+$/.test(new URLSearchParams(location.search).get('demo') || '') ? +new URLSearchParams(location.search).get('demo') : null;
 const MODE = EMBED || new URLSearchParams(location.search).get('mode') === 'present' ? 'present' : 'test';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -1160,7 +1162,7 @@ const DEMOS = [
     await say('When it’s useful, <b>Merge into main</b> puts it right under its source.', tok); await tap(center(subEl.querySelector('[data-tact="merge"]')), tok); hideFinger(); await mergeBranch(S.branches[0], true); await wait(700, tok);
     closeBranches(); await wait(450, tok); const m = thread.querySelector('.merged'); if (m) { scrollToMsg(m.dataset.id, 300); m.classList.remove('pulse'); void m.offsetWidth; m.classList.add('pulse'); } await wait(2000, tok); } },
 ];
-let current = 0, loop = !EMBED, playing = false;
+let current = 0, loop = !EMBED || ONE !== null, playing = false;
 async function play(i) {
   current = i; reset(); const tok = RUN; playing = true; scr.classList.add('demo'); renderRail();
   try {
@@ -1226,7 +1228,13 @@ function fit() {
 }
 addEventListener('resize', () => { fit(); if (S.block) placeTray(); });
 fit(); reset(); renderRail();
-if (MODE === 'present') play(0); else caption.innerHTML = 'Try it: hold an answer, swipe the tray, swipe left for branches.';
+if (MODE === 'present') play(ONE !== null && DEMOS[ONE] ? ONE : 0); else caption.innerHTML = 'Try it: hold an answer, swipe the tray, swipe left for branches.';
+// the portfolio page pauses embeds that are scrolled out of view
+if (EMBED) addEventListener('message', (e) => {
+  if (e.origin !== location.origin) return;
+  if (e.data === 'pause' && playing) { playing = false; RUN++; hideFinger(); }
+  else if (e.data === 'play' && !playing) play(current);
+});
 
 </script>
 

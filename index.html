@@ -892,6 +892,13 @@
   .proto-screen{ width:min(300px, 78vw); aspect-ratio:393/852; border-radius:clamp(30px,4vw,42px); overflow:hidden; background:#1F1E1D; box-shadow:0 24px 60px rgba(61,57,41,.22), 0 0 0 1px rgba(61,57,41,.12); }
   .proto-screen iframe{ display:block; width:100%; height:100%; border:0; pointer-events:none; }
   .proto-demo figcaption{ text-align:center; }
+  /* four looping prototype screens side by side, two per row on phones */
+  .demo-row{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px 14px; padding:clamp(20px,4vw,36px) clamp(14px,3vw,30px); border:1px solid var(--border); background:#F7F4EE; }
+  @media(min-width:760px){ .demo-row{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
+  .demo-item .proto-screen{ width:100%; border-radius:clamp(16px,2.6vw,26px); box-shadow:0 14px 34px rgba(61,57,41,.18), 0 0 0 1px rgba(61,57,41,.12); }
+  .demo-label{ margin-top:12px; }
+  .demo-label b{ display:block; font-size:14px; font-weight:600; color:var(--text); }
+  .demo-label span{ display:block; margin-top:2px; font-size:12.5px; line-height:1.45; color:var(--text-muted); }
 
   /* ---------- toast ---------- */
   .toast{
@@ -1073,19 +1080,19 @@
       journey:[
         '<strong>How might we</strong> let people explore a side question from the exact phrase that raised it, without leaving the conversation, and decide afterwards what to keep? One rule guided everything: build on the Claude people already know.',
         '<strong>Anchor, explore, decide.</strong> Select words in an answer and a side chat opens, anchored to them, while the main chat stays put. When you\'re done, pick one of four endings.',
-        {table:{compact:true, head:['Ending', 'What happens'], rows:[
-          ['Merge into main', 'Folds back under the answer it came from, with the phrase underlined'],
-          ['Keep as a branch', 'Saved behind the edge handle, ready to reopen'],
-          ['Expand into a new chat', 'Becomes its own conversation, carrying the selection and question'],
-          ['Dissolve', 'Gone, and the main chat never changed. Undo brings it back']
-        ]}},
+        {demos:[
+          {src:'claude-prototype/?embed=1&demo=5', title:'Merge into main', d:'Folds back under the answer it came from'},
+          {src:'claude-prototype/?embed=1&demo=6', title:'Keep as a branch', d:'Saved behind the edge handle for later'},
+          {src:'claude-prototype/?embed=1&demo=7', title:'Expand into a new chat', d:'Becomes its own conversation'},
+          {src:'claude-prototype/?embed=1&demo=8', title:'Dissolve', d:'Gone, and Undo brings it back'}
+        ], caption:'Four endings, from the interactive prototype'},
         '<strong>Mobile: four gestures, no new buttons.</strong> A phone has no room for another toolbar, so everything runs on gestures.',
-        {table:{compact:true, head:['Gesture', 'What it does'], rows:[
-          ['Press and hold', 'The answer splits into tappable blocks'],
-          ['Swipe up', 'Tray and prompt bar fuse like droplets into a mini chat'],
-          ['Swipe down', 'The selection drops into your prompt as a quote'],
-          ['Swipe left', 'Opens branches and saved highlights']
-        ]}},
+        {demos:[
+          {src:'claude-prototype/?embed=1&demo=1', title:'Press and hold', d:'The answer splits into tappable blocks'},
+          {src:'claude-prototype/?embed=1&demo=3', title:'Swipe up', d:'Tray and prompt bar fuse into a mini chat'},
+          {src:'claude-prototype/?embed=1&demo=4', title:'Swipe down', d:'The selection drops into the prompt'},
+          {src:'claude-prototype/?embed=1&demo=9', title:'Swipe left', d:'Branches and saved highlights'}
+        ], caption:'Four gestures, from the interactive prototype'},
         '<strong>Desktop.</strong> The side chat lives in the right panel Claude already uses for artifacts. Collapse folds a long chat into one card per question, and History lists every prompt so you can jump instead of scroll.',
         {media:[{src:'images/claude/desktop-side-chat.jpg', alt:'Claude desktop with a phrase underlined in the answer and a side chat open in the right panel, asking whether a weekday is really quieter, with Merge into main, Make a branch, New chat and Dissolve'}], caption:'The side chat in Claude\'s right panel'},
         '<strong>v1 to v2.</strong> Building the prototype in code surfaced problems static frames never showed.',
@@ -1480,6 +1487,12 @@
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
       if(t.flow) return flowHtml(t);
+      // a row of prototype screens, each looping one interaction
+      if(t.demos) return '<figure class="case-fig demo-grid"><div class="demo-row">' +
+        t.demos.map(function(d){
+          return '<div class="demo-item"><div class="proto-screen"><iframe src="'+d.src+'" title="Prototype: '+d.title+'" loading="lazy" tabindex="-1"></iframe></div>' +
+            '<div class="demo-label"><b>'+d.title+'</b><span>'+d.d+'</span></div></div>';
+        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // interview quotes that fade from one person to the next
       if(t.quotes) return '<figure class="case-fig quotes-fig"><div class="quotes" data-rotate>' +
         t.quotes.map(function(q, i){
@@ -1595,6 +1608,7 @@
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     rotateQuotes(caseView);
+    watchEmbeds(caseView);
     buildCaseNav(p);
     if(heroGlow(p)) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
     syncDuo(caseView);
@@ -1610,6 +1624,24 @@
     } else {
       vids.forEach(play);
     }
+  }
+
+  // Prototype embeds only animate while on screen, so several loops on one
+  // page don't all run at once.
+  function watchEmbeds(root){
+    var frames = root.querySelectorAll('.proto-screen iframe');
+    if(!frames.length || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        var w = en.target.contentWindow;
+        if(w) w.postMessage(en.isIntersecting ? 'play' : 'pause', location.origin);
+      });
+    }, { threshold:0.15 });
+    frames.forEach(function(f){
+      io.observe(f);
+      // a frame that loads off screen pauses straight away
+      f.addEventListener('load', function(){ var r = f.getBoundingClientRect(); if(r.bottom < 0 || r.top > innerHeight) f.contentWindow.postMessage('pause', location.origin); });
+    });
   }
 
   // Interview quotes take turns: one fades out as the next fades in. Hovering
