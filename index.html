@@ -914,12 +914,26 @@
   .proto-screen{ width:min(300px, 78vw); aspect-ratio:393/852; border-radius:clamp(30px,4vw,42px); overflow:hidden; background:#1F1E1D; box-shadow:0 24px 60px rgba(61,57,41,.22), 0 0 0 1px rgba(61,57,41,.12); }
   .proto-screen iframe{ display:block; width:100%; height:100%; border:0; pointer-events:none; }
   .proto-demo figcaption{ text-align:center; }
-  /* four looping prototype screens side by side, two per row on phones */
+  /* a row of sketch screens, two per row on phones */
   .demo-row{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px 14px; padding:clamp(20px,4vw,36px) clamp(14px,3vw,30px); border:1px solid var(--border); background:#F7F4EE; }
   @media(min-width:760px){ .demo-row{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
   .demo-item .proto-screen{ width:100%; border-radius:clamp(16px,2.6vw,26px); box-shadow:0 14px 34px rgba(61,57,41,.18), 0 0 0 1px rgba(61,57,41,.12); }
   .demo-label{ margin-top:12px; }
   .sketch-row{ background:#fff; }
+  /* a single phone per key design, with the actions to pick from underneath */
+  .phone-module{ text-align:center; }
+  .pm-stage{ display:flex; justify-content:center; padding:clamp(24px,5vw,44px) 16px; border-radius:26px; background:#F4F1EA; }
+  .pm-stage .proto-screen{ width:min(280px, 72vw); }
+  .pm-options{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:18px; }
+  .pm-opt{
+    font:inherit; font-size:14px; font-weight:500; padding:9px 16px; border-radius:999px; border:0; cursor:pointer;
+    color:var(--text); background:color-mix(in srgb, var(--nav-accent, var(--accent)) 10%, #ffffff);
+    transition:background .2s ease, color .2s ease;
+  }
+  .pm-opt:hover{ background:color-mix(in srgb, var(--nav-accent, var(--accent)) 18%, #ffffff); }
+  .pm-opt[aria-pressed="true"]{ background:var(--nav-accent, var(--accent)); color:#fff; }
+  .pm-opt:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:2px; }
+  .pm-desc{ margin:12px auto 0; max-width:34em; font-size:14.5px; line-height:1.5; color:var(--text-muted); min-height:1.5em; }
   .sketch-screen{ display:block; width:100%; height:auto; }
   .demo-label b{ display:block; font-size:14px; font-weight:600; color:var(--text); }
   .demo-label span{ display:block; margin-top:2px; font-size:12.5px; line-height:1.45; color:var(--text-muted); }
@@ -1065,7 +1079,7 @@
         {label:'Try the prototype &#8599;', url:'claude-prototype/'},
         {label:'Watch the motion demo &#8599;', url:'claude-prototype/?mode=present'}
       ],
-      demo:{src:'claude-prototype/?embed=1', title:'The mobile prototype playing its demo loop', caption:'The mobile prototype, playing its own demo loop'},
+      demo:{src:'claude-prototype/?embed=1&slow=1.6', title:'The mobile prototype playing its demo loop', caption:'The mobile prototype, playing its own demo loop'},
       glanceTint:{ accent:'#B4532F', line:'rgba(217,119,87,.28)', bg:'linear-gradient(120deg, rgba(217,119,87,.10), rgba(244,241,234,.6))' },
       glance:{
         problem:'A side question in Claude either buries the main thread or starts a new chat that forgets the context. Chats pile up, and going back is so hard that people start over.',
@@ -1113,20 +1127,31 @@
           {src:'images/claude/sketch-mobile-04.jpg', title:'Collapsed chat', d:'One card per question, tap to jump back'}
         ], caption:'Low-fi mobile sketches'},
         {media:[{src:'images/claude/sketch-desktop-side-chat.jpg', alt:'Low-fi desktop wireframe: selecting a phrase brings up a toolbar with Side chat, Reply, color dots and Copy'}, {src:'images/claude/sketch-desktop-collapse.jpg', alt:'Low-fi desktop wireframe: the collapsed overview with a summary by topic and one card per question'}], caption:'Low-fi desktop: selecting a phrase, and the collapsed overview'},
-        '<strong>Anchor, explore, decide.</strong> Select words in an answer and a side chat opens, anchored to them, while the main chat stays put. When you\'re done, pick one of four endings.',
-        {demos:[
-          {src:'claude-prototype/?embed=1&demo=5', title:'Merge into main', d:'Folds back under the answer it came from'},
-          {src:'claude-prototype/?embed=1&demo=6', title:'Keep as a branch', d:'Saved behind the edge handle for later'},
-          {src:'claude-prototype/?embed=1&demo=7', title:'Expand into a new chat', d:'Becomes its own conversation'},
-          {src:'claude-prototype/?embed=1&demo=8', title:'Dissolve', d:'Gone, and Undo brings it back'}
-        ], caption:'Four endings, from the interactive prototype'},
-        '<strong>Mobile: four gestures, no new buttons.</strong> A phone has no room for another toolbar, so everything runs on gestures.',
-        {demos:[
-          {src:'claude-prototype/?embed=1&demo=1', title:'Press and hold', d:'The answer splits into tappable blocks'},
-          {src:'claude-prototype/?embed=1&demo=3', title:'Swipe up', d:'Tray and prompt bar fuse into a mini chat'},
-          {src:'claude-prototype/?embed=1&demo=4', title:'Swipe down', d:'The selection drops into the prompt'},
-          {src:'claude-prototype/?embed=1&demo=9', title:'Swipe left', d:'Branches and saved highlights'}
-        ], caption:'Four gestures, from the interactive prototype'},
+        '<strong>Block highlighting.</strong> Press and hold an answer and it splits into tappable blocks. Take the whole paragraph or just the phrases you care about, then swipe the tray down to quote it in your next message.',
+        {phone:{options:[
+          {label:'Select all', demo:12, d:'Hold an answer, then grab the whole paragraph at once.'},
+          {label:'Select phrases', demo:13, d:'Tap just the phrases you want. They collect in a glass tray.'},
+          {label:'Add to prompt', demo:4, d:'Swipe the tray down and the selection drops into your prompt as a quote.'}
+        ]}},
+        '<strong>Mini chat: anchor, explore, decide.</strong> Swipe the tray up and a mini chat opens, anchored to the selection, while the main chat stays put. When you\'re done, it ends one of four ways.',
+        {phone:{options:[
+          {label:'Swipe up', demo:3, d:'The tray and prompt bar fuse like droplets into a mini chat.'},
+          {label:'Merge', demo:5, d:'Folds back under the answer it came from, with the phrase underlined.'},
+          {label:'Branch', demo:6, d:'Saved behind the edge handle, ready to reopen later.'},
+          {label:'New chat', demo:7, d:'Grows into its own conversation, carrying the selection and question.'},
+          {label:'Dissolve', demo:8, d:'Drag it down and it\'s gone. Undo brings it back.'}
+        ]}},
+        '<strong>Branches and saved highlights.</strong> Swipe left from the edge to see every branch in the chat and every phrase you saved in a color. Sub-branches open one level at a time, so the list never becomes a tree.',
+        {phone:{options:[
+          {label:'Branches', demo:9, d:'Tap a branch to reveal Open, Merge and Dissolve.'},
+          {label:'Saved', demo:2, d:'Save a phrase in a color, then find it again under Saved.'},
+          {label:'Inside a branch', demo:10, d:'Keep talking in a branch, then merge it in place.'}
+        ]}},
+        '<strong>Collapse and expand.</strong> A long chat folds into one card per question, with a short summary and keywords. Tap a card to land right back on that spot.',
+        {phone:{options:[
+          {label:'Collapse', demo:11, d:'Fold the chat into cards, then open it back up.'},
+          {label:'Jump to a question', demo:0, d:'Tap a card to land on that spot in the conversation.'}
+        ]}},
         '<strong>Desktop.</strong> The side chat lives in the right panel Claude already uses for artifacts. Collapse folds a long chat into one card per question, and History lists every prompt so you can jump instead of scroll.',
         {media:[{src:'images/claude/desktop-side-chat.jpg', alt:'Claude desktop with a phrase underlined in the answer and a side chat open in the right panel, asking whether a weekday is really quieter, with Merge into main, Make a branch, New chat and Dissolve'}], caption:'The side chat in Claude\'s right panel'},
         '<strong>v1 to v2.</strong> Building the prototype in code surfaced problems static frames never showed.',
@@ -1548,16 +1573,19 @@
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
       if(t.flow) return flowHtml(t);
+      // one phone that loops an action, with buttons underneath to switch actions
+      if(t.phone){
+        var o0 = t.phone.options[0];
+        return '<figure class="case-fig phone-module" data-module><div class="pm-stage"><div class="proto-screen">' +
+          '<iframe src="claude-prototype/?embed=1&slow=1.6&demo='+o0.demo+'" title="Prototype: '+o0.label+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
+          '<div class="pm-options" role="group" aria-label="Choose an action to watch">' +
+          t.phone.options.map(function(o, i){ return '<button type="button" class="pm-opt" data-demo="'+o.demo+'" data-d="'+o.d.replace(/"/g, '&quot;')+'" aria-pressed="'+(i ? 'false' : 'true')+'">'+o.label+'</button>'; }).join('') +
+          '</div><p class="pm-desc" aria-live="polite">'+o0.d+'</p>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      }
       // a row of low-fi sketch screens
       if(t.sketches) return '<figure class="case-fig demo-grid"><div class="demo-row sketch-row">' +
         t.sketches.map(function(d){
           return '<div class="demo-item"><img class="sketch-screen" src="'+d.src+'" alt="Low-fi sketch: '+d.title+'" loading="lazy">' +
-            '<div class="demo-label"><b>'+d.title+'</b><span>'+d.d+'</span></div></div>';
-        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
-      // a row of prototype screens, each looping one interaction
-      if(t.demos) return '<figure class="case-fig demo-grid"><div class="demo-row">' +
-        t.demos.map(function(d){
-          return '<div class="demo-item"><div class="proto-screen"><iframe src="'+d.src+'" title="Prototype: '+d.title+'" loading="lazy" tabindex="-1"></iframe></div>' +
             '<div class="demo-label"><b>'+d.title+'</b><span>'+d.d+'</span></div></div>';
         }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // interview quotes that fade from one person to the next
@@ -1684,6 +1712,17 @@
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     rotateQuotes(caseView);
     watchEmbeds(caseView);
+    caseView.querySelectorAll('[data-module]').forEach(function(m){
+      var frame = m.querySelector('iframe'), desc = m.querySelector('.pm-desc');
+      m.querySelectorAll('.pm-opt').forEach(function(b){
+        b.addEventListener('click', function(){
+          m.querySelectorAll('.pm-opt').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          desc.textContent = b.dataset.d;
+          frame.title = 'Prototype: ' + b.textContent;
+          if(frame.contentWindow) frame.contentWindow.postMessage({demo:+b.dataset.demo}, location.origin);
+        });
+      });
+    });
     buildCaseNav(p);
     if(heroGlow(p)) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);
     syncDuo(caseView);

@@ -415,6 +415,7 @@ mark.mrg.flash{animation:mrgflash calc(1300ms*var(--slow)) ease-out}
 // ?embed=1: just the phone screen, cycling through every demo (used on the portfolio page)
 const EMBED = new URLSearchParams(location.search).get('embed') === '1';
 // &demo=N loops just that one demo; without it the embed cycles through all of them
+const SLOWQ = parseFloat(new URLSearchParams(location.search).get('slow'));
 const ONE = EMBED && /^\d+$/.test(new URLSearchParams(location.search).get('demo') || '') ? +new URLSearchParams(location.search).get('demo') : null;
 const MODE = EMBED || new URLSearchParams(location.search).get('mode') === 'present' ? 'present' : 'test';
 const $ = (s, r = document) => r.querySelector(s);
@@ -1161,6 +1162,19 @@ const DEMOS = [
     await say('The branch has its own <b>prompt bar</b>, so you can keep exploring there.', tok); const bi = $('#binput'); await tap(center(bi), tok); hideFinger(); await typeIn(bi, 'Is there a separate ticket?', tok); await sendBranch(bi.value, tok); bi.value = ''; await wait(1200, tok);
     await say('When it’s useful, <b>Merge into main</b> puts it right under its source.', tok); await tap(center(subEl.querySelector('[data-tact="merge"]')), tok); hideFinger(); await mergeBranch(S.branches[0], true); await wait(700, tok);
     closeBranches(); await wait(450, tok); const m = thread.querySelector('.merged'); if (m) { scrollToMsg(m.dataset.id, 300); m.classList.remove('pulse'); void m.offsetWidth; m.classList.add('pulse'); } await wait(2000, tok); } },
+  { hide: true, title: 'Collapse and expand', d: 'Fold the chat into cards, then open it back up.', run: async (tok) => {
+    await say('Tap <b>Collapse</b> to fold the conversation into cards.', tok); await tap(center($('#viewPill')), tok); await collapse(tok); hideFinger(); await wait(2200, tok);
+    await say('Tap <b>Expand</b> to open the full conversation again.', tok); await tap(center($('#viewPill')), tok); await expandTo(currentCard(), tok); hideFinger(); await wait(1800, tok); } },
+  { hide: true, title: 'Select all', d: 'Hold an answer, then select the whole paragraph.', run: async (tok) => {
+    const ct = msgEl('m4').querySelector('.ctext'); const r = rel(ct); const pt = { x: r.x + 150, y: r.y + 40 };
+    await say('Press and hold an answer. It splits into <b>blocks</b>.', tok); await hold(pt, tok); enterBlock('m4', pt); hideFinger(); await wait(1000, tok);
+    await say('<b>Select all</b> grabs the whole paragraph at once.', tok); await tap(center($('#selAll')), tok); selectAll(); hideFinger(); await wait(2200, tok); } },
+  { hide: true, title: 'Select phrases', d: 'Hold an answer, then tap just the phrases you want.', run: async (tok) => {
+    const ct = msgEl('m4').querySelector('.ctext'); const r = rel(ct); const pt = { x: r.x + 150, y: r.y + 40 };
+    await say('Press and hold an answer. It splits into <b>blocks</b>.', tok); await hold(pt, tok); enterBlock('m4', pt); hideFinger(); await wait(1000, tok);
+    await say('Tap just the phrases you want.', tok);
+    for (const b of blkFor('m4', /^(by mid-morning|so arrive when|the gates open|at 8:30)/)) { await tap(center(b), tok); toggleBlock(+b.dataset.i); }
+    hideFinger(); await say('The selection collects in a <b>glass tray</b> above the prompt bar.', tok); await wait(2200, tok); } },
 ];
 let current = 0, loop = !EMBED || ONE !== null, playing = false;
 async function play(i) {
@@ -1177,7 +1191,7 @@ function renderRail() {
   const rail = $('#rail');
   if (MODE === 'present') {
     rail.innerHTML = `<div><div class="eyebrow">Motion study</div><h1>Anchored branching</h1><p class="lead">Every action in the mobile redesign, played on a loop. Turn on slow motion for recording.</p></div>
-    <div class="list">${DEMOS.map((d, i) => `<button class="item ${i === current && playing ? 'on' : ''}" data-demo="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span><b>${d.title}</b><span class="d">${d.d}</span></span></button>`).join('')}</div>
+    <div class="list">${DEMOS.map((d, i) => d.hide ? '' : `<button class="item ${i === current && playing ? 'on' : ''}" data-demo="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span><b>${d.title}</b><span class="d">${d.d}</span></span></button>`).join('')}</div>
     <div class="row"><button class="btn" id="slowBtn" aria-pressed="${SLOW > 1}">Slow motion</button><button class="btn" id="loopBtn" aria-pressed="${loop}">Loop this action</button><button class="btn" id="tryBtn">${playing ? 'Try it yourself' : 'Resume playback'}</button></div>`;
   } else {
     const n = Object.keys(done).length;
@@ -1227,6 +1241,7 @@ function fit() {
   wrap.style.height = 878 * SC + 'px';
 }
 addEventListener('resize', () => { fit(); if (S.block) placeTray(); });
+if (SLOWQ > 0 && SLOWQ <= 4) { SLOW = SLOWQ; document.documentElement.style.setProperty('--slow', SLOW); }
 fit(); reset(); renderRail();
 if (MODE === 'present') play(ONE !== null && DEMOS[ONE] ? ONE : 0); else caption.innerHTML = 'Try it: hold an answer, swipe the tray, swipe left for branches.';
 // the portfolio page pauses embeds that are scrolled out of view
@@ -1234,6 +1249,7 @@ if (EMBED) addEventListener('message', (e) => {
   if (e.origin !== location.origin) return;
   if (e.data === 'pause' && playing) { playing = false; RUN++; hideFinger(); }
   else if (e.data === 'play' && !playing) play(current);
+  else if (e.data && e.data.demo !== undefined && DEMOS[e.data.demo]) { RUN++; hideFinger(); play(e.data.demo); }
 });
 
 </script>
