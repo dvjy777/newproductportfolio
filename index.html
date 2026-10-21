@@ -635,13 +635,24 @@
   .case-fig.phones img{ border-radius:14px; }
   .case-fig img{ cursor:zoom-in; }
 
-  .case-split{ display:grid; gap:18px; margin:6px 0 30px; }
+  .case-split{ display:grid; grid-template-columns:minmax(0,1fr); gap:18px; margin:6px 0 30px; }
   .case-split .body-text{ margin:0; }
   .case-split .case-fig{ margin:0; max-width:none; }
   @media(min-width:860px){
     .case-split{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:44px; align-items:center; }
     .case-split .case-fig.phones{ max-width:480px; }
   }
+  /* text on the left, its visual on the right; the text stays in view while the visual scrolls past */
+  .case-pair .pair-text .body-text + .body-text{ margin-top:14px; }
+  @media(min-width:860px){
+    .case-split.case-pair{ align-items:start; gap:clamp(32px,4vw,56px); }
+    .case-pair .pair-text{ position:sticky; top:110px; }
+    .case-pair .case-table table{ min-width:0; }
+    .case-pair .case-table tbody th{ white-space:normal; width:34%; }
+    .case-pair .fig-grid.cols-2{ grid-template-columns:minmax(0,1fr); }
+  }
+  /* wide screens: keep the right column clear of the floating section navigator */
+  @media(min-width:1180px){ #case-view.with-nav{ padding-right:276px; } }
 
   /* phones: a little more room at the edges, and rows of app screenshots
      become a swipeable strip instead of three tiny images */
@@ -1101,7 +1112,7 @@
           ['Claude Code', '/btw and /fork side chats', 'Typed commands, for developers only']
         ]}, caption:'Everyone branches from the message. Nobody branches from the phrase.'},
         '<strong>Where Claude fits.</strong> I compared 15 products by how deep they let you explore and how much they disrupt existing habits. Comment threads in Docs, Slack and Figma are familiar but don\'t explore with AI. AI-native canvases go deep but ask you to learn something new. The gap is deep exploration with low disruption.',
-        {media:[{src:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
+        {wide:true, media:[{src:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
         '<strong>What people already do.</strong> On Reddit, Claude users say long chats get "chaotic" after 30 to 40 messages, so they restart and keep context in notes apps. And finding things again is normal behavior, not an edge case: in Yahoo\'s search logs, up to 40% of queries were attempts to re-find something [[1]].',
         '<strong>User interviews.</strong> I talked with three regular Claude users, had each walk me through a recent chat, and saved the concept for last.',
         {quotes:[
@@ -1125,7 +1136,7 @@
           {src:'images/claude/sketch-mobile-05.jpg', title:'Branches', d:'Swipe left for every branch in the chat'},
           {src:'images/claude/sketch-mobile-04.jpg', title:'Collapsed chat', d:'One card per question, tap to jump back'}
         ], caption:'Low-fi mobile sketches'},
-        {media:[{src:'images/claude/sketch-desktop-side-chat.jpg', alt:'Low-fi desktop wireframe: selecting a phrase brings up a toolbar with Side chat, Reply, color dots and Copy'}, {src:'images/claude/sketch-desktop-collapse.jpg', alt:'Low-fi desktop wireframe: the collapsed overview with a summary by topic and one card per question'}], caption:'Low-fi desktop: selecting a phrase, and the collapsed overview'},
+        {wide:true, media:[{src:'images/claude/sketch-desktop-side-chat.jpg', alt:'Low-fi desktop wireframe: selecting a phrase brings up a toolbar with Side chat, Reply, color dots and Copy'}, {src:'images/claude/sketch-desktop-collapse.jpg', alt:'Low-fi desktop wireframe: the collapsed overview with a summary by topic and one card per question'}], caption:'Low-fi desktop: selecting a phrase, and the collapsed overview'},
         '<strong>Block highlighting.</strong> Press and hold an answer and it splits into tappable blocks. Take the whole paragraph or just the phrases you care about, then swipe the tray down to quote it in your next message.',
         {phone:{options:[
           {label:'Select all', demo:12, d:'Hold an answer, then grab the whole paragraph at once.'},
@@ -1152,7 +1163,7 @@
           {label:'Jump to a question', demo:0, d:'Tap a card to land on that spot in the conversation.'}
         ]}},
         '<strong>Desktop.</strong> The side chat lives in the right panel Claude already uses for artifacts. Collapse folds a long chat into one card per question, and History lists every prompt so you can jump instead of scroll.',
-        {media:[{src:'images/claude/desktop-side-chat.jpg', alt:'Claude desktop with a phrase underlined in the answer and a side chat open in the right panel, asking whether a weekday is really quieter, with Merge into main, Make a branch, New chat and Dissolve'}], caption:'The side chat in Claude\'s right panel'},
+        {wide:true, media:[{src:'images/claude/desktop-side-chat.jpg', alt:'Claude desktop with a phrase underlined in the answer and a side chat open in the right panel, asking whether a weekday is really quieter, with Merge into main, Make a branch, New chat and Dissolve'}], caption:'The side chat in Claude\'s right panel'},
         '<strong>v1 to v2.</strong> Building the prototype in code surfaced problems static frames never showed.',
         {table:{compact:true, head:['In v1', 'In v2'], rows:[
           ['Confetti on merge felt like a game', 'A droplet merge: card and prompt bar fuse like two drops'],
@@ -1647,15 +1658,32 @@
         t.thumbs.map(function(m){ return '<img src="'+m.src+'" alt="'+(m.alt||'')+'" loading="lazy">'; }).join('') + '</div>' +
         (t.caption ? '<figcaption>'+t.caption+' · tap to enlarge</figcaption>' : '') + '</figure>';
     }
+    // Visuals narrow enough to sit in the right half, beside the paragraphs before them
+    function rightColumn(t){
+      if(!t || typeof t === 'string' || t.wide) return false;
+      if(sideBySide(t) || t.quotes || t.phone) return true;
+      if(t.table) return t.table.head.length <= 2;
+      // images and videos stack in the right column; embedded YouTube players keep the full width
+      return !!t.media && !t.media.some(function(m){ return m.youtube; });
+    }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
         if(typeof list[i] === 'string' && list[i+1] && list[i+1].clip){
           html += '<div class="case-split clip-split"><div>' + entryHtml(list[i]) + thumbsHtml(list[i+1]) + '</div>' + clipPhone(list[i+1].clip) + '</div>';
           i++;
-        } else if(typeof list[i] === 'string' && sideBySide(list[i+1])){
-          html += '<div class="case-split">' + entryHtml(list[i]) + entryHtml(list[i+1]) + '</div>';
-          i++;
+        } else if(typeof list[i] === 'string'){
+          // a run of paragraphs, then the visual that follows them on the right if it fits there
+          var run = [], j = i;
+          while(typeof list[j] === 'string' && !(list[j+1] && list[j+1].clip)){ run.push(list[j]); j++; }
+          if(!run.length){ html += entryHtml(list[i]); continue; }
+          if(rightColumn(list[j])){
+            html += '<div class="case-split case-pair"><div class="pair-text">' + run.map(entryHtml).join('') + '</div>' + entryHtml(list[j]) + '</div>';
+            i = j;
+          } else {
+            html += run.map(entryHtml).join('');
+            i = j - 1;
+          }
         } else {
           html += entryHtml(list[i]);
         }
@@ -1856,6 +1884,7 @@
   function buildCaseNav(p){
     var secs = Array.prototype.slice.call(caseView.querySelectorAll('.glance, .case-block'));
     caseNav = null;
+    caseView.classList.remove('with-nav');
     if(secs.length < 3) return;
     caseView.style.setProperty('--nav-accent', p.accent || 'var(--accent)');
     var items = secs.map(function(el, i){
@@ -1882,6 +1911,7 @@
     bar.setAttribute('aria-hidden', 'true');
     caseView.appendChild(bar);
     caseView.appendChild(nav);
+    caseView.classList.add('with-nav');
 
     var toggle = nav.querySelector('.case-nav-toggle');
     function setOpen(open){ nav.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }
