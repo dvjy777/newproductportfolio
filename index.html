@@ -652,7 +652,6 @@
     .case-pair .fig-grid.cols-2{ grid-template-columns:minmax(0,1fr); }
   }
   /* wide screens: keep the right column clear of the floating section navigator */
-  @media(min-width:1180px){ #case-view.with-nav{ padding-right:276px; } }
 
   /* phones: a little more room at the edges, and rows of app screenshots
      become a swipeable strip instead of three tiny images */
@@ -789,64 +788,46 @@
   .case-nav-list a.active{ color:var(--text); font-weight:600; }
   .case-nav-list a.active .cn-dot{ border-color:var(--nav-accent, var(--accent)); background:var(--nav-accent, var(--accent)); transform:scale(1.35); box-shadow:0 0 0 4px rgba(29,95,255,.08); }
 
-  /* a floating glass panel: it sits above the page instead of taking space, and
-     tilts slightly toward the cursor so it reads as an object in front of the page */
+  /* the section menu floats over the page on a translucent backdrop, no card:
+     it shows while you scroll and fades away once you stop */
   .case-nav{
-    background:rgba(255,255,255,.74);
-    -webkit-backdrop-filter:blur(22px) saturate(160%) brightness(1.08); backdrop-filter:blur(22px) saturate(160%) brightness(1.08);
-    border:1px solid rgba(255,255,255,.7);
-    box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 18px 50px rgba(20,33,61,.16), 0 3px 10px rgba(20,33,61,.08);
-    border-radius:20px;
+    background:rgba(255,255,255,.62);
+    -webkit-backdrop-filter:blur(16px) saturate(150%); backdrop-filter:blur(16px) saturate(150%);
+    border-radius:14px;
     opacity:0; pointer-events:none;
-    transition:opacity .4s ease, transform .5s cubic-bezier(.2,.7,.2,1);
+    transition:opacity .45s ease, transform .45s ease;
   }
   .case-nav.shown{ opacity:1; pointer-events:auto; }
-  .case-nav-list a{ font-size:13px; padding:9px 0; }
-  .cn-dot{ width:8px; height:8px; }
+  .case-nav-list a{ font-size:12.5px; padding:7px 0; }
+  .cn-dot{ width:7px; height:7px; }
+  .case-nav-rail{ display:none; }
 
-  /* wide screens: floating at the right edge, centred in the window */
+  /* wide screens: at the right edge, centred in the window */
   @media (min-width:1180px){
-    .case-nav{
-      right:32px; top:50%; width:236px; padding:22px 24px 22px 22px;
-      transform:translateY(-50%) translateX(16px) perspective(800px) rotateY(var(--ry, -6deg)) rotateX(var(--rx, 0deg));
-      transform-origin:100% 50%;
-    }
-    .case-nav.shown{ transform:translateY(-50%) perspective(800px) rotateY(var(--ry, -6deg)) rotateX(var(--rx, 0deg)); }
+    .case-nav{ right:24px; top:50%; width:224px; padding:14px 18px; transform:translateY(-50%) translateX(8px); }
+    .case-nav.shown{ transform:translateY(-50%); }
     .case-nav-toggle{ display:none; }
-    .case-nav-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid rgba(20,33,61,.08); }
-    .case-nav-head span{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); }
-    .case-nav-head b{ font-size:11px; color:var(--nav-accent, var(--accent)); font-weight:600; letter-spacing:.06em; }
-    .case-nav-list{ position:relative; }
-    .case-nav-rail{ position:absolute; left:25.5px; top:70px; bottom:34px; width:1.5px; background:rgba(20,33,61,.1); }
-    .case-nav-fill{ width:100%; height:calc(var(--progress, 0) * 100%); background:var(--nav-accent, var(--accent)); opacity:.55; }
+    .case-nav-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+    .case-nav-head span{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); }
+    .case-nav-head b{ font-size:10.5px; color:var(--nav-accent, var(--accent)); font-weight:600; letter-spacing:.06em; }
   }
-  /* smaller screens: a floating glass pill near the bottom that opens upward */
+  /* smaller screens: a pill near the bottom that opens upward */
   @media (max-width:1179px){
-    .case-nav{
-      left:50%; bottom:18px; width:min(420px, calc(100vw - 32px));
-      border-radius:22px;
-      transform:translateX(-50%) translateY(20px);
-    }
+    .case-nav{ left:50%; bottom:16px; width:min(420px, calc(100vw - 32px)); border-radius:18px; transform:translateX(-50%) translateY(12px); }
     .case-nav.shown{ transform:translateX(-50%); }
     .case-nav-head{ display:none; }
     .case-nav-toggle{
-      width:100%; display:flex; align-items:center; gap:10px; padding:14px 20px;
+      width:100%; display:flex; align-items:center; gap:10px; padding:13px 18px;
       background:none; border:0; cursor:pointer; text-align:left; color:var(--text);
-      font-family:'Geist Mono', monospace; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase;
+      font-family:'Geist Mono', monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
     }
     .cn-count{ color:var(--nav-accent, var(--accent)); font-weight:600; }
     .cn-current{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .cn-chev{ transition:transform .25s ease; color:var(--text-muted); }
     .case-nav:not(.open) .cn-chev{ transform:rotate(180deg); }
     .case-nav{ display:flex; flex-direction:column-reverse; }
-    .case-nav-list{ display:none; padding:12px 20px 4px; max-height:55vh; overflow:auto; border-bottom:1px solid rgba(20,33,61,.08); }
+    .case-nav-list{ display:none; padding:10px 18px 2px; max-height:55vh; overflow:auto; }
     .case-nav.open .case-nav-list{ display:block; }
-    .case-nav-rail{ display:none; }
-    /* the pill's own progress, along its bottom edge */
-    .case-nav::after{
-      content:''; position:absolute; left:20px; right:20px; bottom:6px; height:2px; border-radius:2px;
-      background:linear-gradient(90deg, var(--nav-accent, var(--accent)) calc(var(--progress, 0) * 100%), rgba(20,33,61,.08) 0);
-    }
   }
   @media (prefers-reduced-motion: reduce){
     .case-nav, .case-nav-list a, .cn-dot, .cn-chev{ transition:none; }
@@ -926,14 +907,28 @@
   .proto-screen iframe{ display:block; width:100%; height:100%; border:0; pointer-events:none; }
   .proto-demo figcaption{ text-align:center; }
   .proto-screen video{ display:block; width:100%; height:100%; object-fit:cover; }
-  /* a flow without bordered boxes: labels and loops as plain text */
-  .flowmap.plain .flow-panel{ border:0; }
-  .flowmap.plain .flow-tag{ border:0; padding:0; color:#8ea3cf; }
-  .flowmap.plain .flow-loop{ border:0; padding:0; color:#aab6cc; }
+  /* tables as rows: no grid lines, each row a small block of label + text */
+  .case-list .cl-rows{ display:flex; flex-direction:column; gap:22px; }
+  .case-list .cl-row{ display:grid; grid-template-columns:minmax(0,1fr); gap:6px 28px; }
+  @media(min-width:700px){ .case-list .cl-row{ grid-template-columns:minmax(0,.8fr) repeat(var(--cl-cols, 2), minmax(0,1fr)); } }
+  .case-list .cl-label{ display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+  .case-list .cl-row + .cl-row .cl-label{ display:none; }
+  @media(max-width:699px){ .case-list .cl-row + .cl-row .cl-label{ display:block; } .case-list .cl-head .cl-label{ display:none; } }
+  .case-list p{ margin:0; font-size:15px; line-height:1.55; color:var(--text-muted); }
+  .case-list .cl-head p{ color:var(--text); font-weight:600; }
+  /* a light flow without boxes: screens, plain labels and arrows on the page itself */
+  .flowmap.plain .flow-panel{ background:none; border:0; padding:6px 0 0; color:var(--text); }
+  .flowmap.plain .flow-stage + .flow-stage, .flowmap.plain .flow-stage + .flow-pair, .flowmap.plain .flow-pair + .flow-stage{ border-top:0; padding-top:10px; }
+  .flowmap.plain .flow-stage-label{ color:var(--text-muted); }
+  .flowmap.plain .flow-title{ color:var(--text); }
+  .flowmap.plain .flow-tag{ border:0; padding:0; color:var(--text-muted); }
+  .flowmap.plain .flow-arrow{ color:#b3bac6; }
+  .flowmap.plain .flow-loop{ border:0; padding:0; color:var(--text-muted); }
+  .flowmap.plain .flow-loop b{ color:var(--nav-accent, var(--accent)); }
   .flowmap.plain .flow-loops{ gap:6px 22px; }
-  .flowmap.plain .flow-node img{ border:0; }
-  .flowmap.plain .flow-node.hub img{ box-shadow:0 0 0 2px #7aa2ff, 0 0 26px rgba(122,162,255,.25); }
-  .flowmap.plain .flow-full{ border:0; padding:0; text-decoration:underline; text-underline-offset:4px; }
+  .flowmap.plain .flow-node img{ border:0; background:#fff; box-shadow:0 8px 22px rgba(20,33,61,.12), 0 0 0 1px rgba(20,33,61,.06); }
+  .flowmap.plain .flow-node.hub img{ box-shadow:0 0 0 2px var(--nav-accent, var(--accent)), 0 10px 26px rgba(29,95,255,.18); }
+  .flowmap.plain .flow-full{ border:0; padding:0; color:var(--nav-accent, var(--accent)); text-decoration:underline; text-underline-offset:4px; }
   /* a row of sketch screens, two per row on phones */
   .demo-row{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px 14px; padding:clamp(20px,4vw,36px) clamp(14px,3vw,30px); border:1px solid var(--border); background:#F7F4EE; }
   @media(min-width:760px){ .demo-row{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
@@ -1207,8 +1202,7 @@
         problem:'Chance AI\'s image analysis is strong, but there\'s no easy way to browse or create skills. The app feels too broad and doesn\'t adapt to each person, which can lead to choice paralysis.',
         role:'Product designer on the AStudio team. I focused on Create Visual Skill and the home screen.',
         decision:'Replace the empty chat with a guided flow of suggestions, while keeping free prompting one tap away.',
-        outcome:'Hi-fi screens for the whole Create Visual Skill flow, including the alternate paths, and a user flow that ties them together.',
-        stats:[['6','issues found in the audit'], ['5','steps in the new main flow'], ['3','alternate paths: other topics, make my own, improve']]
+        outcome:'Hi-fi screens for the whole Create Visual Skill flow, including the alternate paths, and a user flow that ties them together.'
       },
       overview:'Chance AI is a general-purpose agent, built on a visual language model, that analyzes images. Its core feature, Create Visual Skill, lets you build your own dedicated agent for a specific kind of analysis, and you can also browse preset skills made by other users. Chance AI asked our team at AStudio to redesign three parts of the app: Create Visual Skill, which currently runs as a linear chat; the home screen, so key skills are easier to reach; and the result page, so answers are easier to read and navigate. I focused on Create Visual Skill and the home screen.',
       statements:[
@@ -1238,6 +1232,22 @@
       ],
       journey:[
         '<strong>Key decision: a guided, interest-based flow.</strong> Instead of starting from an empty chat, Create Visual Skill starts from what you\'re into, and free prompting is still one tap away. For first-time users it works like onboarding. For regular users, it builds on the skills they\'ve used and the topics they care about, so every visit starts with context.',
+        '<strong>Low-fi wireframes.</strong> I mapped the flow in grayscale first: the main path from interest to saved skill, plus the side paths for other topics, making your own and improving a skill.',
+        {flow:{plain:true, stages:[
+          {label:'Low-fi · main flow', nodes:[
+            {img:'images/chance/wf-01-interest.jpg', title:'Pick an interest'},
+            {img:'images/chance/wf-02-tool.jpg', title:'Choose a tool'},
+            {img:'images/chance/wf-03-building.jpg', title:'Building'},
+            {img:'images/chance/wf-04-ready.jpg', title:'Your skill is ready'},
+            {img:'images/chance/wf-05-added.jpg', title:'Added to my skills'}
+          ]},
+          {label:'Low-fi · other paths', nodes:[
+            {img:'images/chance/wf-other.jpg', title:'Choose other'},
+            {img:'images/chance/wf-make-own.jpg', title:'Make my own'},
+            {img:'images/chance/wf-improve.jpg', title:'Improve'}
+          ]}
+        ]}, caption:'Low-fi wireframes · tap any screen to enlarge'},
+        '<strong>Hi-fi.</strong> The same flow, in the visual system shared with the team\'s Home and Visual skills screens.',
         {flow:{plain:true, full:'images/chance/flow-hifi.jpg', stages:[
           {label:'01 · Main flow', nodes:[
             {img:'images/chance/new-01-interest.jpg', title:'Pick an interest', tag:'from your latest interests'},
@@ -1652,10 +1662,12 @@
         }).join('') +
         '<div class="quote-dots">' + t.quotes.map(function(q, i){ return '<button type="button" class="quote-dot'+(i ? '' : ' on')+'" aria-label="Show '+q.name+'\'s quote"></button>'; }).join('') + '</div>' +
         '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
-      if(t.table) return '<figure class="case-fig case-table'+(t.table.compact ? ' compact' : '')+'"><div class="table-scroll"><table><thead><tr>' +
-        t.table.head.map(function(h){ return '<th scope="col">'+h+'</th>'; }).join('') + '</tr></thead><tbody>' +
-        t.table.rows.map(function(r){ return '<tr>' + r.map(function(c, i){ return i === 0 ? '<th scope="row">'+c+'</th>' : '<td>'+c+'</td>'; }).join('') + '</tr>'; }).join('') +
-        '</tbody></table></div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      // tables read as simple rows: the first column leads, the others sit beside it with small labels
+      if(t.table) return '<figure class="case-fig case-table case-list'+(t.table.compact ? ' compact' : '')+'"><div class="cl-rows" style="--cl-cols:'+(t.table.head.length - 1)+'">' +
+        t.table.rows.map(function(r){
+          return '<div class="cl-row"><div class="cl-head">'+(t.table.head[0] ? '<span class="cl-label">'+t.table.head[0]+'</span>' : '')+'<p>'+r[0]+'</p></div>' +
+            r.slice(1).map(function(c, i){ return '<div class="cl-cell"><span class="cl-label">'+t.table.head[i + 1]+'</span><p>'+c+'</p></div>'; }).join('') + '</div>';
+        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       var kind = t.cols === 3 ? ' phones' : t.media.length === 1 ? ' single' : ' pair';
       return '<figure class="case-fig'+kind+'"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
         t.media.map(mediaHtml).join('') + '</div>' +
@@ -1957,10 +1969,9 @@
     bar.setAttribute('aria-hidden', 'true');
     caseView.appendChild(bar);
     caseView.appendChild(nav);
-    caseView.classList.add('with-nav');
 
     var toggle = nav.querySelector('.case-nav-toggle');
-    function setOpen(open){ nav.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    function setOpen(open){ nav.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); if(!open) revealNav(); }
     toggle.addEventListener('click', function(){ setOpen(!nav.classList.contains('open')); });
     nav.querySelectorAll('a').forEach(function(a){
       a.addEventListener('click', function(e){
@@ -1971,15 +1982,11 @@
         setOpen(false);
       });
     });
-    // lean gently toward the cursor while it's over the panel, then settle back
-    if(!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
-      nav.addEventListener('mousemove', function(e){
-        var r = nav.getBoundingClientRect();
-        nav.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 8 - 2).toFixed(2) + 'deg');
-        nav.style.setProperty('--rx', ((.5 - (e.clientY - r.top) / r.height) * 6).toFixed(2) + 'deg');
-      });
-      nav.addEventListener('mouseleave', function(){ nav.style.removeProperty('--ry'); nav.style.removeProperty('--rx'); });
-    }
+    // stay up while the pointer or keyboard focus is on it
+    nav.addEventListener('mouseenter', function(){ nav.classList.add('held'); revealNav(); });
+    nav.addEventListener('mouseleave', function(){ nav.classList.remove('held'); revealNav(); });
+    nav.addEventListener('focusin', function(){ nav.classList.add('held'); revealNav(); });
+    nav.addEventListener('focusout', function(){ nav.classList.remove('held'); revealNav(); });
     caseNav = { nav:nav, bar:bar, items:items, links:nav.querySelectorAll('a'), current:-1 };
     updateCaseNav();
   }
@@ -1997,7 +2004,7 @@
     var line = headBottom + window.innerHeight * 0.25, cur = 0;
     caseNav.items.forEach(function(it, i){ if(it.el.getBoundingClientRect().top <= line) cur = i; });
     if(window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = caseNav.items.length - 1;
-    caseNav.nav.classList.toggle('shown', caseNav.items[0].el.getBoundingClientRect().top < window.innerHeight * 0.9);
+    caseNav.inCase = caseNav.items[0].el.getBoundingClientRect().top < window.innerHeight * 0.9;
     if(cur !== caseNav.current){
       caseNav.current = cur;
       caseNav.links.forEach(function(a, i){
@@ -2010,10 +2017,19 @@
       caseNav.nav.querySelector('.cn-current').textContent = caseNav.items[cur].label;
     }
   }
+  // the menu appears while scrolling and fades about a second after scrolling stops
+  var navIdle = null;
+  function revealNav(fromScroll){
+    if(!caseNav) return;
+    var n = caseNav.nav;
+    var keep = n.classList.contains('held') || n.classList.contains('open');
+    if(fromScroll && caseNav.inCase){ n.classList.add('shown'); clearTimeout(navIdle); navIdle = setTimeout(function(){ revealNav(); }, 1200); return; }
+    if(!keep && !fromScroll) n.classList.remove('shown');
+  }
   var navTick = false;
   window.addEventListener('scroll', function(){
     if(navTick) return; navTick = true;
-    requestAnimationFrame(function(){ navTick = false; updateCaseNav(); });
+    requestAnimationFrame(function(){ navTick = false; updateCaseNav(); revealNav(true); });
   }, { passive:true });
   window.addEventListener('resize', updateCaseNav);
 
