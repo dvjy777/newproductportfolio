@@ -713,7 +713,12 @@
   .case-table.compact table{ min-width:0; }
   .case-table.compact tbody th{ white-space:normal; width:34%; }
   .case-fig figcaption{ font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--text-muted); margin-top:10px; }
-  .glance{ margin:30px 0 6px; border:1px solid var(--gl-line, var(--border)); background:var(--gl-bg, linear-gradient(180deg, var(--accent-soft), rgba(232,238,252,.25))); padding:24px clamp(18px,3vw,30px); }
+  .glance{
+    margin:34px 0 10px; border:0; border-radius:26px; padding:28px clamp(20px,3.4vw,34px);
+    background:var(--gl-bg, linear-gradient(180deg, var(--accent-soft), rgba(232,238,252,.25)));
+    /* soft backlight in the project's accent */
+    box-shadow:0 28px 70px -34px color-mix(in srgb, var(--gl-accent, var(--accent)) 60%, transparent), 0 8px 26px -16px color-mix(in srgb, var(--gl-accent, var(--accent)) 35%, transparent);
+  }
   .glance-head{ color:var(--gl-accent, var(--accent)); margin-bottom:16px; }
   .glance-grid{ display:grid; gap:18px 30px; }
   @media(min-width:760px){ .glance-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
@@ -728,13 +733,26 @@
   }
   @media(min-width:560px){ .meta-grid{ grid-template-columns:repeat(4,1fr); } }
   .meta-grid .label{ margin-bottom:8px; }
-  .case-links{ display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
-  .case-links a{
-    font-family:'Geist Mono',monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-    text-decoration:none; color:var(--accent); border:1px solid var(--accent); padding:9px 14px;
-    transition:background .2s ease, color .2s ease;
+  /* intro row: role / timeline / tools / skills, with the project links as square cards beside it */
+  .case-intro{ padding:26px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+  .case-intro .meta-grid{ padding:0; border:0; }
+  .case-links{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; margin-top:24px; }
+  @media(min-width:900px){
+    .case-intro.has-links{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:36px; align-items:center; }
+    .case-intro.has-links .meta-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .case-links{ grid-template-columns:repeat(2, 176px); margin-top:0; }
   }
-  .case-links a:hover{ background:var(--accent); color:var(--accent-ink); }
+  .link-card{
+    position:relative; display:flex; align-items:flex-end; aspect-ratio:1/1; padding:18px;
+    border-radius:22px; text-decoration:none; color:var(--text);
+    background:color-mix(in srgb, var(--nav-accent, var(--accent)) 11%, #ffffff);
+    transition:transform .25s cubic-bezier(.2,.7,.2,1), background .25s ease, box-shadow .25s ease;
+  }
+  .link-card:hover{ transform:translateY(-3px); background:color-mix(in srgb, var(--nav-accent, var(--accent)) 17%, #ffffff); box-shadow:0 18px 40px -22px color-mix(in srgb, var(--nav-accent, var(--accent)) 70%, transparent); }
+  .link-card:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:3px; }
+  .lc-arrow{ position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:16px; color:#fff; background:var(--nav-accent, var(--accent)); }
+  .lc-label{ font-size:16px; font-weight:500; line-height:1.25; letter-spacing:-.005em; max-width:9em; }
+  @media (prefers-reduced-motion: reduce){ .link-card, .link-card:hover{ transition:none; transform:none; } }
   .meta-grid div p{ margin:0 0 3px; font-size:14px; }
   .case-block{ padding:34px 0; border-bottom:1px solid var(--border); }
   /* ---------- case study navigator ---------- */
@@ -1609,8 +1627,12 @@
       '</ol></div>') : '';
     var futureHtml = future.length ? ('<div class="case-block"><h4 class="label">What\'s next</h4>' +
       entriesHtml(future) + '</div>') : '';
+    // links become square cards that sit beside the role / timeline details
     var linksHtml = links.length ? ('<div class="case-links">' +
-      links.map(function(l){ return '<a href="'+l.url+'" target="_blank" rel="noopener">'+l.label+'</a>'; }).join('') + '</div>') : '';
+      links.map(function(l){
+        return '<a class="link-card" href="'+l.url+'" target="_blank" rel="noopener"><span class="lc-arrow" aria-hidden="true">&#8599;</span>' +
+          '<span class="lc-label">'+l.label.replace(/\s*&#8599;\s*$/, '')+'</span></a>';
+      }).join('') + '</div>') : '';
 
     caseView.innerHTML =
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
@@ -1620,7 +1642,7 @@
         (heroDevicesHtml(p) ? heroDevicesHtml(p) + ((p.heroNote || (p.heroPhone && p.heroPhone.note)) ? '<div class="hero-note">'+(p.heroNote || p.heroPhone.note)+'</div>' : '') :
          p.logo ? '<div class="hero-logo">'+p.logo+'</div>' + (p.heroNote ? '<div class="hero-note">'+p.heroNote+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
-      metaHtml + linksHtml + glanceHtml(p.glance, p.glanceTint) +
+      '<div class="case-intro'+(links.length ? ' has-links' : '')+'">' + metaHtml + linksHtml + '</div>' + glanceHtml(p.glance, p.glanceTint) +
       (p.demo ? '<figure class="case-fig proto-demo"><div class="proto-stage" style="background:'+(p.coverBg || p.gradient)+'"><div class="proto-screen">' +
         '<iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
         (p.demo.caption ? '<figcaption>'+p.demo.caption+'</figcaption>' : '') + '</figure>' : '') +
