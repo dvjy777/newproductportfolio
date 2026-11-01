@@ -742,6 +742,7 @@
     padding:26px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
   }
   @media(min-width:560px){ .meta-grid{ grid-template-columns:repeat(4,1fr); } }
+  @media(min-width:1000px){ .meta-grid.six{ grid-template-columns:1.5fr 1.25fr 1.3fr .7fr 1.15fr 1.15fr; gap:24px; } }
   .meta-grid .label{ margin-bottom:8px; }
   /* intro row: role / timeline / tools / skills, with the project links as square cards beside it */
   .case-intro{ padding:26px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
@@ -920,7 +921,7 @@
   .case-soon{ color:var(--text-muted); font-style:italic; }
 
   /* a live prototype as the case hero */
-  .case-hero.embed-hero{ height:clamp(640px, 86vh, 960px); aspect-ratio:auto; padding:0; background:#121212; }
+  .case-hero.embed-hero{ height:max(560px, calc(100vh - 140px)); aspect-ratio:auto; padding:0; background:#121212; }
   .case-hero.embed-hero iframe{ width:100%; height:100%; border:0; display:block; }
   .embed-note{ margin:10px 0 0; font-size:13px; color:var(--text-muted); text-align:center; }
   /* bigger screens in the light flows, scrolling sideways when they don't fit */
@@ -939,7 +940,11 @@
   .case-pair .pair-text > .case-sub:first-child{ margin-top:0; }
   .case-pair .case-paths .path-row{ flex-wrap:wrap; row-gap:8px; }
   .case-pair .proto-stage{ padding:clamp(16px,3vw,32px) 12px; }
-  @media(min-width:900px){ .case-defs{ grid-template-columns:repeat(3, minmax(0,1fr)); max-width:none; gap:28px; } }
+  @media(min-width:900px){ .case-defs{ grid-template-columns:repeat(3, minmax(0,1fr)); max-width:none; gap:40px; } }
+  .def-art{ height:120px; margin-bottom:18px; display:flex; align-items:center; background:#F5F7FD; padding:0 18px; }
+  .def-art svg{ width:100%; height:96px; }
+  @media(min-width:900px){ #case-view .case-defs{ grid-template-columns:repeat(3, minmax(0,1fr)); max-width:none; gap:40px; } }
+  @media(min-width:1000px){ #case-view .meta-grid.six{ max-width:none; grid-template-columns:1.5fr 1.25fr 1.3fr .7fr 1.15fr 1.15fr; gap:28px; } }
   .case-defs{ margin:0; display:grid; gap:18px; max-width:64ch; }
   .case-defs dt{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
   .case-defs dd{ margin:0; font-size:17px; line-height:1.6; }
@@ -1268,9 +1273,9 @@
       chapters:[
         {title:'About Chance AI', entries:[
           {defs:[
-            ['Brand purpose', 'Chance AI offers ready-to-use AI agents powered by its in-house Vision Language Model (VLM). Users can build their own skills or choose from prebuilt lenses.'],
-            ['Brand target', 'Chance AI mainly targets Gen Z and college students. Women make up a slight majority of users, with a female-to-male ratio of 5.5:4.5.'],
-            ['Brand personality', 'Chance AI has a clean, minimal aesthetic, similar to Airbnb and Spotify.']
+            ['Brand purpose', 'Chance AI offers ready-to-use AI agents powered by its in-house Vision Language Model (VLM). Users can build their own skills or choose from prebuilt lenses.', '<svg viewBox="0 0 260 96"><rect x="8" y="30" width="72" height="36" fill="#1D5FFF"/><text x="44" y="53" text-anchor="middle" font-size="13" font-weight="600" fill="#fff" font-family="Helvetica,Arial">VLM</text><path d="M80 48 L120 18 M80 48 L120 48 M80 48 L120 78" stroke="#8aa6f5" stroke-width="1.5" fill="none"/><rect x="120" y="6" width="132" height="24" fill="#DCE5FF"/><text x="130" y="22" font-size="11.5" fill="#0e2a7a" font-family="Helvetica,Arial">Ready-to-use agents</text><rect x="120" y="36" width="132" height="24" fill="#DCE5FF"/><text x="130" y="52" font-size="11.5" fill="#0e2a7a" font-family="Helvetica,Arial">Your own skills</text><rect x="120" y="66" width="132" height="24" fill="#DCE5FF"/><text x="130" y="82" font-size="11.5" fill="#0e2a7a" font-family="Helvetica,Arial">Prebuilt lenses</text></svg>'],
+            ['Brand target', 'Chance AI mainly targets Gen Z and college students. Women make up a slight majority of users, with a female-to-male ratio of 5.5:4.5.', '<svg viewBox="0 0 260 96"><text x="0" y="16" font-size="11.5" fill="#55607a" font-family="Helvetica,Arial">Gen Z · college students</text><rect x="0" y="30" width="143" height="30" fill="#1D5FFF"/><rect x="143" y="30" width="117" height="30" fill="#9DB8FF"/><text x="10" y="50" font-size="13" font-weight="600" fill="#fff" font-family="Helvetica,Arial">Women 55%</text><text x="152" y="50" font-size="13" font-weight="600" fill="#0e2a7a" font-family="Helvetica,Arial">Men 45%</text><text x="0" y="84" font-size="11.5" fill="#55607a" font-family="Helvetica,Arial">Female-to-male ratio 5.5 : 4.5</text></svg>'],
+            ['Brand personality', 'Chance AI has a clean, minimal aesthetic, similar to Airbnb and Spotify.', '<svg viewBox="0 0 260 96"><text x="0" y="86" font-size="11.5" fill="#55607a" font-family="Helvetica,Arial">Busy</text><text x="260" y="86" text-anchor="end" font-size="11.5" fill="#55607a" font-family="Helvetica,Arial">Clean, minimal</text><line x1="0" y1="56" x2="260" y2="56" stroke="#9DB8FF" stroke-width="2"/><rect x="164" y="50" width="12" height="12" fill="#fff" stroke="#1D5FFF" stroke-width="1.5"/><text x="170" y="40" text-anchor="middle" font-size="10.5" fill="#55607a" font-family="Helvetica,Arial">Airbnb</text><rect x="232" y="50" width="12" height="12" fill="#fff" stroke="#1D5FFF" stroke-width="1.5"/><text x="238" y="40" text-anchor="middle" font-size="10.5" fill="#55607a" font-family="Helvetica,Arial">Spotify</text><rect x="196" y="48" width="16" height="16" fill="#1D5FFF"/><text x="204" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#0e2a7a" font-family="Helvetica,Arial">Chance AI</text><line x1="204" y1="26" x2="204" y2="46" stroke="#1D5FFF" stroke-width="1"/></svg>']
           ]}
         ]},
         {title:'Competitive analysis', entries:[
@@ -1750,7 +1755,7 @@
       ['Role', p.role], ['Timeline', p.timeline], ['Team', p.team], ['Tools', p.tools],
       ['Skills', p.skills && p.skills.length ? p.skills.join(', ') : '']
     ]).filter(function(f){ return f[1]; });
-    var metaHtml = metaFields.length ? ('<div class="meta-grid">' +
+    var metaHtml = metaFields.length ? ('<div class="meta-grid'+(metaFields.length > 4 ? ' six' : '')+'">' +
       metaFields.map(function(f){ return '<div><div class="label">'+f[0]+'</div><p>'+f[1]+'</p></div>'; }).join('') +
       '</div>') : '';
 
@@ -1779,7 +1784,7 @@
       // a large How might we statement, the same as the ones under the overview
       if(t.hmw) return '<div class="case-hmw">'+(t.label ? '<div class="label">'+t.label+'</div>' : '')+'<blockquote class="statement-quote"><span class="qm">“</span>'+t.hmw+'<span class="qm">”</span></blockquote></div>';
       // label + text pairs, e.g. brand purpose, target and personality
-      if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div><dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
+      if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div>'+(d[2] ? '<div class="def-art" aria-hidden="true">'+d[2]+'</div>' : '')+'<dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
       // simple paths of square blue steps, e.g. how people use a feature
       if(t.paths) return '<figure class="case-fig case-paths">' + t.paths.map(function(row){
           return '<div class="path-row">' + row.map(function(step, i){ return (i ? '<span class="path-arrow" aria-hidden="true">→</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>'; }).join('') + '</div>';
@@ -1960,6 +1965,7 @@
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     rotateQuotes(caseView);
+    fitHeroEmbed();
     watchEmbeds(caseView);
     caseView.querySelectorAll('[data-module]').forEach(function(m){
       var frame = m.querySelector('iframe'), desc = m.querySelector('.pm-desc');
@@ -2103,6 +2109,29 @@
   // the page's sections that shows where you are and jumps to any of them. On wide
   // screens it sits in the right margin; on smaller ones it's a bar you tap to open.
   var caseNav = null;
+  // an embedded prototype fits one screen: tighten its step panel so nothing scrolls inside
+  function fitHeroEmbed(){
+    var f = caseView.querySelector('.embed-hero iframe');
+    if(!f) return;
+    function apply(){
+      try {
+        var d = f.contentDocument;
+        if(!d || !d.head || d.getElementById('fit-one-screen')) return;
+        var st = d.createElement('style'); st.id = 'fit-one-screen';
+        st.textContent = 'html,body{overflow:hidden!important;height:100%}' +
+          '.stage{min-height:0!important;height:100vh;padding-block:12px!important;gap:48px!important}' +
+          '.panel{gap:9px!important;max-height:calc(100vh - 24px);overflow:hidden}' +
+          '.panel .p-note{display:none}.panel .p-intro{font-size:12px;line-height:1.4}' +
+          '.panel .flow h4{margin:0 0 1px!important;font-size:10px}' +
+          '.panel .fl{padding-block:2px!important;font-size:12.5px!important;min-height:0!important}' +
+          '.panel .flow ol{gap:0!important}.panel .fl .tag{transform:scale(.8)}' +
+          '.panel .pbtn{padding:5px 11px!important;font-size:11.5px!important}.panel .p-ai{font-size:11px}';
+        d.head.appendChild(st);
+        f.contentWindow.dispatchEvent(new Event('resize'));
+      } catch(e){}
+    }
+    f.addEventListener('load', apply); apply();
+  }
   function buildCaseNav(p){
     var secs = Array.prototype.slice.call(caseView.querySelectorAll('.glance, .case-block'));
     caseNav = null;
