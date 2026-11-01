@@ -482,7 +482,12 @@
 
   /* ---------- footer ---------- */
   footer{ padding:40px 0 64px; border-top:1px solid var(--border); }
-  .footer-links{ display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+  .footer-cta{ padding:clamp(24px,5vw,56px) 0 clamp(20px,4vw,40px); }
+  .footer-cta h2{ margin:0 0 14px; font-size:clamp(34px,5.4vw,64px); line-height:1.05; letter-spacing:-.02em; font-weight:500; }
+  .footer-mail{ font-size:clamp(18px,2vw,24px); color:var(--accent); text-decoration:none; border-bottom:1px solid currentColor; padding-bottom:2px; }
+  .footer-mail span{ display:inline-block; transition:transform .2s; }
+  .footer-mail:hover span{ transform:translateX(4px); }
+  .footer-links{ display:flex; flex-direction:row; flex-wrap:wrap; gap:10px 28px; margin-top:20px; }
   .footer-links a{
     font-family:'Geist Mono',monospace; font-size:13px; letter-spacing:.06em;
     text-transform:uppercase; text-decoration:none; color:var(--text-muted);
@@ -591,6 +596,7 @@
   .thumb .thumb-stage{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
   .thumb .thumb-stage > .phone-mock{ width:37cqh; padding:1.1cqh; border-radius:6cqh; }
   .thumb .thumb-stage .phone-mock .screen{ border-radius:5cqh; }
+  .thumb .thumb-stage .proto-screen.card-demo{ width:auto; height:78cqh; border-radius:5.5cqh; }
   .thumb .thumb-stage .phone-mock::before{ top:2.2cqh; height:2.4cqh; }
   .thumb .thumb-stage .phone-mock .status{ font-size:1.5cqh; }
   .thumb .thumb-stage .device-pair{ height:100%; align-items:center; gap:4cqh; }
@@ -1230,6 +1236,11 @@
     </div>
   </section>
 
+  <section class="section" id="work">
+    <div class="section-head"><h2 class="serif">Selected work</h2></div>
+    <div class="work-grid" id="workGrid"></div>
+  </section>
+
   <section class="section" id="experience">
     <div class="exp-layout">
       <div id="timeline" class="prose"></div>
@@ -1242,11 +1253,6 @@
         </div>
       </aside>
     </div>
-  </section>
-
-  <section class="section" id="work">
-    <div class="section-head"><h2 class="serif">Selected work</h2></div>
-    <div class="work-grid" id="workGrid"></div>
   </section>
 
   <section class="section" id="about">
@@ -1275,7 +1281,12 @@
   </section>
 
   <footer>
+    <div class="footer-cta">
+      <h2 class="serif">Let's grab a coffee.</h2>
+      <a class="footer-mail" href="mailto:jy3424@nyu.edu">jy3424@nyu.edu <span aria-hidden="true">→</span></a>
+    </div>
     <div class="footer-links">
+      <a href="files/David-Yang-Resume.pdf" target="_blank" rel="noopener">Resume</a>
       <a href="https://www.linkedin.com/in/david-yang-3916671b6/" target="_blank" rel="noopener">LinkedIn</a>
       <a href="mailto:jy3424@nyu.edu">Email</a>
       <a href="https://github.com/jinho72" target="_blank" rel="noopener">GitHub</a>
@@ -1293,10 +1304,8 @@
   var timeline = [
     { year:'Present', company:'New York University', role:'M.S. Candidate, Integrated Design & Media (Tandon School of Engineering)',
       desc:'I\'m concentrating in Human-Computer Interaction and Brand Strategy, working with emerging media such as AI and AR to explore how they serve as media for sentiment expression. I\'m currently working on my thesis :) I <3 IDM' },
-    { year:'2026', company:'Chance AI x AStudio', role:'Design Lead (Mentorship Mentee)',
+    { year:'2026', company:'Chance AI x AStudio', role:'Design Lead, AStudio mentorship',
       desc:'I\'m currently working with an amazing team at NYU Tisch AStudio, alongside mentees, to help redesign the visual AI agent at Chance AI. More to come soon!' },
-    { year:'2025', company:'Point Off View', role:'Creative Designer & Editor',
-      desc:'I worked with Creative Director Marina Testino and her design team to redesign the website, research sustainable fashion companies, and attend events, including Peace Boat US.' },
     { year:'2024–25', company:'IDM Experimental Print Studio, NYU', role:'Design Assistant',
       desc:'I\'m a print and graphic design enthusiast. I spend my spare time at the studio helping ITP and IDM students with their print design projects, troubleshooting risograph machines, and making cool prints.' },
     { year:'2021', company:'Bondit.io', role:'Product Design Intern',
@@ -1323,6 +1332,8 @@
       coverBg:'radial-gradient(ellipse 55% 75% at 50% 50%, rgba(217,119,87,.20), rgba(217,119,87,0) 70%), #F4F1EA',
       blurb:'Highlight a phrase in Claude\'s answer, ask about it on the side, then decide what to keep. A redesign for people whose chats pile up.',
       heroNote:'Personal concept · not affiliated with Anthropic',
+      heroEmbed:{src:'claude-prototype/', title:'Claude anchored branching interactive prototype', note:'Personal concept · not affiliated with Anthropic'},
+      cardDemo:'claude-prototype/?embed=1&slow=1.6',
       role:'Product designer', timeline:'2 weeks',
       tools:'Figma, FigJam, Claude, HTML, CSS, JavaScript',
       skills:['User interviews', 'Competitive analysis', 'Interaction design', 'Interactive prototyping'],
@@ -1467,6 +1478,7 @@
       slug:'chance-ai', company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
       title:'Reimagining Visual Agent', word:'Chance AI',
       heroEmbed:{src:'chance-prototype/', title:'Chance AI clickable prototype'},
+      cardPhone:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Screen recording of the redesigned Create Visual Skill flow in Chance AI', bare:true},
       inProgress:true,
       accent:'#1d5fff',
       gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)',
@@ -1938,6 +1950,8 @@
 
   // ── device frames shared by project banners and homepage cards ──
   function phoneMockHtml(m){
+    // recordings that already include their own status bar go in bare
+    if(m.bare) return '<div class="phone-mock"><div class="screen"><video src="'+m.phone+'" poster="'+(m.poster||'')+'" autoplay muted loop playsinline aria-label="'+(m.alt||'')+'"></video></div></div>';
     return '<div class="phone-mock"><div class="screen">'+
         '<div class="status'+(m.statusInk === 'dark' ? ' ink-dark' : '')+'" style="background:'+(m.statusBg||'#000')+'" aria-hidden="true">'+
           '<span>9:41</span><svg viewBox="0 0 68 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/>'+
@@ -1975,7 +1989,8 @@
     var a = document.createElement('a');
     a.className = 'card'; a.href = '#work/'+p.slug;
     if(p.accent) a.style.setProperty('--card-accent', p.accent);
-    var devices = heroDevicesHtml(p);
+    var devices = p.cardPhone ? phoneMockHtml({phone:p.cardPhone.src, poster:p.cardPhone.poster, alt:p.cardPhone.alt, bare:p.cardPhone.bare}) :
+      p.cardDemo ? '<div class="proto-screen card-demo"><iframe src="'+p.cardDemo+'" title="" aria-hidden="true" tabindex="-1" loading="lazy"></iframe></div>' : heroDevicesHtml(p);
     a.innerHTML =
       '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+(p.coverLight ? ' light' : '')+'" style="background:'+(devices ? heroBackground(p) : (p.coverBg || p.gradient))+'">'+
         (devices ? '<div class="thumb-stage">'+devices+'</div>' : '')+
@@ -1985,7 +2000,7 @@
         (p.blurb ? '<div class="thumb-hover"><p>'+p.blurb+'</p><span>View case study →</span></div>' : '')+
         '<span class="tag">'+p.company+'</span></div>'+
       '<h3>'+p.title+'</h3>'+
-      '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
+      '<div class="meta label">'+p.company.toUpperCase()+' · '+(p.inProgress ? p.tagline.replace(/\s*·\s*IN PROGRESS$/i, '') : p.tagline)+'</div>';
     grid.appendChild(a);
   });
 
@@ -2495,6 +2510,19 @@
       try {
         var d = f.contentDocument;
         if(!d || !d.head || d.getElementById('fit-one-screen')) return;
+        // Claude prototype: keep the phone and the tasks, drop the facilitator tools, scale to one screen
+        if(d.getElementById('rail')){
+          var cs = d.createElement('style'); cs.id = 'fit-one-screen';
+          cs.textContent = 'html,body{overflow:hidden!important}.rail .card:has(#logBox),.rail .row{display:none!important}';
+          d.head.appendChild(cs);
+          var fitZoom = function(){
+            d.documentElement.style.zoom = 1;
+            var r = f.clientHeight / d.documentElement.scrollHeight;
+            d.documentElement.style.zoom = r < 1 ? Math.max(r, .7) : 1;
+          };
+          setTimeout(fitZoom, 300); f.contentWindow.addEventListener('resize', function(){ setTimeout(fitZoom, 50); });
+          return;
+        }
         var st = d.createElement('style'); st.id = 'fit-one-screen';
         st.textContent = 'html,body{overflow:hidden!important;height:100%}' +
           /* phone in the middle, the steps split to its left and right; the panel stays the click target */
