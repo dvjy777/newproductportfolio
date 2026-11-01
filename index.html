@@ -928,6 +928,16 @@
   .case-hmw{ margin:26px 0; }
   .case-hmw .label{ margin-bottom:8px; }
   .case-soon{ color:var(--text-muted); font-style:italic; }
+
+  /* two columns: text on the left, its visuals stacked on the right */
+  .case-pair .pair-side{ display:flex; flex-direction:column; gap:30px; min-width:0; }
+  .case-pair .pair-side .case-fig{ margin:0; }
+  .case-pair .pair-side .case-hmw{ margin:0; }
+  .case-pair .pair-side .case-hmw .statement-quote{ margin-bottom:0; }
+  .case-pair .pair-text > .case-sub:first-child{ margin-top:0; }
+  .case-pair .case-paths .path-row{ flex-wrap:wrap; row-gap:8px; }
+  .case-pair .proto-stage{ padding:clamp(16px,3vw,32px) 12px; }
+  @media(min-width:900px){ .case-defs{ grid-template-columns:repeat(3, minmax(0,1fr)); max-width:none; gap:28px; } }
   .case-defs{ margin:0; display:grid; gap:18px; max-width:64ch; }
   .case-defs dt{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
   .case-defs dd{ margin:0; font-size:17px; line-height:1.6; }
@@ -1843,7 +1853,7 @@
     // At a glance: problem, role, key decision, outcome, plus a few numbers
     // a project timeline drawn as one line with stops, in its own card under At a glance
     function timelineHtml(steps, tint){
-      if(!steps || !steps.length) return '';
+      if(!Array.isArray(steps) || !steps.length) return '';   // other projects use timeline for a plain duration
       var style = tint ? ' style="--gl-accent:'+tint.accent+'; --gl-line:'+tint.line+'; --gl-bg:'+tint.bg+'"' : '';
       return '<section class="glance timeline-card" aria-label="Timeline"'+style+'><div class="glance-head label">Timeline</div><ol class="tl">' +
         steps.map(function(st){ return '<li class="tl-step"><span class="tl-dot" aria-hidden="true"></span><div class="tl-when">'+st.when+'</div>' + st.items.map(function(it){ return '<div class="tl-item">'+it+'</div>'; }).join('') + '</li>'; }).join('') +
@@ -1868,25 +1878,28 @@
     // Visuals narrow enough to sit in the right half, beside the paragraphs before them
     function rightColumn(t){
       if(!t || typeof t === 'string' || t.wide) return false;
-      if(sideBySide(t) || t.quotes || t.phone) return true;
+      if(sideBySide(t) || t.quotes || t.phone || (t.flow && t.flow.plain) || t.protoVideo || t.paths || t.hmw) return true;
       if(t.table) return t.table.head.length <= 2;
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
     }
+    function textLike(t){ return typeof t === 'string' || !!(t && (t.sub || t.bullets || t.pull || t.soon || t.defs)); }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
         if(typeof list[i] === 'string' && list[i+1] && list[i+1].clip){
           html += '<div class="case-split clip-split"><div>' + entryHtml(list[i]) + thumbsHtml(list[i+1]) + '</div>' + clipPhone(list[i+1].clip) + '</div>';
           i++;
-        } else if(typeof list[i] === 'string'){
-          // a run of paragraphs, then the visual that follows them on the right if it fits there
+        } else if(textLike(list[i])){
+          // a run of text (paragraphs, sub-headings, lists, quotes), then every visual that follows it, stacked on the right
           var run = [], j = i;
-          while(typeof list[j] === 'string' && !(list[j+1] && list[j+1].clip)){ run.push(list[j]); j++; }
+          while(textLike(list[j]) && !(typeof list[j] === 'string' && list[j+1] && list[j+1].clip)){ run.push(list[j]); j++; }
           if(!run.length){ html += entryHtml(list[i]); continue; }
-          if(rightColumn(list[j])){
-            html += '<div class="case-split case-pair"><div class="pair-text">' + run.map(entryHtml).join('') + '</div>' + entryHtml(list[j]) + '</div>';
-            i = j;
+          var side = [], k = j;
+          while(rightColumn(list[k])){ side.push(list[k]); k++; }
+          if(side.length){
+            html += '<div class="case-split case-pair"><div class="pair-text">' + run.map(entryHtml).join('') + '</div><div class="pair-side">' + side.map(entryHtml).join('') + '</div></div>';
+            i = k - 1;
           } else {
             html += run.map(entryHtml).join('');
             i = j - 1;
@@ -2140,7 +2153,7 @@
     nav.addEventListener('mouseleave', function(){ nav.classList.remove('held'); revealNav(); });
     nav.addEventListener('focusin', function(){ nav.classList.add('held'); revealNav(); });
     nav.addEventListener('focusout', function(){ nav.classList.remove('held'); revealNav(); });
-    caseNav = { nav:nav, bar:bar, items:items, links:nav.querySelectorAll('a'), current:-1 };
+    caseNav = { nav:nav, bar:bar, items:items, links:nav.querySelectorAll('a'), current:-1, quietUntil:Date.now() + 800 };
     updateCaseNav();
   }
   function updateCaseNav(){
@@ -2176,7 +2189,7 @@
     if(!caseNav) return;
     var n = caseNav.nav;
     var keep = n.classList.contains('held') || n.classList.contains('open');
-    if(fromScroll && caseNav.inCase){ n.classList.add('shown'); clearTimeout(navIdle); navIdle = setTimeout(function(){ revealNav(); }, 1200); return; }
+    if(fromScroll && caseNav.inCase && Date.now() > caseNav.quietUntil && window.scrollY > 120){ n.classList.add('shown'); clearTimeout(navIdle); navIdle = setTimeout(function(){ revealNav(); }, 1200); return; }
     if(!keep && !fromScroll) n.classList.remove('shown');
   }
   var navTick = false;
