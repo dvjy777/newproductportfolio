@@ -933,6 +933,11 @@
   .flowmap.plain .flow-row{ overflow-x:auto; padding-bottom:8px; }
   /* plain flows sit centred, with even room between screens */
   .flowmap.plain .flow-row{ justify-content:safe center; gap:18px; }
+  /* centred screen pairs, spaced like the flows */
+  .case-fig.centered{ max-width:none; }
+  .case-fig.centered .fig-grid{ display:flex; justify-content:center; flex-wrap:wrap; gap:40px; }
+  .case-fig.centered .fig-grid img{ width:min(280px, 42vw); height:auto; }
+  .case-fig.centered figcaption{ text-align:center; }
   .flowmap.plain .flow-stage-label{ text-align:center; }
   .flowmap.plain .flow-loops{ justify-content:center; }
   .flowmap.plain .flow-full{ display:block; margin-left:auto; margin-right:auto; }
@@ -983,6 +988,12 @@
   .carousel .cr-dot::after{ content:''; position:absolute; left:8px; top:8px; width:8px; height:8px; border-radius:50%; background:#c3cfee; }
   .carousel .cr-dot.on::after{ background:#1d5fff; }
   @media (prefers-reduced-motion: reduce){ .carousel .cr-slide{ transition:none; } }
+  /* four product screens side by side */
+  .screens4 .s4-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:28px 22px; }
+  @media(min-width:860px){ .screens4 .s4-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
+  .screens4 img{ width:100%; aspect-ratio:403/874; object-fit:cover; border-radius:22px; box-shadow:0 8px 22px rgba(20,33,61,.12), 0 0 0 1px rgba(20,33,61,.06); }
+  .screens4 b{ display:block; margin-top:12px; font-size:15px; font-weight:600; }
+  .screens4 span{ display:block; margin-top:2px; font-size:13.5px; color:var(--text-muted); line-height:1.45; }
   /* two text blocks side by side */
   .case-twocol{ display:grid; gap:8px 48px; margin:4px 0 24px; }
   @media(min-width:860px){ .case-twocol{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
@@ -1276,7 +1287,7 @@
     {
       slug:'chance-ai', company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
       title:'Reimagining Visual Agent', word:'Chance AI',
-      heroEmbed:{src:'chance-prototype/', title:'Chance AI clickable prototype', note:'Clickable prototype · tap the Dynamic Island for every step'},
+      heroEmbed:{src:'chance-prototype/', title:'Chance AI clickable prototype'},
       inProgress:true,
       accent:'#1d5fff',
       gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)',
@@ -1316,7 +1327,11 @@
         ]},
         {title:'Competitive analysis', entries:[
           'We\'ve looked at similar products in the field, including Wabi (top competitor), Google Lens, Pinterest, Apple Intelligence, and more, to identify the gaps and opportunities.',
-          {media:[{src:'images/chance/positioning.svg', alt:'Positioning map of how you ask (snap and go, to talk it through) against what you get back (exact match, to ideas). Bing, Google Lens and Apple Visual Intelligence sit low and to the left, Pinterest Lens high on the left, and Chance AI today high on the right; with a guided flow, Chance AI moves left.'}], caption:'Where Chance AI sits · placed from the competitive analysis by River Ramirez and Nina Qiu'}
+          {media:[{src:'images/chance/positioning.svg', alt:'Positioning map of how you ask (snap and go, to talk it through) against what you get back (exact match, to ideas). Bing, Google Lens and Apple Visual Intelligence sit low and to the left, Pinterest Lens high on the left, and Chance AI today high on the right; with a guided flow, Chance AI moves left.'}], caption:'Where Chance AI sits · placed from the competitive analysis by River Ramirez and Nina Qiu'},
+          {wide:true, screens:[
+            {src:'images/chance/comp-google-lens.jpg', title:'Google Lens', d:'Overview, visual matches and pages with the image', alt:'Google Lens result: a photo of a room with tabs for Overview, Visual Matches and Pages with this image, and a written description'},
+            {src:'images/chance/comp-wabi.jpg', title:'Wabi', d:'Builds mini-apps through a chat with suggested options', alt:'Wabi chat: the assistant asks what kind of mini-app to build and offers four numbered options for a habit tracker'}
+          ], caption:'Competitor screens, captured by the team'}
         ]},
         {title:'Client goals & problems', entries:[
           {sub:'1. Results page + Visual Skill'},
@@ -1348,7 +1363,7 @@
         ]},
         {kicker:'Ch.1', title:'Redefining the Chat Interface & Home Screen Renewal', entries:[
           'The client\'s first request was to redesign the Create Visual Skill page, which was a simple chat interface. My question was not why we must abandon the chat interface, but why we needed a new one and what it could do to boost user creativity.',
-          'When it comes to deep research, a chat interface is helpful. But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up. According to Hick\'s law, users find it more difficult to make a decision when they are given more choices. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity. Hence:',
+          'When it comes to deep research, a chat interface is helpful. But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up [[1]]. According to Hick\'s law, users find it more difficult to make a decision when they are given more choices [[2]] [[3]] [[4]]. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity [[5]]. Hence:',
           {hmw:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?', label:'How might we · Create Visual Skill'},
           {sub:'Step 1. Create Visual Skill'},
           {sub:'First iteration', minor:true},
@@ -1444,14 +1459,14 @@
           'That is why we designed a dedicated tab for the community (renamed “Visual skills” in a later iteration).',
           'This tab specifically highlights the work of all Chance AI users through a Pinterest-esque board that enables intuitive exploration based on users\' interests. Users land on the For You tab by default, which selects skills and outputs that are paired together within a grid system, organized by the algorithm. However, a variety of other skills can also be accessed through topics.',
           {sub:'First iteration', minor:true},
-          {media:[{src:'images/chance/home-lofi.jpg', alt:'Home lo-fi wireframe: recent shot, recent skills, Snap to Know and Create visual skill buttons, and the top 4 skills used by college students'}, {src:'images/chance/community-lofi.jpg', alt:'Community lo-fi wireframe: a two-column grid of skill cards'}], cols:3, caption:'Original wireframes: Home · Lo-fi and Community · Lo-fi'},
-          {media:[{src:'images/chance/home-hifi-v1.jpg', alt:'Home hi-fi: recent shot and recent skills, Snap to Know and Create visual skill, and the top 4 skills for college students'}, {src:'images/chance/community-hifi-v1.jpg', alt:'Community hi-fi: search, topic chips and a Pinterest-like board of skills with their creators'}], cols:3, caption:'Hi-fi screens: Home · Hi-fi (Branched) and Community · Hi-fi (Branched)'},
+          {wide:true, center:true, media:[{src:'images/chance/home-lofi.jpg', alt:'Home lo-fi wireframe: recent shot, recent skills, Snap to Know and Create visual skill buttons, and the top 4 skills used by college students'}, {src:'images/chance/community-lofi.jpg', alt:'Community lo-fi wireframe: a two-column grid of skill cards'}], cols:3, caption:'Original wireframes: Home · Lo-fi and Community · Lo-fi'},
+          {wide:true, center:true, media:[{src:'images/chance/home-hifi-v1.jpg', alt:'Home hi-fi: recent shot and recent skills, Snap to Know and Create visual skill, and the top 4 skills for college students'}, {src:'images/chance/community-hifi-v1.jpg', alt:'Community hi-fi: search, topic chips and a Pinterest-like board of skills with their creators'}], cols:3, caption:'Hi-fi screens: Home · Hi-fi (Branched) and Community · Hi-fi (Branched)'},
           {sub:'Second iteration', minor:true},
           {bullets:[
             'Added a search bar to the Community tab',
             'Added a layer to group personal skills and snapshots together'
           ], ordered:true},
-          {media:[{src:'images/chance/home-hifi-v2.jpg', alt:'Home hi-fi v2: the recent shot and recent skills grouped on one layer, with Snap to Know and Create visual skill below'}, {src:'images/chance/skills-hifi-v2.jpg', alt:'Visual skills hi-fi v2: the community board renamed Visual skills'}], cols:3, caption:'Hi-fi screens: Home · Hi-fi (Branched) v2 and Visual skills · Hi-fi (Branched) v2'}
+          {wide:true, center:true, media:[{src:'images/chance/home-hifi-v2.jpg', alt:'Home hi-fi v2: the recent shot and recent skills grouped on one layer, with Snap to Know and Create visual skill below'}, {src:'images/chance/skills-hifi-v2.jpg', alt:'Visual skills hi-fi v2: the community board renamed Visual skills'}], cols:3, caption:'Hi-fi screens: Home · Hi-fi (Branched) v2 and Visual skills · Hi-fi (Branched) v2'}
         ]},
         {kicker:'Ch.4', title:'Onboarding', entries:[
           {soon:'Work in progress.'}
@@ -1464,7 +1479,11 @@
         ]}
       ],
       references:[
-        {text:'Leviim, A. (2026, April 20). The chat box isn\'t a UI paradigm. It\'s what shipped. <em>UX Collective</em>.', url:'https://uxdesign.cc/the-chat-box-isnt-a-ui-paradigm-it-s-what-shipped-96e931d92769'}
+        {text:'Leviim, A. (2026, April 20). The chat box isn\'t a UI paradigm. It\'s what shipped. <em>UX Collective</em>.', url:'https://uxdesign.cc/the-chat-box-isnt-a-ui-paradigm-it-s-what-shipped-96e931d92769'},
+        {text:'Hick, W. E. (1952). On the rate of gain of information. <em>Quarterly Journal of Experimental Psychology, 4</em>(1), 11–26.', url:'https://doi.org/10.1080/17470215208416600'},
+        {text:'Hyman, R. (1953). Stimulus information as a determinant of reaction time. <em>Journal of Experimental Psychology, 45</em>(3), 188–196.', url:'https://doi.org/10.1037/h0056940'},
+        {text:'Yablonski, J. (n.d.). Hick\'s law. <em>Laws of UX</em>.', url:'https://lawsofux.com/hicks-law/'},
+        {text:'Nielsen, J. (2023, June 18). AI: First new UI paradigm in 60 years. <em>Nielsen Norman Group</em>.', url:'https://www.nngroup.com/articles/ai-paradigm/'}
       ]
     },
     {
@@ -1849,6 +1868,10 @@
           '<div class="cr-foot"><span class="cr-cap" aria-live="polite">'+(t.carousel[0].cap || '')+'</span><span class="cr-dots">' +
           t.carousel.map(function(m, i){ return '<button type="button" class="cr-dot'+(i ? '' : ' on')+'" data-i="'+i+'" data-cap="'+(m.cap || '')+'" aria-label="Show '+(m.cap || 'screen '+(i+1))+'"></button>'; }).join('') +
           '</span></div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      // product screens in a row of four columns
+      if(t.screens) return '<figure class="case-fig screens4"><div class="s4-grid">' + t.screens.map(function(m){
+          return '<div class="s4-item"><img src="'+m.src+'" alt="'+m.alt+'" loading="lazy"><b>'+m.title+'</b>'+(m.d ? '<span>'+m.d+'</span>' : '')+'</div>';
+        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // two blocks of text side by side
       if(t.twoCol) return '<div class="case-twocol">' + t.twoCol.map(function(col){ return '<div>' + col.map(entryHtml).join('') + '</div>'; }).join('') + '</div>';
       // the same paths as columns: one scenario per column, steps running down
@@ -1893,6 +1916,7 @@
             r.slice(1).map(function(c, i){ return '<div class="cl-cell"><span class="cl-label">'+t.table.head[i + 1]+'</span><p>'+c+'</p></div>'; }).join('') + '</div>';
         }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       var kind = t.cols === 3 ? ' phones' : t.media.length === 1 ? ' single' : ' pair';
+      if(t.center) kind += ' centered';
       return '<figure class="case-fig'+kind+'"><div class="fig-grid'+(t.cols === 3 ? ' cols-3' : t.media.length > 1 ? ' cols-2' : '')+'">' +
         t.media.map(mediaHtml).join('') + '</div>' +
         (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
@@ -2205,8 +2229,11 @@
         if(!d || !d.head || d.getElementById('fit-one-screen')) return;
         var st = d.createElement('style'); st.id = 'fit-one-screen';
         st.textContent = 'html,body{overflow:hidden!important;height:100%}' +
-          '.stage{min-height:0!important;height:100vh;padding-block:14px!important;gap:56px!important;grid-template-columns:minmax(320px,430px) auto!important}' +
-          '.panel{gap:12px!important;max-width:430px!important;max-height:calc(100vh - 28px);overflow:hidden}' +
+          /* phone in the middle, the steps split to its left and right; the panel stays the click target */
+          '.stage{min-height:0!important;height:100vh;padding:14px 24px!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;gap:40px!important;align-items:center!important}' +
+          '.panel{display:contents!important}' +
+          '.p-left,.p-right{display:flex;flex-direction:column;gap:12px;grid-row:1;align-self:center;max-width:440px;width:100%}' +
+          '.p-left{grid-column:1;justify-self:end}.device-wrap{grid-column:2;grid-row:1}.p-right{grid-column:3;justify-self:start}' +
           '.panel .p-note{display:none}.panel .p-intro{font-size:12px;line-height:1.4}' +
           '.panel .flow h4{margin:0 0 6px!important;font-size:10.5px}' +
           '.panel .flow ol{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px!important;margin:0;padding:0}' +
@@ -2219,6 +2246,15 @@
           '.panel .fl .n{font-size:10.5px;opacity:.7;width:auto!important}' +
           '.panel .fl .tag{position:absolute;top:6px;right:6px;margin:0!important;transform:scale(.75);transform-origin:top right}' +
           '.panel .pbtn{padding:6px 12px!important;font-size:11.5px!important}.panel .p-ai{font-size:11px}';
+        // regroup the panel's own parts into a left and a right column (both stay inside the panel)
+        var panel = d.getElementById('panel');
+        if(panel && !panel.querySelector('.p-left')){
+          var L = d.createElement('div'), R = d.createElement('div'), navs = panel.querySelectorAll('nav.flow');
+          L.className = 'p-left'; R.className = 'p-right';
+          [panel.querySelector('.brand'), panel.querySelector('.p-intro'), navs[0], navs[1]].forEach(function(n){ if(n) L.appendChild(n); });
+          [navs[2], panel.querySelector('.p-ctrl'), panel.querySelector('.p-ai'), panel.querySelector('.p-note')].forEach(function(n){ if(n) R.appendChild(n); });
+          panel.prepend(L); panel.appendChild(R);
+        }
         d.head.appendChild(st);
         f.contentWindow.dispatchEvent(new Event('resize'));
       } catch(e){}
