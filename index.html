@@ -955,6 +955,14 @@
   .path-step:first-child{ background:rgba(29,95,255,.16); }
   .path-step.open{ background:none; color:#1d5fff; font-weight:700; font-size:18px; padding:8px 10px; }
   .path-arrow{ color:#7d9cf0; flex:0 0 auto; }
+  /* four scenarios side by side, each a column of square blue steps */
+  .pc-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:28px 20px; }
+  @media(min-width:860px){ .pc-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
+  .pc-col{ display:flex; flex-direction:column; align-items:stretch; }
+  .pc-head{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#1d5fff; padding-bottom:10px; margin-bottom:12px; border-bottom:1.5px solid #1d5fff; }
+  .pc-col .path-step{ white-space:normal; text-align:center; }
+  .pc-col .path-step.open{ font-size:22px; }
+  .pc-arrow{ color:#7d9cf0; text-align:center; line-height:1; padding:6px 0; }
   /* tables as rows: no grid lines, each row a small block of label + text */
   .case-list .cl-rows{ display:flex; flex-direction:column; gap:22px; }
   .case-list .cl-row{ display:grid; grid-template-columns:minmax(0,1fr); gap:6px 28px; }
@@ -1287,6 +1295,25 @@
           'Visual Search is tucked inside the UI; Chance wants it to be what draws people in. Results should be visual, not text, with many blocks in one style, plus a space where anyone can make a filter-like camera skill.',
           '<strong>Focus.</strong> The priority is the Visual Skills Result page (after search and loading) and the Create Visual Skill page (currently ChatGPT-inspired). The All, Pinned and Created screens come second.'
         ]},
+        {title:'App audit', entries:[
+          '<strong>Creating a skill starts from zero, every time.</strong> Every time someone creates a visual skill, Chance AI gives them the same blank interface, and the result screen looks the same too. Each skill is built from scratch, with no context carried over from past visits. So people rarely revisit the skills they\'ve made, creating new ones stops feeling exciting, and no habit forms.',
+          '<strong>Create Visual Skill.</strong> I walked through the original flow screen by screen and marked six issues: what\'s wrong, how to fix it, and how much it matters.',
+          {media:[{src:'images/chance/before-entry.jpg', alt:'Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom'}, {src:'images/chance/before-builder.jpg', alt:'Original Skill Builder chat, annotated: 5 a linear chat, 6 a developer-style task breakdown'}, {src:'images/chance/before-building.jpg', alt:'Original building screen, annotated: 5 publishing and edits stuck in the same linear chat'}], cols:3, caption:'The original flow, annotated'},
+          {table:{head:['Issue', 'Fix', 'Severity'], rows:[
+            ['1 · No onboarding or context', 'Ask about interests or intent before the prompt', 'High'],
+            ['2 · Example prompts are fixed', 'Refresh prompts each visit from history and interests', 'High'],
+            ['3 · The icon looks like other lenses', 'Use a distinct graphic, unlike user-made skills', 'Medium'],
+            ['4 · The prompt bar sits at the bottom', 'Center the prompt bar on the first screen', 'Low'],
+            ['5 · A linear chat, like any LLM', 'Split the chat into guided, interest-based steps', 'High'],
+            ['6 · The task breakdown is for developers', 'Swap the task list for a friendlier waiting state', 'Medium']
+          ]}, wide:true, caption:'Six issues, six fixes'},
+          '<strong>Home screen.</strong> The home screen had the opposite problem: too much at once, and nothing pointing to the feature that makes Chance AI personal.',
+          {table:{head:['Issue', 'Fix'], rows:[
+            ['Too many choices at once, so people freeze (Hick\'s law)', 'Lead with one skill of the day, then the skills you use'],
+            ['No direct way to create a visual skill', 'Put Create skill first in My visual skills, one tap from home'],
+            ['Skills shown as similar round icons, hard to tell apart', 'Cards with a simple photo of an everyday object in warm light']
+          ]}, caption:'Home screen audit'}
+        ]},
         {kicker:'Ch.1', title:'Redefining the Chat Interface & Home Screen Renewal', entries:[
           'The client\'s first request was to redesign the Create Visual Skill page, which was a simple chat interface. My question was not why we must abandon the chat interface, but why we needed a new one and what it could do to boost user creativity.',
           'When it comes to deep research, a chat interface is helpful. But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up. According to Hick\'s law, users find it more difficult to make a decision when they are given more choices. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity. Hence:',
@@ -1301,7 +1328,7 @@
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps'],
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps', 'Publishes'],
             ['User doesn\'t have a clear purpose', 'Brainstorms', '?']
-          ], caption:'How people use Create Visual Skill today'},
+          ], columns:true, wide:true, heads:['Clear purpose · satisfied', 'Clear purpose · improves', 'Clear purpose · publishes', 'No clear purpose'], caption:'How people use Create Visual Skill today'},
           {sub:'Chat interface as a blank canvas', minor:true},
           'The problem was clear. The first three scenarios allow users to create something and test it until satisfied, and eventually keep or publish it (revisiting their created skills is a separate problem that we will revisit, no pun intended). But in the last scenario, where users don\'t have a clear picture of what they want or what they want to build, the chat interface becomes a literal blank canvas. Users could type some prompts to ask for help with brainstorming, just like with any LLM. Hence, such an interface could be a double-edged sword: it could be either liberating or daunting, depending on the user\'s state. It does not provide any soft cushion to fall back on. This process could be designed into a structured UI.',
           {sub:'The solution', minor:true},
@@ -1783,6 +1810,12 @@
       // label + text pairs, e.g. brand purpose, target and personality
       if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div>'+(d[2] ? '<div class="def-art" aria-hidden="true">'+d[2]+'</div>' : '')+'<dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
       // simple paths of square blue steps, e.g. how people use a feature
+      // the same paths as columns: one scenario per column, steps running down
+      if(t.paths && t.columns) return '<figure class="case-fig case-paths-cols"><div class="pc-grid">' + t.paths.map(function(col, ci){
+          return '<div class="pc-col"><div class="pc-head">'+(t.heads ? t.heads[ci] : 'Scenario '+(ci+1))+'</div>' + col.map(function(step, i){
+            return (i ? '<span class="pc-arrow" aria-hidden="true">↓</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>';
+          }).join('') + '</div>';
+        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       if(t.paths) return '<figure class="case-fig case-paths">' + t.paths.map(function(row){
           return '<div class="path-row">' + row.map(function(step, i){ return (i ? '<span class="path-arrow" aria-hidden="true">→</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>'; }).join('') + '</div>';
         }).join('') + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
@@ -2116,13 +2149,20 @@
         if(!d || !d.head || d.getElementById('fit-one-screen')) return;
         var st = d.createElement('style'); st.id = 'fit-one-screen';
         st.textContent = 'html,body{overflow:hidden!important;height:100%}' +
-          '.stage{min-height:0!important;height:100vh;padding-block:12px!important;gap:48px!important}' +
-          '.panel{gap:9px!important;max-height:calc(100vh - 24px);overflow:hidden}' +
+          '.stage{min-height:0!important;height:100vh;padding-block:14px!important;gap:56px!important;grid-template-columns:minmax(320px,430px) auto!important}' +
+          '.panel{gap:12px!important;max-width:430px!important;max-height:calc(100vh - 28px);overflow:hidden}' +
           '.panel .p-note{display:none}.panel .p-intro{font-size:12px;line-height:1.4}' +
-          '.panel .flow h4{margin:0 0 1px!important;font-size:10px}' +
-          '.panel .fl{padding-block:2px!important;font-size:12.5px!important;min-height:0!important}' +
-          '.panel .flow ol{gap:0!important}.panel .fl .tag{transform:scale(.8)}' +
-          '.panel .pbtn{padding:5px 11px!important;font-size:11.5px!important}.panel .p-ai{font-size:11px}';
+          '.panel .flow h4{margin:0 0 6px!important;font-size:10.5px}' +
+          '.panel .flow ol{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px!important;margin:0;padding:0}' +
+          '.panel .flow li{display:block}' +
+          '.panel .fl{position:relative;width:100%;aspect-ratio:1;min-height:0!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:space-between!important;' +
+            'gap:4px!important;padding:8px!important;border-radius:14px!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.08)!important;' +
+            'font-size:11.5px!important;line-height:1.2!important;text-align:left;white-space:normal!important}' +
+          '.panel .fl:hover{background:rgba(255,255,255,.12)!important}' +
+          '.panel .fl.on{background:#1d5fff!important;border-color:#1d5fff!important;color:#fff!important}' +
+          '.panel .fl .n{font-size:10.5px;opacity:.7;width:auto!important}' +
+          '.panel .fl .tag{position:absolute;top:6px;right:6px;margin:0!important;transform:scale(.75);transform-origin:top right}' +
+          '.panel .pbtn{padding:6px 12px!important;font-size:11.5px!important}.panel .p-ai{font-size:11px}';
         d.head.appendChild(st);
         f.contentWindow.dispatchEvent(new Event('resize'));
       } catch(e){}
