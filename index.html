@@ -907,6 +907,37 @@
   .proto-screen iframe{ display:block; width:100%; height:100%; border:0; pointer-events:none; }
   .proto-demo figcaption{ text-align:center; }
   .proto-screen video{ display:block; width:100%; height:100%; object-fit:cover; }
+
+  /* ---------- chapters, timeline and the pieces used inside them ---------- */
+  .timeline-card{ margin-top:14px; }
+  .tl{ list-style:none; margin:0; padding:0; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(150px,1fr); gap:0 18px; overflow-x:auto; position:relative; }
+  .tl-step{ position:relative; padding-top:26px; }
+  .tl-step::before{ content:''; position:absolute; left:0; right:-18px; top:6px; border-top:1.5px solid var(--gl-accent, var(--accent)); opacity:.45; }
+  .tl-step:last-child::before{ right:0; }
+  .tl-dot{ position:absolute; left:0; top:1px; width:11px; height:11px; border-radius:50%; background:var(--bg); border:1.5px solid var(--gl-accent, var(--accent)); }
+  .tl-when{ font-size:13px; font-weight:600; color:var(--gl-accent, var(--accent)); margin-bottom:6px; }
+  .tl-item{ font-size:14px; line-height:1.45; color:var(--text); }
+  .tl-item + .tl-item{ margin-top:3px; }
+  .chapter-kicker{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--nav-accent, var(--accent)); margin-bottom:6px; }
+  #case-view .case-block.chapter > h4.label{ font-size:clamp(28px,3.8vw,40px); }
+  .case-sub{ font-size:clamp(20px,2.4vw,25px); font-weight:500; margin:34px 0 12px; letter-spacing:-.01em; }
+  .case-sub.minor{ font-size:18px; font-weight:600; margin:28px 0 8px; }
+  .case-bullets{ margin:0 0 16px; padding-left:1.3em; max-width:64ch; font-size:17px; line-height:1.65; }
+  .case-bullets li + li{ margin-top:6px; }
+  .case-pull{ margin:4px 0 18px; padding-left:18px; border-left:2px solid var(--nav-accent, var(--accent)); font-size:clamp(18px,2vw,21px); line-height:1.45; max-width:44em; }
+  .case-hmw{ margin:26px 0; }
+  .case-hmw .label{ margin-bottom:8px; }
+  .case-soon{ color:var(--text-muted); font-style:italic; }
+  .case-defs{ margin:0; display:grid; gap:18px; max-width:64ch; }
+  .case-defs dt{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+  .case-defs dd{ margin:0; font-size:17px; line-height:1.6; }
+  /* square, blue-tinted steps in Chance AI's own style */
+  .case-paths{ display:flex; flex-direction:column; gap:12px; overflow-x:auto; padding-bottom:4px; }
+  .path-row{ display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
+  .path-step{ flex:0 0 auto; padding:10px 14px; font-size:14px; line-height:1.3; color:#0e2a7a; background:rgba(29,95,255,.08); white-space:nowrap; }
+  .path-step:first-child{ background:rgba(29,95,255,.16); }
+  .path-step.open{ background:none; color:#1d5fff; font-weight:700; font-size:18px; padding:8px 10px; }
+  .path-arrow{ color:#7d9cf0; flex:0 0 auto; }
   /* tables as rows: no grid lines, each row a small block of label + text */
   .case-list .cl-rows{ display:flex; flex-direction:column; gap:22px; }
   .case-list .cl-row{ display:grid; grid-template-columns:minmax(0,1fr); gap:6px 28px; }
@@ -1191,85 +1222,182 @@
     },
     {
       slug:'chance-ai', company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
-      title:'Making visual skills easier to find and create', word:'Chance AI',
+      title:'Reimagining Visual Agent', word:'Chance AI',
       inProgress:true,
       accent:'#1d5fff',
       gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)',
-      blurb:'Redesigning how people find and create visual skills in Chance AI, an agent that analyzes images. Work in progress.',
-      role:'Product designer', timeline:'2 months, 2026', team:'AStudio team, with Chance AI',
+      blurb:'Redesigning how people find, create and share visual skills in Chance AI, a visual AI agent. Work in progress.',
+      meta:[
+        ['Role', 'Product Designer, focused on Create Visual Skill, the Home screen and the Community tab'],
+        ['Duration', '2 months (September 2026 – October 2026)'],
+        ['Team', 'AStudio (Lucy Liu, River Ramirez, Nina Qiu)'],
+        ['Client', 'Chance AI'],
+        ['Project type', 'Product Design, User Testing, Prototyping'],
+        ['Keywords', 'AI agent, Visual Language Model, Social AI']
+      ],
       glanceTint:{ accent:'#1d5fff', line:'rgba(29,95,255,.22)', bg:'linear-gradient(120deg, rgba(29,95,255,.08), rgba(157,184,255,.12))' },
       glance:{
         problem:'Chance AI\'s image analysis is strong, but there\'s no easy way to browse or create skills. The app feels too broad and doesn\'t adapt to each person, which can lead to choice paralysis.',
-        role:'Product designer on the AStudio team. I focused on Create Visual Skill and the home screen.',
+        role:'Product designer on the AStudio team, focused on Create Visual Skill, the Home screen and the Community tab.',
         decision:'Replace the empty chat with a guided flow of suggestions, while keeping free prompting one tap away.',
         outcome:'Hi-fi screens for the whole Create Visual Skill flow, including the alternate paths, and a user flow that ties them together.'
       },
-      overview:'Chance AI is a general-purpose agent, built on a visual language model, that analyzes images. Its core feature, Create Visual Skill, lets you build your own dedicated agent for a specific kind of analysis, and you can also browse preset skills made by other users. Chance AI asked our team at AStudio to redesign three parts of the app: Create Visual Skill, which currently runs as a linear chat; the home screen, so key skills are easier to reach; and the result page, so answers are easier to read and navigate. I focused on Create Visual Skill and the home screen.',
-      statements:[
-        {label:'Problem statement', quote:'Chance AI\'s visual language model is its strength, and the team positions it ahead of general tools like Gemini and ChatGPT for image analysis. But the app offers no easy way to browse or create skills, so users are left to work out their own intent. The experience lacks context and doesn\'t adapt to each person\'s taste, so it feels too broad, which can lead to choice paralysis.'},
-        {label:'How might we · Create Visual Skill', quote:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?'},
-        {label:'How might we · Home screen', quote:'How might we redesign the home screen so the skills people return to are easy to reach, and creating a new skill is one tap away?'},
-        {label:'How might we · Visual design', quote:'How might we make the app feel more cohesive and inviting, and less AI-generated?', note:'This led to new skill artwork in place of the round icons.'}
+      timeline:[
+        {when:'Week 1', items:['First client meeting', 'Problem identification', 'First proposal']},
+        {when:'Week 2', items:['App audit', 'Competitive analysis', 'User flow', 'First draft of wireframes']},
+        {when:'Hi-fi', items:['First high-fidelity prototypes']},
+        {when:'Mentor meeting 1', items:['Redefining scope']},
+        {when:'Mentor meeting 2', items:['Second iteration (Create Visual Skill)']},
+        {when:'Mentor meeting 3', items:['Redesigned Home screen + Community tab']}
       ],
-      research:[
-        '<strong>Creating a skill starts from zero, every time.</strong> Every time someone creates a visual skill, Chance AI gives them the same blank interface, and the result screen looks the same too. Each skill is built from scratch, with no context carried over from past visits. So people rarely revisit the skills they\'ve made, creating new ones stops feeling exciting, and no habit forms.',
-        '<strong>Auditing Create Visual Skill.</strong> I walked through the original flow screen by screen and marked six issues: what\'s wrong, how to fix it, and how much it matters.',
-        {media:[{src:'images/chance/before-entry.jpg', alt:'Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom'}, {src:'images/chance/before-builder.jpg', alt:'Original Skill Builder chat, annotated: 5 a linear chat, 6 a developer-style task breakdown'}, {src:'images/chance/before-building.jpg', alt:'Original building screen, annotated: 5 publishing and edits stuck in the same linear chat'}], cols:3, caption:'The original flow, annotated'},
-        {table:{compact:true, head:['Issue', 'Fix', 'Severity'], rows:[
-          ['1 · No onboarding or context', 'Ask about interests or intent before the prompt', 'High'],
-          ['2 · Example prompts are fixed', 'Refresh prompts each visit from history and interests', 'High'],
-          ['3 · The icon looks like other lenses', 'Use a distinct graphic, unlike user-made skills', 'Medium'],
-          ['4 · The prompt bar sits at the bottom', 'Center the prompt bar on the first screen', 'Low'],
-          ['5 · A linear chat, like any LLM', 'Split the chat into guided, interest-based steps', 'High'],
-          ['6 · The task breakdown is for developers', 'Swap the task list for a friendlier waiting state', 'Medium']
-        ]}, caption:'Six issues, six fixes'},
-        '<strong>Auditing the home screen.</strong> The home screen had the opposite problem from Create Visual Skill: too much at once, and nothing pointing to the feature that makes Chance AI personal.',
-        {table:{compact:true, head:['Issue', 'Fix'], rows:[
-          ['Too many choices at once, so people freeze (Hick\'s law)', 'Lead with one skill of the day, then the skills you use'],
-          ['No direct way to create a visual skill', 'Put Create skill first in My visual skills, one tap from home'],
-          ['Skills shown as similar round icons, hard to tell apart', 'Cards with a simple photo of an everyday object in warm light']
-        ]}, caption:'Home screen audit'}
-      ],
-      journey:[
-        '<strong>Key decision: a guided, interest-based flow.</strong> Instead of starting from an empty chat, Create Visual Skill starts from what you\'re into, and free prompting is still one tap away. For first-time users it works like onboarding. For regular users, it builds on the skills they\'ve used and the topics they care about, so every visit starts with context.',
-        '<strong>Low-fi wireframes.</strong> I mapped the flow in grayscale first: the main path from interest to saved skill, plus the side paths for other topics, making your own and improving a skill.',
-        {flow:{plain:true, stages:[
-          {label:'Low-fi · main flow', nodes:[
-            {img:'images/chance/wf-01-interest.jpg', title:'Pick an interest'},
-            {img:'images/chance/wf-02-tool.jpg', title:'Choose a tool'},
-            {img:'images/chance/wf-03-building.jpg', title:'Building'},
-            {img:'images/chance/wf-04-ready.jpg', title:'Your skill is ready'},
-            {img:'images/chance/wf-05-added.jpg', title:'Added to my skills'}
+      overviewTitle:'Project overview',
+      overview:'Chance AI offers visual agentic AI. Its core features are image understanding, photo editing, and customizable visual skills. The company is working to reach the right audience and refine its visual skills, and it plans to make its UX and branding more consistent for its next launch.',
+      chapters:[
+        {title:'About Chance AI', entries:[
+          {defs:[
+            ['Brand purpose', 'Chance AI offers ready-to-use AI agents powered by its in-house Vision Language Model (VLM). Users can build their own skills or choose from prebuilt lenses.'],
+            ['Brand target', 'Chance AI mainly targets Gen Z and college students. Women make up a slight majority of users, with a female-to-male ratio of 5.5:4.5.'],
+            ['Brand personality', 'Chance AI has a clean, minimal aesthetic, similar to Airbnb and Spotify.']
+          ]}
+        ]},
+        {title:'Competitive analysis', entries:[
+          'We\'ve looked at similar products in the field, including Wabi (top competitor), Google Lens, Pinterest, Apple Intelligence, and more, to identify the gaps and opportunities.',
+          {table:{head:['Product', 'Price', 'Style', 'Primary SEO target', 'Ease of use', 'Quality of results'], rows:[
+            ['Bing', '<strong>100% free</strong>, with access through Bing\'s mobile app and Microsoft Edge', '<strong>Clean, functional and utility-driven:</strong> plain and image-first UI', 'Image description, similar images, object identification, product discovery, text identification and translation', '<strong>Straightforward but limited:</strong> users only need to take or upload a photo, but cannot put in text, which eliminates further conversation.', '<strong>Task-oriented and accurate:</strong> high accuracy in both object and text recognition.'],
+            ['Pinterest', '100% free, with monetization generated from shoppable ads, checkout commissions and promotions', 'Aesthetic prioritization with visually rich, moodboard-centered layouts, highlighting creative trends and clean visuals', 'Engagement metadata: strategic pin titles, descriptions, hashtags, board names, etc. Internal platform traffic, saves, clicks, partnerships/promotions', 'Immersive and discoverable: integrated well into content browsing. Easy to pin and save items. Occasional irrelevant search recommendations.', 'Contextual aesthetics: finds items that look similar and feel cohesive with the image\'s “vibe.”'],
+            ['Google', '100% free, with monetization generated indirectly (unassociated with this particular service)', 'Functional: plain/minimalist UI, optimized for quick functionality, widgets, and direct web links', 'On-page SEO: product feeds, exact alt text and explicit keywords drive organic web traffic, image search clicks, shopping sales, etc.', 'Fast and efficient: instant activation via “Circle to Search” or home screen widgets. Low friction, possible overwhelm of results.', 'High match accuracy: retrieves exact product stock metrics, reads barcodes, translates text, and finds exact duplicates.'],
+            ['Apple Visual Intelligence', '<strong>Free</strong> on compatible Apple devices with iOS 27 or later (may require a new product purchase or system upgrade)', '<strong>Minimal and system-integrated:</strong> follows Apple\'s existing UI (the glass effects)', 'Object identification, product match, text identification and summary, completing simple tasks (like adding events to a calendar)', '<strong>Highly integrated into existing device functions:</strong> users can activate it through camera controls, the Control Center, or the Action button.', '(Uses AFM, occasionally handing questions to ChatGPT.) Strong for everyday objects and text; can connect recognition to actions. Less reliable for ambiguous object identification; product matching often relies on external search providers.'],
+            ['Chance AI', 'Free with limited use, $70/yr for quality use and deeper utilization', 'Minimal and analytical: while clean, it offers text-heavy breakdowns and descriptive tags.', 'Technical accuracy: design genres, materials, concepts, etc. Generates descriptive search keywords to bridge users to the web.', 'Conversational and interactive: a chat box is used for a conversational user flow around the image search to gain further context.', 'Conceptual accuracy: explains abstract themes and design genres/language. Lower accuracy for serial number and barcode matching.']
+          ]}, caption:'Competitive analysis by River Ramirez and Nina Qiu'}
+        ]},
+        {title:'Client goals & problems', entries:[
+          {sub:'1. Results page + Visual Skill'},
+          'Visual Search is tucked inside the UI; Chance wants it to be what draws people in. Results should be visual, not text, with many blocks in one style, plus a space where anyone can make a filter-like camera skill.',
+          '<strong>Focus.</strong> The priority is the Visual Skills Result page (after search and loading) and the Create Visual Skill page (currently ChatGPT-inspired). The All, Pinned and Created screens come second.'
+        ]},
+        {kicker:'Ch.1', title:'Redefining the Chat Interface & Home Screen Renewal', entries:[
+          'The client\'s first request was to redesign the Create Visual Skill page, which was a simple chat interface. My question was not why we must abandon the chat interface, but why we needed a new one and what it could do to boost user creativity.',
+          'I had done some research on why the chat interface was chosen as the default interface for LLMs, which can be found <a href="https://uxdesign.cc/the-chat-box-isnt-a-ui-paradigm-it-s-what-shipped-96e931d92769" target="_blank" rel="noopener">here</a> [[1]].',
+          'When it comes to deep research, a chat interface is helpful. But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up. According to Hick\'s law, users find it more difficult to make a decision when they are given more choices. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity. Hence:',
+          {hmw:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?', label:'How might we · Create Visual Skill'},
+          {hmw:'How might we redesign the home screen so the skills people return to are easy to reach, and creating a new skill is one tap away?', label:'How might we · Home screen'},
+          {hmw:'How might we make the app feel more cohesive and inviting, and less AI-generated?', label:'How might we · Visual design'},
+          {sub:'Step 1. Create Visual Skill'},
+          {sub:'First iteration', minor:true},
+          '<strong>Key decisions made:</strong> topic suggestion, skill suggestion, build summary, user-friendly loading copy.',
+          {sub:'How people use Create Visual Skill', minor:true},
+          'I tested making skills myself to understand the general workflow. The workflows I identified were roughly like this:',
+          {paths:[
+            ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If satisfied', 'Keeps'],
+            ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps'],
+            ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps', 'Publishes'],
+            ['User doesn\'t have a clear purpose', 'Brainstorms', '?']
+          ], caption:'How people use Create Visual Skill today'},
+          {sub:'Chat interface as a blank canvas', minor:true},
+          'The problem was clear. The first three scenarios allow users to create something and test it until satisfied, and eventually keep or publish it (revisiting their created skills is a separate problem that we will revisit, no pun intended). But in the last scenario, where users don\'t have a clear picture of what they want or what they want to build, the chat interface becomes a literal blank canvas. Users could type some prompts to ask for help with brainstorming, just like with any LLM. Hence, such an interface could be a double-edged sword: it could be either liberating or daunting, depending on the user\'s state. It does not provide any soft cushion to fall back on. This process could be designed into a structured UI.',
+          {sub:'The solution', minor:true},
+          'My solution was to break down the chat interface into a guided flow that adapts to users\' history and needs. It starts with topic suggestions, showing the top 4 topics users could be interested in. Once a topic is chosen, it shows you relevant skills. At the same time, free prompting is available if none of the skills are what you want. The build summary gives you keywords for what Chance would build based on your prompt, giving you a clear picture of what the final outcome would be. Making improvements works the same way.',
+          {flow:{plain:true, stages:[
+            {label:'Lo-fi · main flow', nodes:[
+              {img:'images/chance/wf-01-interest.jpg', title:'Pick an interest'},
+              {img:'images/chance/wf-02-tool.jpg', title:'Choose a tool'},
+              {img:'images/chance/wf-03-building.jpg', title:'Building'},
+              {img:'images/chance/wf-04-ready.jpg', title:'Your skill is ready'},
+              {img:'images/chance/wf-05-added.jpg', title:'Added to my skills'}
+            ]},
+            {label:'Lo-fi · other paths', nodes:[
+              {img:'images/chance/wf-other.jpg', title:'Choose other'},
+              {img:'images/chance/wf-make-own.jpg', title:'Make my own'},
+              {img:'images/chance/wf-improve.jpg', title:'Improve'}
+            ]}
+          ]}, caption:'Create Visual Skill · Lo-fi wireframes, user flow · tap any screen to enlarge'},
+          {flow:{plain:true, full:'images/chance/flow-hifi.jpg', stages:[
+            {label:'Hi-fi · main flow', nodes:[
+              {img:'images/chance/new-01-interest.jpg', title:'Pick an interest'},
+              {img:'images/chance/new-02-tool.jpg', title:'Choose a tool', hub:true},
+              {img:'images/chance/new-03-building.jpg', title:'Building'},
+              {img:'images/chance/new-04-ready.jpg', title:'Your skill is ready'},
+              {img:'images/chance/new-05-added.jpg', title:'Added to my skills'}
+            ]},
+            {label:'Hi-fi · other paths', nodes:[
+              {img:'images/chance/alt-other.jpg', title:'Choose other'},
+              {img:'images/chance/alt-make-own.jpg', title:'Make my own'},
+              {img:'images/chance/alt-sent.jpg', title:'Check your request'},
+              {img:'images/chance/alt-improve.jpg', title:'Improve'}
+            ]}
+          ]}, caption:'Hi-fi · Create Visual Skill, user flow · tap any screen to enlarge'},
+          {protoVideo:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Prototype: picking Fashion, choosing Outfit Rater, the skill building, then Confirm and Try it now'}, caption:'The main flow, prototyped'},
+          {sub:'Second iteration', minor:true},
+          '<strong>After mentor meeting 1.</strong> Mentors pointed out two key issues in the redesigned flow:',
+          {pull:'There are no ways to access an already created skill if what the user is trying to create already exists.'},
+          'This was also proven by the client\'s direction, as they wanted users to make their own skills but still have access to already existing skills if they match the user\'s intention.',
+          'Hence, a popular skills section was added to the landing page of Create Visual Skill, where you can see the top 4 popular skills. Also, an “Already made for you” section that shows existing skills the user could be interested in was added to the skill suggestion screen. Last but not least, the free prompting screen shows you similar skills that already exist based on the user\'s input. Through these multi-stage suggestions, users can make sure that what they create doesn\'t already exist, and if it does, they can easily access it at different stages of the flow.',
+          {sub:'Changes made', minor:true},
+          {bullets:[
+            'Top 4 popular skills accessible on the landing page of Create Visual Skill',
+            '“Already made for you” and “Similar skills already exist” sections that match already existing skills with the user\'s intent'
           ]},
-          {label:'Low-fi · other paths', nodes:[
-            {img:'images/chance/wf-other.jpg', title:'Choose other'},
-            {img:'images/chance/wf-make-own.jpg', title:'Make my own'},
-            {img:'images/chance/wf-improve.jpg', title:'Improve'}
-          ]}
-        ]}, caption:'Low-fi wireframes · tap any screen to enlarge'},
-        '<strong>Hi-fi.</strong> The same flow, in the visual system shared with the team\'s Home and Visual skills screens.',
-        {flow:{plain:true, full:'images/chance/flow-hifi.jpg', stages:[
-          {label:'01 · Main flow', nodes:[
-            {img:'images/chance/new-01-interest.jpg', title:'Pick an interest', tag:'from your latest interests'},
-            {img:'images/chance/new-02-tool.jpg', title:'Choose a tool', tag:'e.g. Fashion → Outfit Rater', hub:true},
-            {img:'images/chance/new-03-building.jpg', title:'Building', tag:'plain-language steps'},
-            {img:'images/chance/new-04-ready.jpg', title:'Your skill is ready', tag:'try it, improve or confirm'},
-            {img:'images/chance/new-05-added.jpg', title:'Added to my skills', tag:'saved next to your others'}
-          ], loops:['Improve: tell Chance what to change, then confirm', 'Back to Create from the last screen']},
-          {label:'02 · Other paths', nodes:[
-            {img:'images/chance/alt-other.jpg', title:'Choose other', tag:'pick or describe a topic'},
-            {img:'images/chance/alt-make-own.jpg', title:'Make my own', tag:'free prompt, with photos'},
-            {img:'images/chance/alt-sent.jpg', title:'Check your request', tag:'what we\'ll build'},
-            {img:'images/chance/alt-improve.jpg', title:'Improve', tag:'suggested changes'}
-          ]}
-        ]}, caption:'The new Create Visual Skill flow, built from the hi-fi screens · tap any screen to enlarge'},
-        {protoVideo:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Prototype: picking Fashion, choosing Outfit Rater, the skill building, then Confirm and Try it now'}, caption:'The main flow, prototyped: pick an interest, choose a tool, build, confirm'},
-        '<strong>A waiting state people can read.</strong> The old task breakdown listed developer steps like "Choosing UI components". The new building screen shows the skill\'s subject and steps in plain language, like "Setting rating criteria".',
-        {media:[{src:'images/chance/before-builder.jpg', alt:'Before: a task breakdown card listing developer steps'}, {src:'images/chance/new-03-building.jpg', alt:'After: Building your Wardrobe Analyzer, with a photo and plain-language steps'}], cols:3, caption:'Before and after: the waiting state'},
-        '<strong>Home and Visual skills.</strong> Create skill now sits first in My visual skills on the home screen, one tap away. Skills became cards with a simple photo of an everyday object in warm light, in place of the round icons. I built the Create Visual Skill screens on the same system as the team\'s Home and Visual skills screens: the same nav, type, chips, cards, image style and 20px margins.',
-        {media:[{src:'images/chance/new-home.jpg', alt:'New home screen: Today\'s skill, Design Has Reasons, with Snap to know, then My visual skills starting with Create skill'}, {src:'images/chance/new-skills.jpg', alt:'New Visual skills screen: filter chips and skill cards with photos of everyday objects'}], cols:3, caption:'Home and Visual skills'}
+          {flow:{plain:true, stages:[
+            {label:'Hi-fi V2 · main flow', nodes:[
+              {img:'images/chance/v2-01-interest.jpg', title:'Pick an interest', tag:'popular skills'},
+              {img:'images/chance/v2-02-tool.jpg', title:'Choose a tool', tag:'already made for you', hub:true},
+              {img:'images/chance/new-03-building.jpg', title:'Building'},
+              {img:'images/chance/new-04-ready.jpg', title:'Your skill is ready'},
+              {img:'images/chance/new-05-added.jpg', title:'Added to my skills'}
+            ]},
+            {label:'Hi-fi V2 · make my own', nodes:[
+              {img:'images/chance/v2-make-own.jpg', title:'Make my own'},
+              {img:'images/chance/v2-sent.jpg', title:'Check your request', tag:'similar skills already exist', hub:true},
+              {img:'images/chance/v2-used-by-others.jpg', title:'Already used by others'},
+              {img:'images/chance/v2-private.jpg', title:'Your own private skill'}
+            ]}
+          ]}, caption:'Hi-fi · Create Visual Skill, user flow · V2 (after client meeting, Oct 22) · tap any screen to enlarge'},
+          {sub:'Client meeting feedback', minor:true},
+          'The client was very impressed with our first high-fidelity prototype, and was especially satisfied with the breakdown flow of the redesigned Create Visual Skill. During the meeting, the client showed our team the work-in-progress design that the in-house design team was working on, suggesting ways to consolidate the two designs.'
+        ]},
+        {kicker:'Ch.2', title:'Home Screen Inspection', entries:[
+          'Our team sat down with a mentor from Adobe to audit the redesigned home screen. The updated minimalistic aesthetic for skill thumbnails was easier on the eyes, and the general organization looked much better, but it still felt off in some sense. We soon realized it was the inconsistency across the same flows and the same functions that led to this scatteredness.',
+          'The problem was twofold:',
+          {bullets:[
+            'The top banner showed a carousel of images that included skills such as Snap to Know, which was a default image analyzer that was also easily accessible through the main tab (a one-tap action from the camera icon).',
+            'Accessing various visual skills came in inconsistent forms and card designs, including the banner action, circle icons in the My visual skills carousel, and rectangle cards that were inconsistent in their forms and designs.'
+          ], ordered:true},
+          {hmw:'How might we position Snap to Know as the default visual skill, so users discover specialized skills as natural extensions of what they already use?', label:'How might we'},
+          'To tackle this major issue, I reimagined what a simpler home screen would look like:',
+          {bullets:[
+            'Unifying all skills into an identical or similar card format that applies equally throughout the app.',
+            'Removing the banner and bringing Snap to Know and Create Visual Skill in as the two key tap-to-action buttons, accessible directly from the home screen.'
+          ], ordered:true},
+          'This way, users can identify two diverging flows as soon as they open the home screen: either to take a picture and go into the default analysis, or to create a visual skill they would like to use for specialized cases that are a natural extension of the default mode.',
+          'However, the question remained: “How do users get to freely explore visual skills that are created by others?”'
+        ]},
+        {kicker:'Ch.3', title:'Making Them Social: Community Tab (renamed “Visual Skills”)', entries:[
+          'In the current app, all visual skills, whether created by the user or by other users, were placed on the home screen, accessible through endless scrolling. Although there was basic organization by generic topic categories, most of them were just there filling up the screen with no context. We imagined how this abundance of visual skills could be highlighted as a form of creativity and connect users at the same time.',
+          'That is why we designed a dedicated tab for the community (renamed “Visual skills” in a later iteration).',
+          'This tab specifically highlights the work of all Chance AI users through a Pinterest-esque board that enables intuitive exploration based on users\' interests. Users land on the For You tab by default, which selects skills and outputs that are paired together within a grid system, organized by the algorithm. However, a variety of other skills can also be accessed through topics.',
+          {sub:'First iteration', minor:true},
+          {media:[{src:'images/chance/home-lofi.jpg', alt:'Home lo-fi wireframe: recent shot, recent skills, Snap to Know and Create visual skill buttons, and the top 4 skills used by college students'}, {src:'images/chance/community-lofi.jpg', alt:'Community lo-fi wireframe: a two-column grid of skill cards'}], cols:3, caption:'Original wireframes: Home · Lo-fi and Community · Lo-fi'},
+          {media:[{src:'images/chance/home-hifi-v1.jpg', alt:'Home hi-fi: recent shot and recent skills, Snap to Know and Create visual skill, and the top 4 skills for college students'}, {src:'images/chance/community-hifi-v1.jpg', alt:'Community hi-fi: search, topic chips and a Pinterest-like board of skills with their creators'}], cols:3, caption:'Hi-fi screens: Home · Hi-fi (Branched) and Community · Hi-fi (Branched)'},
+          {sub:'Second iteration', minor:true},
+          {bullets:[
+            'Added a search bar to the Community tab',
+            'Added a layer to group personal skills and snapshots together'
+          ], ordered:true},
+          {media:[{src:'images/chance/home-hifi-v2.jpg', alt:'Home hi-fi v2: the recent shot and recent skills grouped on one layer, with Snap to Know and Create visual skill below'}, {src:'images/chance/skills-hifi-v2.jpg', alt:'Visual skills hi-fi v2: the community board renamed Visual skills'}], cols:3, caption:'Hi-fi screens: Home · Hi-fi (Branched) v2 and Visual skills · Hi-fi (Branched) v2'}
+        ]},
+        {kicker:'Ch.4', title:'Onboarding', entries:[
+          {soon:'Work in progress.'}
+        ]},
+        {title:'Reflection', entries:[
+          'As someone who has been deeply passionate about designing UX for AI, working with a client that is leading the industry in visual language models was an exciting challenge. I realized that product strategy is as important as designing UX, as UX is derived from the primary goal of the product. At the same time, it was a big challenge for our design team to work with a more lenient client who wanted us to explore instead of coming up with an optimal solution. We took this as an opportunity to break free, test wild ideas while refining them to industry standards, and reimagine what the future of AI visual agents could look like.'
+        ]},
+        {title:'Moving forward…', entries:[
+          {soon:'Coming soon.'}
+        ]}
       ],
-      planned:['Outcomes', 'Reflection']
+      references:[
+        {text:'Leviim, A. (2026, April 20). The chat box isn\'t a UI paradigm. It\'s what shipped. <em>UX Collective</em>.', url:'https://uxdesign.cc/the-chat-box-isnt-a-ui-paradigm-it-s-what-shipped-96e931d92769'}
+      ]
     },
     {
       slug:'inyun', company:'INYUN', tagline:'PRODUCT DESIGN · 2026',
@@ -1611,10 +1739,10 @@
   var caseView = document.getElementById('case-view');
 
   function renderCase(p){
-    var metaFields = [
+    var metaFields = (p.meta || [
       ['Role', p.role], ['Timeline', p.timeline], ['Team', p.team], ['Tools', p.tools],
       ['Skills', p.skills && p.skills.length ? p.skills.join(', ') : '']
-    ].filter(function(f){ return f[1]; });
+    ]).filter(function(f){ return f[1]; });
     var metaHtml = metaFields.length ? ('<div class="meta-grid">' +
       metaFields.map(function(f){ return '<div><div class="label">'+f[0]+'</div><p>'+f[1]+'</p></div>'; }).join('') +
       '</div>') : '';
@@ -1636,6 +1764,19 @@
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
       if(t.flow) return flowHtml(t);
+      // sub-headings, lists, pull quotes and placeholders inside a chapter
+      if(t.sub) return '<h5 class="case-sub'+(t.minor ? ' minor' : '')+'">'+t.sub+'</h5>';
+      if(t.bullets) return (t.ordered ? '<ol' : '<ul')+' class="case-bullets">' + t.bullets.map(function(b){ return '<li>'+cites(b)+'</li>'; }).join('') + (t.ordered ? '</ol>' : '</ul>');
+      if(t.pull) return '<blockquote class="case-pull">“'+t.pull+'”</blockquote>';
+      if(t.soon) return '<p class="body-text case-soon">'+t.soon+'</p>';
+      // a large How might we statement, the same as the ones under the overview
+      if(t.hmw) return '<div class="case-hmw">'+(t.label ? '<div class="label">'+t.label+'</div>' : '')+'<blockquote class="statement-quote"><span class="qm">“</span>'+t.hmw+'<span class="qm">”</span></blockquote></div>';
+      // label + text pairs, e.g. brand purpose, target and personality
+      if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div><dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
+      // simple paths of square blue steps, e.g. how people use a feature
+      if(t.paths) return '<figure class="case-fig case-paths">' + t.paths.map(function(row){
+          return '<div class="path-row">' + row.map(function(step, i){ return (i ? '<span class="path-arrow" aria-hidden="true">→</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>'; }).join('') + '</div>';
+        }).join('') + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // one phone that loops an action, with buttons underneath to switch actions
       if(t.phone){
         var o0 = t.phone.options[0];
@@ -1700,6 +1841,14 @@
         '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
     }
     // At a glance: problem, role, key decision, outcome, plus a few numbers
+    // a project timeline drawn as one line with stops, in its own card under At a glance
+    function timelineHtml(steps, tint){
+      if(!steps || !steps.length) return '';
+      var style = tint ? ' style="--gl-accent:'+tint.accent+'; --gl-line:'+tint.line+'; --gl-bg:'+tint.bg+'"' : '';
+      return '<section class="glance timeline-card" aria-label="Timeline"'+style+'><div class="glance-head label">Timeline</div><ol class="tl">' +
+        steps.map(function(st){ return '<li class="tl-step"><span class="tl-dot" aria-hidden="true"></span><div class="tl-when">'+st.when+'</div>' + st.items.map(function(it){ return '<div class="tl-item">'+it+'</div>'; }).join('') + '</li>'; }).join('') +
+        '</ol></section>';
+    }
     function glanceHtml(g, tint){
       if(!g) return '';
       var style = tint ? ' style="--gl-accent:'+tint.accent+'; --gl-line:'+tint.line+'; --gl-bg:'+tint.bg+'"' : '';
@@ -1786,12 +1935,16 @@
       (p.demo ? '<figure class="case-fig proto-demo"><div class="proto-stage" style="background:'+(p.coverBg || p.gradient)+'"><div class="proto-screen">' +
         '<iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
         (p.demo.caption ? '<figcaption>'+p.demo.caption+'</figcaption>' : '') + '</figure>' : '') +
-      '<div class="case-block"><h4 class="label">Overview</h4><p class="body-text">'+p.overview+'</p></div>'+
+      timelineHtml(p.timeline, p.glanceTint) +
+      '<div class="case-block"><h4 class="label">'+(p.overviewTitle || 'Overview')+'</h4><p class="body-text">'+p.overview+'</p></div>'+
       (p.statements || []).map(function(s){
         return '<div class="case-block statement"><h4 class="label">'+s.label+'</h4><blockquote class="statement-quote"><span class="qm">“</span>'+s.quote+'<span class="qm">”</span></blockquote>' +
           (s.note ? '<p class="body-text">'+s.note+'</p>' : '') + '</div>';
       }).join('')+
-      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml + refsHtml +
+      researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml +
+      (p.chapters || []).map(function(c){
+        return '<div class="case-block chapter">'+(c.kicker ? '<div class="chapter-kicker">'+c.kicker+'</div>' : '')+'<h4 class="label">'+c.title+'</h4>' + entriesHtml(c.entries) + '</div>';
+      }).join('') + refsHtml +
       (p.planned || []).map(function(t){ return '<div class="case-block planned"><h4 class="label">'+t+'</h4><p class="body-text">Coming soon.</p></div>'; }).join('');
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
