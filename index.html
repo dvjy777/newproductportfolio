@@ -931,6 +931,12 @@
   .flowmap.plain .flow-tag{ font-size:11px; }
   .flowmap.plain .flow-arrow{ margin-top:-60px; font-size:16px; }
   .flowmap.plain .flow-row{ overflow-x:auto; padding-bottom:8px; }
+  /* plain flows sit centred, with even room between screens */
+  .flowmap.plain .flow-row{ justify-content:safe center; gap:18px; }
+  .flowmap.plain .flow-stage-label{ text-align:center; }
+  .flowmap.plain .flow-loops{ justify-content:center; }
+  .flowmap.plain .flow-full{ display:block; margin-left:auto; margin-right:auto; }
+  .flowmap.plain + figcaption, .flowmap.plain figcaption{ text-align:center; }
 
   /* two columns: text on the left, its visuals stacked on the right */
   .case-pair .pair-side{ display:flex; flex-direction:column; gap:30px; min-width:0; }
@@ -963,6 +969,28 @@
   .pc-col .path-step{ white-space:normal; text-align:center; }
   .pc-col .path-step.open{ font-size:22px; }
   .pc-arrow{ color:#7d9cf0; text-align:center; line-height:1; padding:6px 0; }
+  /* a carousel: one large screen at a time */
+  .carousel .cr-stage{ position:relative; display:grid; background:#F5F7FD; padding:clamp(14px,2.5vw,28px); }
+  .carousel .cr-slide{ grid-area:1/1; width:100%; max-height:78vh; object-fit:contain; opacity:0; transition:opacity .35s ease; pointer-events:none; }
+  .carousel .cr-slide.on{ opacity:1; pointer-events:auto; }
+  .carousel .cr-btn{ position:absolute; top:50%; transform:translateY(-50%); width:40px; height:40px; border-radius:50%; border:0;
+    background:rgba(255,255,255,.92); box-shadow:0 4px 14px rgba(20,33,61,.15); font-size:24px; line-height:1; color:#14213d; cursor:pointer; }
+  .carousel .cr-btn.prev{ left:12px; } .carousel .cr-btn.next{ right:12px; }
+  .carousel .cr-foot{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px; }
+  .carousel .cr-cap{ font-size:14px; color:var(--text); }
+  .carousel .cr-dots{ display:flex; gap:2px; }
+  .carousel .cr-dot{ width:24px; height:24px; border:0; padding:0; background:none; cursor:pointer; position:relative; }
+  .carousel .cr-dot::after{ content:''; position:absolute; left:8px; top:8px; width:8px; height:8px; border-radius:50%; background:#c3cfee; }
+  .carousel .cr-dot.on::after{ background:#1d5fff; }
+  @media (prefers-reduced-motion: reduce){ .carousel .cr-slide{ transition:none; } }
+  /* two text blocks side by side */
+  .case-twocol{ display:grid; gap:8px 48px; margin:4px 0 24px; }
+  @media(min-width:860px){ .case-twocol{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
+  .case-twocol .case-sub.minor{ margin-top:12px; }
+  /* the scenario with no clear purpose, called out in red */
+  .pc-col.alert{ outline:2px solid #d93025; outline-offset:10px; }
+  .pc-col.alert .pc-head{ color:#d93025; border-bottom-color:#d93025; }
+
   /* tables as rows: no grid lines, each row a small block of label + text */
   .case-list .cl-rows{ display:flex; flex-direction:column; gap:22px; }
   .case-list .cl-row{ display:grid; grid-template-columns:minmax(0,1fr); gap:6px 28px; }
@@ -1298,7 +1326,11 @@
         {title:'App audit', entries:[
           '<strong>Creating a skill starts from zero, every time.</strong> Every time someone creates a visual skill, Chance AI gives them the same blank interface, and the result screen looks the same too. Each skill is built from scratch, with no context carried over from past visits. So people rarely revisit the skills they\'ve made, creating new ones stops feeling exciting, and no habit forms.',
           '<strong>Create Visual Skill.</strong> I walked through the original flow screen by screen and marked six issues: what\'s wrong, how to fix it, and how much it matters.',
-          {media:[{src:'images/chance/before-entry.jpg', alt:'Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom'}, {src:'images/chance/before-builder.jpg', alt:'Original Skill Builder chat, annotated: 5 a linear chat, 6 a developer-style task breakdown'}, {src:'images/chance/before-building.jpg', alt:'Original building screen, annotated: 5 publishing and edits stuck in the same linear chat'}], cols:3, caption:'The original flow, annotated'},
+          {carousel:[
+            {src:'images/chance/before-entry.jpg', alt:'Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom', cap:'1 · Create Visual Skill entry'},
+            {src:'images/chance/before-builder.jpg', alt:'Original Skill Builder chat, annotated: 5 a linear chat, 6 a developer-style task breakdown', cap:'2 · Skill Builder chat'},
+            {src:'images/chance/before-building.jpg', alt:'Original building screen, annotated: 5 publishing and edits stuck in the same linear chat', cap:'3 · Building the skill'}
+          ], caption:'The original flow, annotated'},
           {table:{head:['Issue', 'Fix', 'Severity'], rows:[
             ['1 · No onboarding or context', 'Ask about interests or intent before the prompt', 'High'],
             ['2 · Example prompts are fixed', 'Refresh prompts each visit from history and interests', 'High'],
@@ -1328,11 +1360,11 @@
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps'],
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps', 'Publishes'],
             ['User doesn\'t have a clear purpose', 'Brainstorms', '?']
-          ], columns:true, wide:true, heads:['Clear purpose · satisfied', 'Clear purpose · improves', 'Clear purpose · publishes', 'No clear purpose'], caption:'How people use Create Visual Skill today'},
-          {sub:'Chat interface as a blank canvas', minor:true},
-          'The problem was clear. The first three scenarios allow users to create something and test it until satisfied, and eventually keep or publish it (revisiting their created skills is a separate problem that we will revisit, no pun intended). But in the last scenario, where users don\'t have a clear picture of what they want or what they want to build, the chat interface becomes a literal blank canvas. Users could type some prompts to ask for help with brainstorming, just like with any LLM. Hence, such an interface could be a double-edged sword: it could be either liberating or daunting, depending on the user\'s state. It does not provide any soft cushion to fall back on. This process could be designed into a structured UI.',
-          {sub:'The solution', minor:true},
-          'My solution was to break down the chat interface into a guided flow that adapts to users\' history and needs. It starts with topic suggestions, showing the top 4 topics users could be interested in. Once a topic is chosen, it shows you relevant skills. At the same time, free prompting is available if none of the skills are what you want. The build summary gives you keywords for what Chance would build based on your prompt, giving you a clear picture of what the final outcome would be. Making improvements works the same way.',
+          ], columns:true, wide:true, alert:[3], heads:['Clear purpose · satisfied', 'Clear purpose · improves', 'Clear purpose · publishes', 'No clear purpose'], caption:'How people use Create Visual Skill today'},
+          {twoCol:[
+            [{sub:'Chat interface as a blank canvas', minor:true}, 'The problem was clear. The first three scenarios allow users to create something and test it until satisfied, and eventually keep or publish it (revisiting their created skills is a separate problem that we will revisit, no pun intended). But in the last scenario, where users don\'t have a clear picture of what they want or what they want to build, the chat interface becomes a literal blank canvas. Users could type some prompts to ask for help with brainstorming, just like with any LLM. Hence, such an interface could be a double-edged sword: it could be either liberating or daunting, depending on the user\'s state. It does not provide any soft cushion to fall back on. This process could be designed into a structured UI.'],
+            [{sub:'The solution', minor:true}, 'My solution was to break down the chat interface into a guided flow that adapts to users\' history and needs. It starts with topic suggestions, showing the top 4 topics users could be interested in. Once a topic is chosen, it shows you relevant skills. At the same time, free prompting is available if none of the skills are what you want. The build summary gives you keywords for what Chance would build based on your prompt, giving you a clear picture of what the final outcome would be. Making improvements works the same way.']
+          ]},
           {flow:{plain:true, stages:[
             {label:'Lo-fi · main flow', nodes:[
               {img:'images/chance/wf-01-interest.jpg', title:'Pick an interest'},
@@ -1810,9 +1842,18 @@
       // label + text pairs, e.g. brand purpose, target and personality
       if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div>'+(d[2] ? '<div class="def-art" aria-hidden="true">'+d[2]+'</div>' : '')+'<dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
       // simple paths of square blue steps, e.g. how people use a feature
+      // one large image at a time, with arrows and dots to step through the rest
+      if(t.carousel) return '<figure class="case-fig carousel" data-carousel><div class="cr-stage">' +
+          t.carousel.map(function(m, i){ return '<img class="cr-slide'+(i ? '' : ' on')+'" src="'+m.src+'" alt="'+m.alt+'" loading="lazy"'+(i ? ' aria-hidden="true"' : '')+'>'; }).join('') +
+          '<button type="button" class="cr-btn prev" aria-label="Previous screen">‹</button><button type="button" class="cr-btn next" aria-label="Next screen">›</button></div>' +
+          '<div class="cr-foot"><span class="cr-cap" aria-live="polite">'+(t.carousel[0].cap || '')+'</span><span class="cr-dots">' +
+          t.carousel.map(function(m, i){ return '<button type="button" class="cr-dot'+(i ? '' : ' on')+'" data-i="'+i+'" data-cap="'+(m.cap || '')+'" aria-label="Show '+(m.cap || 'screen '+(i+1))+'"></button>'; }).join('') +
+          '</span></div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      // two blocks of text side by side
+      if(t.twoCol) return '<div class="case-twocol">' + t.twoCol.map(function(col){ return '<div>' + col.map(entryHtml).join('') + '</div>'; }).join('') + '</div>';
       // the same paths as columns: one scenario per column, steps running down
       if(t.paths && t.columns) return '<figure class="case-fig case-paths-cols"><div class="pc-grid">' + t.paths.map(function(col, ci){
-          return '<div class="pc-col"><div class="pc-head">'+(t.heads ? t.heads[ci] : 'Scenario '+(ci+1))+'</div>' + col.map(function(step, i){
+          return '<div class="pc-col'+(t.alert && t.alert.indexOf(ci) > -1 ? ' alert' : '')+'"><div class="pc-head">'+(t.heads ? t.heads[ci] : 'Scenario '+(ci+1))+'</div>' + col.map(function(step, i){
             return (i ? '<span class="pc-arrow" aria-hidden="true">↓</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>';
           }).join('') + '</div>';
         }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
@@ -1910,7 +1951,7 @@
     // Visuals narrow enough to sit in the right half, beside the paragraphs before them
     function rightColumn(t){
       if(!t || typeof t === 'string' || t.wide) return false;
-      if(sideBySide(t) || t.quotes || t.phone || t.protoVideo || t.paths || t.hmw) return true;
+      if(sideBySide(t) || t.quotes || t.phone || t.carousel || t.protoVideo || t.paths || t.hmw) return true;
       if(t.table) return t.table.head.length <= 2;
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
@@ -1997,6 +2038,21 @@
     rotateQuotes(caseView);
     fitHeroEmbed();
     watchEmbeds(caseView);
+    caseView.querySelectorAll('[data-carousel]').forEach(function(c){
+      var slides = c.querySelectorAll('.cr-slide'), dots = c.querySelectorAll('.cr-dot'), cap = c.querySelector('.cr-cap'), cur = 0;
+      function go(i){
+        cur = (i + slides.length) % slides.length;
+        slides.forEach(function(s, k){ s.classList.toggle('on', k === cur); if(k === cur) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true'); });
+        dots.forEach(function(d, k){ d.classList.toggle('on', k === cur); });
+        cap.textContent = dots[cur].dataset.cap;
+      }
+      c.querySelector('.prev').addEventListener('click', function(){ go(cur - 1); });
+      c.querySelector('.next').addEventListener('click', function(){ go(cur + 1); });
+      dots.forEach(function(d){ d.addEventListener('click', function(){ go(+d.dataset.i); }); });
+      var x0 = null;
+      c.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, { passive:true });
+      c.addEventListener('touchend', function(e){ if(x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if(Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1)); x0 = null; });
+    });
     caseView.querySelectorAll('[data-module]').forEach(function(m){
       var frame = m.querySelector('iframe'), desc = m.querySelector('.pm-desc');
       m.querySelectorAll('.pm-opt').forEach(function(b){
