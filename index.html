@@ -988,6 +988,19 @@
   .carousel .cr-dot::after{ content:''; position:absolute; left:8px; top:8px; width:8px; height:8px; border-radius:50%; background:#c3cfee; }
   .carousel .cr-dot.on::after{ background:#1d5fff; }
   @media (prefers-reduced-motion: reduce){ .carousel .cr-slide{ transition:none; } }
+
+  /* How might we as a full-width band: soft Chance blue, a large faint question mark, words revealed on scroll */
+  .case-hmw.band{ position:relative; overflow:hidden; margin:40px calc(50% - 50vw); padding:clamp(48px,7vw,88px) 28px;
+    background:linear-gradient(120deg, #EEF3FF 0%, #F6F8FF 60%, #EAF0FF 100%); }
+  .case-hmw.band .hmw-inner{ position:relative; z-index:1; max-width:980px; }
+  .case-hmw.band .label{ color:#1d5fff; margin-bottom:14px; }
+  .case-hmw.band .statement-quote{ font-size:clamp(26px,3.6vw,44px); line-height:1.22; letter-spacing:-.02em; max-width:none; margin:0; }
+  .hmw-mark{ position:absolute; right:28px; top:50%; transform:translateY(-50%); font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size:clamp(220px,30vw,420px); font-weight:700; line-height:1; color:#1d5fff; opacity:.07; pointer-events:none; user-select:none; }
+  .case-hmw .rw{ display:inline-block; text-indent:0; opacity:0; transform:translateY(.35em); filter:blur(4px);
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1), filter .6s ease; transition-delay:calc(var(--i) * 55ms); }
+  .case-hmw.in .rw{ opacity:1; transform:none; filter:none; }
+  @media (prefers-reduced-motion: reduce){ .case-hmw .rw{ opacity:1; transform:none; filter:none; transition:none; } }
   /* four product screens side by side */
   .screens4 .s4-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:28px 22px; }
   @media(min-width:860px){ .screens4 .s4-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
@@ -1857,7 +1870,9 @@
       if(t.pull) return '<blockquote class="case-pull">“'+t.pull+'”</blockquote>';
       if(t.soon) return '<p class="body-text case-soon">'+t.soon+'</p>';
       // a large How might we statement, the same as the ones under the overview
-      if(t.hmw) return '<div class="case-hmw">'+(t.label ? '<div class="label">'+t.label+'</div>' : '')+'<blockquote class="statement-quote"><span class="qm">“</span>'+t.hmw+'<span class="qm">”</span></blockquote></div>';
+      if(t.hmw) return '<div class="case-hmw band" data-reveal><span class="hmw-mark" aria-hidden="true">?</span><div class="hmw-inner">'+(t.label ? '<div class="label">'+t.label+'</div>' : '')+
+        '<blockquote class="statement-quote" aria-label="'+t.hmw.replace(/"/g, '&quot;')+'"><span class="qm">“</span>' +
+        t.hmw.split(' ').map(function(w, i){ return '<span class="rw" aria-hidden="true" style="--i:'+i+'">'+w+'</span>'; }).join(' ') + '<span class="qm">”</span></blockquote></div></div>';
       // label + text pairs, e.g. brand purpose, target and personality
       if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div>'+(d[2] ? '<div class="def-art" aria-hidden="true">'+d[2]+'</div>' : '')+'<dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
       // simple paths of square blue steps, e.g. how people use a feature
@@ -1975,7 +1990,7 @@
     // Visuals narrow enough to sit in the right half, beside the paragraphs before them
     function rightColumn(t){
       if(!t || typeof t === 'string' || t.wide) return false;
-      if(sideBySide(t) || t.quotes || t.phone || t.carousel || t.protoVideo || t.paths || t.hmw) return true;
+      if(sideBySide(t) || t.quotes || t.phone || t.carousel || t.protoVideo || t.paths) return true;
       if(t.table) return t.table.head.length <= 2;
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
@@ -2062,6 +2077,14 @@
     rotateQuotes(caseView);
     fitHeroEmbed();
     watchEmbeds(caseView);
+    // How might we bands: the words fade in one by one when the band comes into view
+    var reveals = caseView.querySelectorAll('[data-reveal]');
+    if(!('IntersectionObserver' in window) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+      reveals.forEach(function(r){ r.classList.add('in'); });
+    } else {
+      var ro = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }); }, { threshold:.45 });
+      reveals.forEach(function(r){ ro.observe(r); });
+    }
     caseView.querySelectorAll('[data-carousel]').forEach(function(c){
       var slides = c.querySelectorAll('.cr-slide'), dots = c.querySelectorAll('.cr-dot'), cap = c.querySelector('.cr-cap'), cur = 0;
       function go(i){
