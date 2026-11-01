@@ -788,47 +788,37 @@
   .case-nav-list a.active{ color:var(--text); font-weight:600; }
   .case-nav-list a.active .cn-dot{ border-color:var(--nav-accent, var(--accent)); background:var(--nav-accent, var(--accent)); transform:scale(1.35); box-shadow:0 0 0 4px rgba(29,95,255,.08); }
 
-  /* the section menu floats over the page on a translucent backdrop, no card:
-     it shows while you scroll and fades away once you stop */
+  /* the section menu is a notch at the top centre, like a phone's Dynamic Island: a dark pill
+     with the current section that opens into the full list. It shows while you scroll. */
   .case-nav{
-    background:rgba(255,255,255,.62);
-    -webkit-backdrop-filter:blur(16px) saturate(150%); backdrop-filter:blur(16px) saturate(150%);
-    border-radius:14px;
-    opacity:0; pointer-events:none;
-    transition:opacity .45s ease, transform .45s ease;
+    left:50%; top:calc(var(--head-bottom, 84px) + 10px);
+    width:min(300px, calc(100vw - 32px)); max-height:calc(100vh - var(--head-bottom, 84px) - 30px);
+    display:flex; flex-direction:column; overflow:hidden;
+    background:rgba(12,12,14,.92); color:#f2f3f5;
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+    border-radius:24px; box-shadow:0 10px 30px rgba(10,12,20,.22);
+    opacity:0; pointer-events:none; transform:translateX(-50%) translateY(-10px) scale(.96);
+    transition:opacity .35s ease, transform .4s cubic-bezier(.32,.72,.24,1), width .4s cubic-bezier(.32,.72,.24,1), border-radius .4s ease;
   }
-  .case-nav.shown{ opacity:1; pointer-events:auto; }
-  .case-nav-list a{ font-size:12.5px; padding:7px 0; }
-  .cn-dot{ width:7px; height:7px; }
-  .case-nav-rail{ display:none; }
-
-  /* wide screens: at the right edge, centred in the window */
-  @media (min-width:1180px){
-    .case-nav{ right:24px; top:50%; width:224px; padding:14px 18px; transform:translateY(-50%) translateX(8px); }
-    .case-nav.shown{ transform:translateY(-50%); }
-    .case-nav-toggle{ display:none; }
-    .case-nav-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
-    .case-nav-head span{ font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); }
-    .case-nav-head b{ font-size:10.5px; color:var(--nav-accent, var(--accent)); font-weight:600; letter-spacing:.06em; }
+  .case-nav.shown, .case-nav.open{ opacity:1; pointer-events:auto; transform:translateX(-50%); }
+  .case-nav.open{ width:min(440px, calc(100vw - 32px)); border-radius:28px; }
+  .case-nav-head, .case-nav-rail{ display:none; }
+  .case-nav-toggle{
+    width:100%; display:flex; align-items:center; gap:10px; padding:11px 18px;
+    background:none; border:0; cursor:pointer; text-align:left; color:inherit;
+    font-family:'Geist Mono', monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
   }
-  /* smaller screens: a pill near the bottom that opens upward */
-  @media (max-width:1179px){
-    .case-nav{ left:50%; bottom:16px; width:min(420px, calc(100vw - 32px)); border-radius:18px; transform:translateX(-50%) translateY(12px); }
-    .case-nav.shown{ transform:translateX(-50%); }
-    .case-nav-head{ display:none; }
-    .case-nav-toggle{
-      width:100%; display:flex; align-items:center; gap:10px; padding:13px 18px;
-      background:none; border:0; cursor:pointer; text-align:left; color:var(--text);
-      font-family:'Geist Mono', monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-    }
-    .cn-count{ color:var(--nav-accent, var(--accent)); font-weight:600; }
-    .cn-current{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .cn-chev{ transition:transform .25s ease; color:var(--text-muted); }
-    .case-nav:not(.open) .cn-chev{ transform:rotate(180deg); }
-    .case-nav{ display:flex; flex-direction:column-reverse; }
-    .case-nav-list{ display:none; padding:10px 18px 2px; max-height:55vh; overflow:auto; }
-    .case-nav.open .case-nav-list{ display:block; }
-  }
+  .cn-count{ color:#8fb0ff; font-weight:600; }
+  .cn-current{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cn-chev{ color:#8e94a0; transition:transform .25s ease; }
+  .case-nav.open .cn-chev{ transform:rotate(180deg); }
+  .case-nav-list{ display:none; padding:2px 18px 14px; overflow:auto; }
+  .case-nav.open .case-nav-list{ display:block; }
+  .case-nav-list a{ font-size:12.5px; padding:7px 0; color:#a7adb8; }
+  .case-nav-list a:hover, .case-nav-list a.active{ color:#fff; }
+  .cn-dot{ width:7px; height:7px; border-color:#5b6170; background:transparent; }
+  .case-nav-list a.done .cn-dot{ background:#5b6170; }
+  .case-nav-list a.active .cn-dot{ border-color:#8fb0ff; background:#8fb0ff; box-shadow:none; }
   @media (prefers-reduced-motion: reduce){
     .case-nav, .case-nav-list a, .cn-dot, .cn-chev{ transition:none; }
   }
@@ -2200,6 +2190,10 @@
     if(fromScroll && caseNav.inCase && Date.now() > caseNav.quietUntil && window.scrollY > 120){ n.classList.add('shown'); clearTimeout(navIdle); navIdle = setTimeout(function(){ revealNav(); }, 1200); return; }
     if(!keep && !fromScroll) n.classList.remove('shown');
   }
+  // clicking anywhere outside the open notch closes it
+  document.addEventListener('click', function(e){
+    if(caseNav && caseNav.nav.classList.contains('open') && !caseNav.nav.contains(e.target)) caseNav.nav.querySelector('.case-nav-toggle').click();
+  });
   var navTick = false;
   window.addEventListener('scroll', function(){
     if(navTick) return; navTick = true;
