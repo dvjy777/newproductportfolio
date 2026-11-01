@@ -1,0 +1,39 @@
+/* Dynamic Island navigation: the step list lives in the phone's island instead of a side panel */
+.stage{grid-template-columns:auto !important; gap:0 !important}
+.panel{display:none !important}
+
+.island{pointer-events:auto; cursor:pointer; overflow:hidden; color:#fff; font-family:var(--font, Inter, sans-serif);
+  transition:width .45s cubic-bezier(.32,.72,.24,1), height .45s cubic-bezier(.32,.72,.24,1), margin-left .45s cubic-bezier(.32,.72,.24,1), border-radius .45s ease, top .45s ease;
+  display:block !important}
+.island .is-peek{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px; padding:0 18px;
+  font-size:13px; font-weight:600; white-space:nowrap; opacity:0; transition:opacity .25s ease}
+.island .is-peek .dot{width:7px; height:7px; border-radius:50%; background:#3b6cff; flex:none}
+.island.peek{width:250px; margin-left:-125px}
+.island.peek .is-peek{opacity:1; transition-delay:.15s}
+
+.island .is-menu{opacity:0; pointer-events:none; padding:20px 18px 16px; transition:opacity .2s ease}
+.island.open{width:calc(100% - 28px); margin-left:0; left:14px; top:16px; height:min(600px, 72%); border-radius:34px; cursor:default;
+  box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.island.open .is-peek{opacity:0}
+.island.open .is-menu{opacity:1; pointer-events:auto; height:100%; overflow-y:auto; transition-delay:.18s}
+.is-menu h4{margin:14px 0 6px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#8e8e96; font-weight:600}
+.is-menu h4:first-of-type{margin-top:0}
+.is-menu ol{list-style:none; margin:0; padding:0}
+.is-menu button{width:100%; display:flex; align-items:center; gap:10px; padding:8px 10px; border:0; border-radius:12px; background:none;
+  color:#f2f2f4; font:500 14px var(--font, Inter, sans-serif); text-align:left; cursor:pointer}
+.is-menu button:hover{background:rgba(255,255,255,.08)}
+.is-menu button.on{background:rgba(59,108,255,.22); color:#fff}
+.is-menu .n{width:16px; color:#8e8e96; font-size:12px; text-align:center; flex:none}
+.is-menu .tag{margin-left:auto; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#9db8ff; border:1px solid rgba(157,184,255,.5); border-radius:999px; padding:2px 7px}
+.is-ctrl{display:flex; gap:8px; margin-top:16px}
+.is-ctrl button{flex:1; justify-content:center; background:rgba(255,255,255,.1); border-radius:999px; font-size:12.5px; padding:9px 10px}
+.is-ctrl button[aria-pressed="true"]{background:#3b6cff}
+.is-close{position:absolute; top:12px; right:14px; width:30px; height:30px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; font-size:15px; cursor:pointer}
+
+/* small screens: the island floats over the full-screen app */
+@media (max-width:500px){
+  .island{top:max(8px, env(safe-area-inset-top, 0px)); width:108px; height:32px; margin-left:-54px}
+  .island.peek{width:230px; margin-left:-115px}
+  .island.open{left:10px; width:calc(100% - 20px); height:min(560px, 78%)}
+}
+@media (prefers-reduced-motion: reduce){ .island, .island *{transition:none !important} }

@@ -929,6 +929,18 @@
   .case-hmw .label{ margin-bottom:8px; }
   .case-soon{ color:var(--text-muted); font-style:italic; }
 
+  /* a live prototype as the case hero */
+  .case-hero.embed-hero{ height:clamp(640px, 86vh, 960px); aspect-ratio:auto; padding:0; background:#121212; }
+  .case-hero.embed-hero iframe{ width:100%; height:100%; border:0; display:block; }
+  .embed-note{ margin:10px 0 0; font-size:13px; color:var(--text-muted); text-align:center; }
+  /* bigger screens in the light flows, scrolling sideways when they don't fit */
+  .flowmap.plain .flow-node{ width:168px; }
+  .flowmap.plain .flow-node img{ width:156px; border-radius:16px; }
+  .flowmap.plain .flow-title{ font-size:14px; margin-top:12px; }
+  .flowmap.plain .flow-tag{ font-size:11px; }
+  .flowmap.plain .flow-arrow{ margin-top:-60px; font-size:16px; }
+  .flowmap.plain .flow-row{ overflow-x:auto; padding-bottom:8px; }
+
   /* two columns: text on the left, its visuals stacked on the right */
   .case-pair .pair-side{ display:flex; flex-direction:column; gap:30px; min-width:0; }
   .case-pair .pair-side .case-fig{ margin:0; }
@@ -1233,6 +1245,7 @@
     {
       slug:'chance-ai', company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
       title:'Reimagining Visual Agent', word:'Chance AI',
+      heroEmbed:{src:'chance-prototype/', title:'Chance AI clickable prototype', note:'Clickable prototype · tap the Dynamic Island for every step'},
       inProgress:true,
       accent:'#1d5fff',
       gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)',
@@ -1872,7 +1885,7 @@
     // Visuals narrow enough to sit in the right half, beside the paragraphs before them
     function rightColumn(t){
       if(!t || typeof t === 'string' || t.wide) return false;
-      if(sideBySide(t) || t.quotes || t.phone || (t.flow && t.flow.plain) || t.protoVideo || t.paths || t.hmw) return true;
+      if(sideBySide(t) || t.quotes || t.phone || t.protoVideo || t.paths || t.hmw) return true;
       if(t.table) return t.table.head.length <= 2;
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
@@ -1934,10 +1947,11 @@
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
+      (p.heroEmbed ? '<div class="case-hero embed-hero"><iframe src="'+p.heroEmbed.src+'" title="'+p.heroEmbed.title+'" loading="lazy" allow="clipboard-write"></iframe></div>' + (p.heroEmbed.note ? '<p class="embed-note">'+p.heroEmbed.note+'</p>' : '') :
       '<div class="case-hero'+(heroDevicesHtml(p) ? ' has-phone' : '')+(heroGlow(p) ? ' has-glow' : '')+'" style="background:'+heroBackground(p)+'">'+
         (heroDevicesHtml(p) ? heroDevicesHtml(p) + ((p.heroNote || (p.heroPhone && p.heroPhone.note)) ? '<div class="hero-note">'+(p.heroNote || p.heroPhone.note)+'</div>' : '') :
          p.logo ? '<div class="hero-logo">'+p.logo+'</div>' + (p.heroNote ? '<div class="hero-note">'+p.heroNote+'</div>' : '') :
-         p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>'+
+         p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>')+
       '<div class="case-intro'+(links.length ? ' has-links' : '')+'">' + metaHtml + linksHtml + '</div>' + glanceHtml(p.glance, p.glanceTint) +
       (p.demo ? '<figure class="case-fig proto-demo"><div class="proto-stage" style="background:'+(p.coverBg || p.gradient)+'"><div class="proto-screen">' +
         '<iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div></div>' +

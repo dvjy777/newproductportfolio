@@ -1,0 +1,102 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Chance AI Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="screens.css">
+<link rel="stylesheet" href="island.css">
+
+<div class="stage">
+  <aside class="panel" id="panel" aria-label="Prototype guide">
+    <div class="brand"><span class="mark"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><div><b>Chance AI</b><span>Clickable prototype</span></div></div>
+    <p class="p-intro">Tap through the phone like the real app, or jump to any step below. Taps on things that aren’t wired flash the tappable areas.</p>
+    <nav class="flow" aria-label="Snap to know">
+      <h4>Snap to know</h4>
+      <ol>
+        <li><button class="fl" data-jump="home"><span class="n">1</span>Home</button></li>
+        <li><button class="fl" data-jump="camera"><span class="n">2</span>Camera<span class="tag">New</span></button></li>
+        <li><button class="fl" data-jump="analyzing"><span class="n">3</span>Analyzing<span class="tag">New</span></button></li>
+        <li><button class="fl" data-jump="learn"><span class="n">4</span>Results · Learn</button></li>
+        <li><button class="fl" data-jump="ask"><span class="n">5</span>Ask</button></li>
+      </ol>
+    </nav>
+    <nav class="flow" aria-label="Create a skill">
+      <h4>Create a skill</h4>
+      <ol>
+        <li><button class="fl" data-jump="interest"><span class="n">1</span>Pick an interest</button></li>
+        <li><button class="fl" data-jump="tool"><span class="n">2</span>Choose a tool</button></li>
+        <li><button class="fl" data-jump="building"><span class="n">3</span>Building</button></li>
+        <li><button class="fl" data-jump="ready"><span class="n">4</span>Your skill is ready</button></li>
+        <li><button class="fl" data-jump="added"><span class="n">5</span>Added to my skills</button></li>
+        <li><button class="fl" data-jump="tryit"><span class="n">6</span>Try the new skill<span class="tag">New</span></button></li>
+      </ol>
+    </nav>
+    <nav class="flow" aria-label="Other paths">
+      <h4>Other paths</h4>
+      <ol>
+        <li><button class="fl" data-jump="community"><span class="n">·</span>Community<span class="tag">New</span></button></li>
+        <li><button class="fl" data-jump="other"><span class="n">·</span>Other topics</button></li>
+        <li><button class="fl" data-jump="describe"><span class="n">·</span>Describe your topic</button></li>
+        <li><button class="fl" data-jump="own"><span class="n">·</span>Make my own skill</button></li>
+        <li><button class="fl" data-jump="review"><span class="n">·</span>Check your request</button></li>
+        <li><button class="fl" data-jump="edit"><span class="n">·</span>Edit your request</button></li>
+        <li><button class="fl" data-jump="improve"><span class="n">·</span>Improve a skill</button></li>
+        <li><button class="fl" data-jump="changes"><span class="n">·</span>Check your changes</button></li>
+        <li><button class="fl" data-jump="skills"><span class="n">·</span>All visual skills</button></li>
+      </ol>
+    </nav>
+    <div class="p-ctrl"><button class="pbtn" id="restart">Restart demo</button><button class="pbtn" id="hotspots" aria-pressed="false">Show tap targets</button></div>
+    <p class="p-ai" id="aiNote">Checking for live AI…</p>
+    <p class="p-note"><kbd>Esc</kbd> goes back · <kbd>R</kbd> restarts. In the camera, swipe or tap the skill names to switch skills.</p>
+  </aside>
+  <div class="device-wrap" id="wrap">
+    <div class="device" id="device">
+      <div class="app" id="app">
+        <div class="home-ind" id="homeInd"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+      <div class="island"></div>
+    </div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-target" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" stroke-width="1.67"/><circle cx="10" cy="10" r="2.67" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-search" viewBox="0 0 18 18"><circle cx="8.25" cy="8.25" r="6" stroke-width="1.5"/><path d="M15.75 15.75 12.53 12.53" stroke-width="1.5"/></symbol>
+  <symbol id="i-chevR" viewBox="0 0 16 16"><path d="M6 12l4-4-4-4" stroke-width="1.4"/></symbol>
+  <symbol id="i-chevL" viewBox="0 0 20 20"><path d="M12.5 15l-5-5 5-5" stroke-width="1.8"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 26 26"><path d="M13 5.4v15.2M5.4 13h15.2" stroke-width="2"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 20 20"><path d="M5 10h10" stroke-width="2.4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5 5 15" stroke-width="1.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.6 8.5l3.2 3.2 5.7-6.9" stroke-width="1.8"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 22 22"><path d="M13.3 3.7H8.7L6.4 6.4H3.7a1.8 1.8 0 0 0-1.9 1.9v8.2a1.8 1.8 0 0 0 1.9 1.8h14.6a1.8 1.8 0 0 0 1.9-1.8V8.3a1.8 1.8 0 0 0-1.9-1.9h-2.7z" stroke-width="1.9"/><circle cx="11" cy="11.9" r="2.75" stroke-width="1.9"/></symbol>
+  <symbol id="i-image" viewBox="0 0 22 22"><path d="M3.3 14.85 7.7 10.45l4.4 4.4 2.2-2.2 4.4 4.4M6.05 3.3h9.9a2.75 2.75 0 0 1 2.75 2.75v9.9a2.75 2.75 0 0 1-2.75 2.75h-9.9A2.75 2.75 0 0 1 3.3 15.95v-9.9A2.75 2.75 0 0 1 6.05 3.3z" stroke-width="1.76"/></symbol>
+  <symbol id="i-file" viewBox="0 0 22 22"><path d="M17.05 7.15 12.65 2.75H5.5v16.5h11.55zM12.65 2.75v4.4h4.4" stroke-width="1.76"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 18 18"><path d="M4.05 8.1a4.95 4.95 0 0 0 9.9 0M9 13.05v3.15M6.75 4.05a2.25 2.25 0 0 1 4.5 0v4.5a2.25 2.25 0 0 1-4.5 0z" stroke-width="1.62"/></symbol>
+  <symbol id="i-up" viewBox="0 0 18 18"><path d="M9 14.4V3.6M13.5 8.1 9 3.6 4.5 8.1" stroke-width="1.7"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 20 20"><path d="M12.5 3.5l4 4L7 17H3v-4z" stroke-width="1.8"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 14 14"><path d="M7 1.75 8.12 5.88 12.25 7 8.12 8.12 7 12.25 5.88 8.12 1.75 7l4.13-1.12z" fill="currentColor" stroke-width="1.17"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 16 16"><path d="M13.59 2.31 10.67 1.33a2.67 2.67 0 0 1-5.34 0L2.41 2.31a1.33 1.33 0 0 0-.89 1.48l.39 2.32a.67.67 0 0 0 .66.56H4v6.66c0 .74.6 1.34 1.33 1.34h5.34c.73 0 1.33-.6 1.33-1.34V6.67h1.43a.67.67 0 0 0 .66-.56l.39-2.32a1.33 1.33 0 0 0-.89-1.48z" stroke-width="1.27"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 16 16"><g fill="currentColor" stroke="none"><circle cx="5.33" cy="5.33" r="1.47"/><circle cx="10.67" cy="5.33" r="1.47"/><circle cx="5.33" cy="10.67" r="1.47"/><circle cx="10.67" cy="10.67" r="1.47"/></g></symbol>
+  <symbol id="i-bulb" viewBox="0 0 16 16"><path d="M10 9.33c.13-.66.47-1.13 1-1.66.67-.6 1-1.47 1-2.34a4 4 0 0 0-8 0c0 .67.13 1.47 1 2.34.47.46.87 1 1 1.66M6 12h4M6.67 14.67h2.66" stroke-width="1.27"/></symbol>
+  <symbol id="i-glasses" viewBox="0 0 16 16"><circle cx="4" cy="10" r="2.67" stroke-width="1.27"/><circle cx="12" cy="10" r="2.67" stroke-width="1.27"/><path d="M9.33 10A1.33 1.33 0 0 0 8 9.33 1.33 1.33 0 0 0 6.67 10M1.67 8.67l1.66-4C3.8 3.8 4.27 3.33 5.33 3.33M14.33 8.67l-1.66-4c-.47-.87-1-1.34-2-1.34" stroke-width="1.27"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M8 2a4.24 4.24 0 0 0 6 6A6 6 0 1 1 8 2zM13.33 2v2.67M14.67 3.33H12" stroke-width="1.27"/></symbol>
+  <symbol id="i-utensils" viewBox="0 0 11 11"><path d="M1.38.92v3.2c0 .5.4.92.91.92h1.84a.92.92 0 0 0 .91-.92V.92M3.2.92v9.16M9.63 6.88V.92a2.29 2.29 0 0 0-2.3 2.29v2.75c0 .5.42.92.92.92zm0 0v3.2" stroke-width=".87"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" stroke-width="1.8"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 3v5h5M4 13a8 8 0 0 0 14.3 4.9L20 16m0 5v-5h-5" stroke-width="1.8"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z" stroke-width="2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" stroke-width="1.9"/></symbol>
+</svg>
+
+<script src="data.js"></script>
+<script src="core.js"></script>
+<script src="snap.js"></script>
+<script src="results.js"></script>
+<script src="create.js"></script>
+<script src="actions.js"></script>
+<script src="island.js"></script>
+
+</body></html>
