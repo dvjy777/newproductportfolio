@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 596 1760 1124" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t">
+<title id="t">Positioning map: how you ask (snap and go, to talk it through) against what you get back (exact match, to interpretation). Bing, Google and Apple Visual Intelligence sit low and to the left; Pinterest sits high on the left; Chance AI today sits high on the right, and with a guided flow it moves left, keeping rich interpretation with less typing.</title>
+<rect x="100" y="596" width="1760" height="1124" fill="#ffffff"/>
+<rect x="230" y="616" width="1500" height="1000" fill="#F5F5F5"/>
+<line x1="230" y1="1116" x2="1730" y2="1116" stroke="#E0E0E0" stroke-width="2"/>
+<line x1="980" y1="616" x2="980" y2="1616" stroke="#E0E0E0" stroke-width="2"/>
+<line x1="230" y1="1616" x2="1730" y2="1616" stroke="#C9C9C9" stroke-width="2"/>
+<line x1="230" y1="616" x2="230" y2="1616" stroke="#C9C9C9" stroke-width="2"/>
+<line x1="1418" y1="770" x2="850" y2="770" stroke="#8A8A8A" stroke-width="2.5"/>
+<path d="M864 759 L848 770 L864 781" fill="none" stroke="#8A8A8A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="330.0" cy="1430.0" r="26.0" fill="#008373"/>
+<text x="370" y="1430" font-size="25" font-weight="400" fill="#333" dominant-baseline="middle">Bing Visual Search</text>
+<circle cx="470.0" cy="1530.0" r="30.0" fill="#4285F4"/>
+<text x="514" y="1530" font-size="25" font-weight="400" fill="#333" dominant-baseline="middle">Google Lens</text>
+<circle cx="740.0" cy="1290.0" r="26.0" fill="#111111"/>
+<text x="780" y="1290" font-size="25" font-weight="400" fill="#333" dominant-baseline="middle">Apple Visual Intelligence</text>
+<circle cx="560.0" cy="870.0" r="30.0" fill="#E60023"/>
+<text x="604" y="870" font-size="25" font-weight="400" fill="#333" dominant-baseline="middle">Pinterest Lens</text>
+<circle cx="1450.0" cy="770.0" r="30.0" fill="#1D5FFF"/>
+<text x="1494" y="770" font-size="27" font-weight="600" fill="#111" dominant-baseline="middle">Chance AI today</text>
+<circle cx="820.0" cy="770.0" r="30.0" fill="#9DB8FF"/>
+<text x="800" y="722" font-size="27" font-weight="600" fill="#111" text-anchor="end">Chance AI + guided flow</text>
+<text x="212" y="637" font-size="21" fill="#777" text-anchor="end">Ideas</text>
+<text x="212" y="1612" font-size="21" fill="#777" text-anchor="end">Exact</text>
+<text x="150" y="1116" font-size="24" fill="#444" text-anchor="middle" transform="rotate(-90 150 1116)">What you get back</text>
+<text x="230" y="1656" font-size="21" fill="#777">Snap and go</text>
+<text x="1730" y="1656" font-size="21" fill="#777" text-anchor="end">Talk it through</text>
+<text x="980" y="1700" font-size="24" fill="#444" text-anchor="middle">How you ask</text>
+</svg>
