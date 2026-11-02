@@ -1353,7 +1353,6 @@
       coverBg:'radial-gradient(ellipse 55% 75% at 50% 50%, rgba(217,119,87,.20), rgba(217,119,87,0) 70%), #F4F1EA',
       blurb:'Highlight a phrase in Claude\'s answer, ask about it on the side, then decide what to keep. A redesign for people whose chats pile up.',
       heroNote:'Personal concept · not affiliated with Anthropic',
-      heroEmbed:{src:'claude-prototype/', title:'Claude anchored branching interactive prototype', note:'Personal concept · not affiliated with Anthropic'},
       cardDemo:'claude-prototype/?embed=1&slow=1.6',
       role:'Product designer', timeline:'2 weeks',
       tools:'Figma, FigJam, Claude, HTML, CSS, JavaScript',
@@ -2538,19 +2537,6 @@
       try {
         var d = f.contentDocument;
         if(!d || !d.head || d.getElementById('fit-one-screen')) return;
-        // Claude prototype: keep the phone and the tasks, drop the facilitator tools, scale to one screen
-        if(d.getElementById('rail')){
-          var cs = d.createElement('style'); cs.id = 'fit-one-screen';
-          cs.textContent = 'html,body{overflow:hidden!important}.rail .card:has(#logBox),.rail .row{display:none!important}';
-          d.head.appendChild(cs);
-          var fitZoom = function(){
-            d.documentElement.style.zoom = 1;
-            var r = f.clientHeight / d.documentElement.scrollHeight;
-            d.documentElement.style.zoom = r < 1 ? Math.max(r, .7) : 1;
-          };
-          setTimeout(fitZoom, 300); f.contentWindow.addEventListener('resize', function(){ setTimeout(fitZoom, 50); });
-          return;
-        }
         var st = d.createElement('style'); st.id = 'fit-one-screen';
         st.textContent = 'html,body{overflow:hidden!important;height:100%}' +
           /* phone in the middle, the steps split to its left and right; the panel stays the click target */
