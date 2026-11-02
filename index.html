@@ -779,7 +779,7 @@
     background:var(--nav-accent, var(--accent)); transform-origin:0 50%; transform:scaleX(0);
     pointer-events:none;
   }
-  .case-nav{ position:fixed; z-index:39; font-family:'Geist Mono', monospace; }
+  .case-nav{ position:fixed; z-index:39; font-family:'Geist', -apple-system, "Segoe UI", sans-serif; }
   .case-nav-list{ list-style:none; margin:0; padding:0; }
   .case-nav-list a{
     display:flex; align-items:center; gap:10px; text-decoration:none;
@@ -795,15 +795,23 @@
   .case-nav-list a.active{ color:var(--text); font-weight:600; }
   .case-nav-list a.active .cn-dot{ border-color:var(--nav-accent, var(--accent)); background:var(--nav-accent, var(--accent)); transform:scale(1.35); box-shadow:0 0 0 4px rgba(29,95,255,.08); }
 
+  /* the project's accent, lightened so it reads on the dark notch */
+  /* the menu is a frosted card tinted with the project's accent */
+  .case-nav, .case-end{
+    --nav-tint:color-mix(in srgb, var(--nav-accent, var(--accent)) 14%, rgb(255 255 255 / .78));
+    --nav-solid:color-mix(in srgb, var(--nav-accent, var(--accent)) 14%, #ffffff);
+    --nav-edge:color-mix(in srgb, var(--nav-accent, var(--accent)) 24%, transparent);
+  }
+
   /* the section menu is a notch at the top centre, like a phone's Dynamic Island: a dark pill
      with the current section that opens into the full list. It shows while you scroll. */
   .case-nav{
     left:50%; top:calc(var(--head-bottom, 84px) + 10px);
     width:min(300px, calc(100vw - 32px)); max-height:calc(100vh - var(--head-bottom, 84px) - 30px);
     display:flex; flex-direction:column; overflow:hidden;
-    background:rgba(12,12,14,.92); color:#f2f3f5;
-    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-    border-radius:24px; box-shadow:0 10px 30px rgba(10,12,20,.22);
+    background:var(--nav-tint); color:var(--text);
+    -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4);
+    border-radius:24px; box-shadow:inset 0 0 0 1px var(--nav-edge), 0 10px 30px color-mix(in srgb, var(--nav-accent, var(--accent)) 18%, transparent);
     opacity:0; pointer-events:none; transform:translateX(-50%) translateY(-10px) scale(.96);
     transition:opacity .35s ease, transform .4s cubic-bezier(.32,.72,.24,1), width .4s cubic-bezier(.32,.72,.24,1), border-radius .4s ease;
   }
@@ -813,18 +821,18 @@
     opacity:0; pointer-events:none; transition:opacity .2s ease .38s; }
   .case-end.on{ opacity:1; pointer-events:auto; transition-delay:0s; }
   .ce-goo{ position:absolute; inset:-20px -30px; filter:url(#ce-goo); pointer-events:none; }
-  .ce-blob{ position:absolute; top:20px; height:40px; border-radius:20px; background:#0c0c0e;
+  .ce-blob{ position:absolute; top:20px; height:40px; border-radius:20px; background:var(--nav-solid);
     left:calc(30px + var(--cx)); width:var(--cw);
     transition:left .6s cubic-bezier(.34,1.45,.5,1), width .6s cubic-bezier(.34,1.45,.5,1); }
   .case-end.on .ce-blob{ left:calc(30px + var(--x)); width:var(--w); }
   .case-end.on .ce-blob.b0, .case-end.on .ce-blob.b2{ transition-duration:.85s; transition-delay:.06s; }
   .ce-btns{ position:relative; display:flex; gap:12px; height:40px; }
   .ce-btns a, .ce-btns button{ display:flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 18px; border:0; background:none; cursor:pointer; white-space:nowrap;
-    color:#f2f3f5; text-decoration:none; font-family:'Geist Mono', monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--text); text-decoration:none; font-family:'Geist', -apple-system, "Segoe UI", sans-serif; font-size:13.5px; font-weight:500;
     opacity:0; transform:scale(.85); transition:opacity .2s ease, transform .3s ease; border-radius:20px; }
   .case-end.on .ce-btns > *{ opacity:1; transform:none; transition-delay:.28s; }
-  .ce-btns > *:hover{ color:#8fb0ff; }
-  .ce-btns .ce-next b{ color:#8fb0ff; font-weight:600; }
+  .ce-btns > *:hover{ color:var(--nav-accent, var(--accent)); }
+  .ce-btns .ce-next b{ color:var(--nav-accent, var(--accent)); font-weight:600; }
   .case-nav.ended{ opacity:0 !important; pointer-events:none !important; transition:opacity .15s ease; }
   @media (prefers-reduced-motion: reduce){ .ce-blob, .ce-btns > *, .case-end{ transition:none !important; } }
   .case-nav.shown, .case-nav.open{ opacity:1; pointer-events:auto; transform:translateX(-50%); }
@@ -833,19 +841,19 @@
   .case-nav-toggle{
     width:100%; display:flex; align-items:center; gap:10px; padding:11px 18px;
     background:none; border:0; cursor:pointer; text-align:left; color:inherit;
-    font-family:'Geist Mono', monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    font-family:'Geist', -apple-system, "Segoe UI", sans-serif; font-size:14px; font-weight:500;
   }
-  .cn-count{ color:#8fb0ff; font-weight:600; }
+  .cn-count{ color:var(--nav-accent, var(--accent)); font-weight:600; font-variant-numeric:tabular-nums; }
   .cn-current{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .cn-chev{ color:#8e94a0; transition:transform .25s ease; }
+  .cn-chev{ color:var(--text-muted); transition:transform .25s ease; }
   .case-nav.open .cn-chev{ transform:rotate(180deg); }
   .case-nav-list{ display:none; padding:2px 18px 14px; overflow:auto; }
   .case-nav.open .case-nav-list{ display:block; }
-  .case-nav-list a{ font-size:12.5px; padding:7px 0; color:#a7adb8; }
-  .case-nav-list a:hover, .case-nav-list a.active{ color:#fff; }
-  .cn-dot{ width:7px; height:7px; border-color:#5b6170; background:transparent; }
-  .case-nav-list a.done .cn-dot{ background:#5b6170; }
-  .case-nav-list a.active .cn-dot{ border-color:#8fb0ff; background:#8fb0ff; box-shadow:none; }
+  .case-nav-list a{ font-size:14px; letter-spacing:0; text-transform:none; padding:7px 0; color:var(--text-muted); }
+  .case-nav-list a:hover, .case-nav-list a.active{ color:var(--text); }
+  .cn-dot{ width:7px; height:7px; border-color:var(--nav-edge); background:transparent; }
+  .case-nav-list a.done .cn-dot{ background:color-mix(in srgb, var(--nav-accent, var(--accent)) 40%, transparent); border-color:transparent; }
+  .case-nav-list a.active .cn-dot{ border-color:var(--nav-accent, var(--accent)); background:var(--nav-accent, var(--accent)); box-shadow:none; }
   @media (prefers-reduced-motion: reduce){
     .case-nav, .case-nav-list a, .cn-dot, .cn-chev{ transition:none; }
   }
@@ -2578,7 +2586,7 @@
     if(secs.length < 3) return;
     caseView.style.setProperty('--nav-accent', p.accent || 'var(--accent)');
     var items = secs.map(function(el, i){
-      var h = el.querySelector('h4.label, .glance-head');
+      var h = el.querySelector('h4.label, .glance-head, .case-hmw .label');
       var label = h ? h.textContent.trim() : 'Section ' + (i + 1);
       label = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
       el.id = 'sec-' + i;
