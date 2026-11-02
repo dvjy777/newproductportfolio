@@ -26,7 +26,25 @@
   .orb.a{ width:46vmax; height:46vmax; left:-12vmax; top:-14vmax; background:radial-gradient(circle, rgba(29,95,255,.24), transparent 65%); animation:drift-a 26s ease-in-out infinite alternate; }
   .orb.b{ width:40vmax; height:40vmax; right:-10vmax; bottom:-16vmax; background:radial-gradient(circle, rgba(217,119,87,.18), transparent 65%); animation:drift-b 31s ease-in-out infinite alternate; }
   /* a small light that wanders behind the island, so the glass always has something to bend */
-  .orb.c{ width:22vmax; height:22vmax; left:calc(50% - 11vmax); top:calc(var(--island-top, 36vh) - 11vmax); background:radial-gradient(circle, rgba(143,176,255,.30), rgba(232,69,107,.12) 45%, transparent 68%); animation:wander 18s ease-in-out infinite alternate; }
+  /* a blurred, colour-washed silhouette of the portrait glows behind the glass, smeared sideways like motion;
+     its colour follows the project you point at */
+  .aura{ position:absolute; left:50%; top:calc(var(--island-top, 36vh) + 12vh); width:min(118vmin, 1180px); aspect-ratio:1; transform:translate(-50%, -50%);
+    isolation:isolate; opacity:0; transition:opacity 2.6s ease .3s;
+    -webkit-mask-image:radial-gradient(closest-side, #000 38%, rgba(0,0,0,.55) 66%, transparent 100%); mask-image:radial-gradient(closest-side, #000 38%, rgba(0,0,0,.55) 66%, transparent 100%); }
+  .ready .aura{ opacity:.9; }
+  .aura img{ position:absolute; left:14%; top:10%; width:72%; height:72%; object-fit:cover; filter:grayscale(1) contrast(1.35) brightness(.95) blur(28px); }
+  .aura .s2{ opacity:.5; transform:translateX(9%) scaleX(1.06); animation:smear 9s ease-in-out infinite alternate; }
+  .aura .s3{ opacity:.35; transform:translateX(-11%) scaleX(1.12); filter:grayscale(1) contrast(1.3) blur(40px); animation:smear 12s ease-in-out infinite alternate-reverse; }
+  @keyframes smear{ to{ transform:translateX(-3%) scaleX(1.18); } }
+  .tint{ position:absolute; inset:0; mix-blend-mode:color; opacity:0; transition:opacity 1s ease; }
+  .tint.on{ opacity:1; }
+  .tint.t-default{ background:linear-gradient(135deg, #5b82ff, #c2477a 70%); }
+  .tint.t-claude{ background:linear-gradient(135deg, #ffb08a, #c15f3c 70%); }
+  .tint.t-chance-ai{ background:linear-gradient(135deg, #9db8ff, #1d5fff 70%); }
+  .tint.t-inyun{ background:linear-gradient(135deg, #f5b96e, #e8456b 70%); }
+  .tint.t-ekpyrosis{ background:linear-gradient(135deg, #ffd1dc, #d9476b 70%); }
+  .shade{ position:absolute; inset:0; background:radial-gradient(closest-side, rgba(0,0,0,0) 40%, rgba(5,5,6,.5)); }
+  .orb.c{ display:none; width:22vmax; height:22vmax; left:calc(50% - 11vmax); top:calc(var(--island-top, 36vh) - 11vmax); background:radial-gradient(circle, rgba(143,176,255,.30), rgba(232,69,107,.12) 45%, transparent 68%); animation:wander 18s ease-in-out infinite alternate; }
   @keyframes drift-a{ to{ transform:translate(8vmax, 6vmax) scale(1.08); } }
   @keyframes drift-b{ to{ transform:translate(-7vmax, -5vmax) scale(1.1); } }
   @keyframes wander{ 0%{ transform:translate(-14vmax, 2vmax); } 50%{ transform:translate(4vmax, -3vmax) scale(.85); } 100%{ transform:translate(13vmax, 3vmax); } }
@@ -57,12 +75,12 @@
      One sheet of glass whose outline is redrawn every frame: the island, the card, and the neck
      that stretches between them when a card drips out. The rims and words ride on top. */
   .liquid{ position:fixed; inset:0; z-index:3; pointer-events:none; clip-path:path('M0 0Z');
-    -webkit-backdrop-filter:blur(16px) saturate(180%) brightness(1.08); backdrop-filter:blur(16px) saturate(180%) brightness(1.08);
-    background:linear-gradient(180deg, rgba(30,31,38,.50), rgba(14,14,18,.62)); }
+    -webkit-backdrop-filter:blur(26px) saturate(170%) brightness(1.15); backdrop-filter:blur(26px) saturate(170%) brightness(1.15);
+    background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04) 65%), linear-gradient(rgba(10,10,14,.24), rgba(10,10,14,.24)); }
   .rim{ position:fixed; z-index:4; pointer-events:none; left:0; top:0;
-    box-shadow:inset 0 1px .5px rgba(255,255,255,.30), inset 0 -.5px 0 rgba(255,255,255,.10), inset 0 0 0 .5px rgba(255,255,255,.14), 0 12px 34px rgba(0,0,0,.32); }
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.45), inset 0 -1px 1px rgba(255,255,255,.10), inset 0 0 24px rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.22), 0 18px 44px rgba(0,0,0,.35); }
   .rim::before{ content:''; position:absolute; inset:0; border-radius:inherit;
-    background:linear-gradient(110deg, rgba(255,255,255,.10), rgba(255,255,255,0) 28%, rgba(255,255,255,0) 72%, rgba(169,193,255,.07)); }
+    background:linear-gradient(140deg, rgba(255,255,255,.16), rgba(255,255,255,0) 34%, rgba(255,255,255,0) 74%, rgba(255,255,255,.06)); }
   .rim.island{ opacity:0; transition:opacity .5s ease; }
   .ready .rim.island{ opacity:1; }
 
@@ -72,11 +90,11 @@
   .photo canvas{ width:100%; height:100%; display:block; image-rendering:pixelated; }
   .is-icons .photo{ opacity:0; transform:scale(.6); }
 
-  .say{ margin:0; position:absolute; left:56px; right:22px; top:50%; transform:translateY(-50%); font-size:14.5px; line-height:1.5; letter-spacing:.005em; color:var(--soft); }
+  .say{ margin:0; position:absolute; left:56px; right:22px; top:50%; transform:translateY(-50%); font-size:14.5px; line-height:1.5; letter-spacing:.005em; color:rgba(255,255,255,.66); }
   .say .w{ display:inline-block; opacity:0; filter:blur(5px); transform:translateY(4px); transition:opacity .55s ease, filter .55s ease, transform .55s cubic-bezier(.32,.72,0,1); transition-delay:calc(var(--i) * 45ms); }
   .say.in .w{ opacity:1; filter:none; transform:none; }
   .say.out .w{ opacity:0; filter:blur(4px); transform:translateY(-3px); transition-duration:.4s; transition-delay:calc(var(--i) * 12ms); }
-  .say .w.em{ color:var(--accent); }
+  .say .w.em{ color:#fff; }
 
   .icons{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px; padding:0 6px; }
   .ico{ position:relative; width:40px; height:40px; flex:0 0 40px; border-radius:50%; border:0; padding:0; cursor:pointer; color:inherit;
@@ -115,7 +133,10 @@
 </style>
 </head>
 <body>
-<div class="space" aria-hidden="true"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="floor"></div></div>
+<div class="space" aria-hidden="true">
+  <div class="aura"><img class="s1" src="../images/headshot.jpg" alt=""><img class="s2" src="../images/headshot.jpg" alt=""><img class="s3" src="../images/headshot.jpg" alt="">
+    <div class="tint t-default on"></div><div class="tint t-claude"></div><div class="tint t-chance-ai"></div><div class="tint t-inyun"></div><div class="tint t-ekpyrosis"></div><div class="shade"></div></div>
+  <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="floor"></div></div>
 
 <header class="top">
   <a class="name mono" href="../">David Jinho Yang<span>Product designer + prototyper</span></a>
@@ -331,6 +352,8 @@
 
   // ---------- the droplet card ----------
   var current = -1, closeTimer = null, stageT = [];
+  var tints = document.querySelectorAll('.tint');
+  function tint(name){ tints.forEach(function(t){ t.classList.toggle('on', t.classList.contains('t-' + name)); }); }
   function later(fn, ms){ stageT.push(setTimeout(fn, reduce ? 0 : ms)); }
   function clearLater(){ stageT.forEach(clearTimeout); stageT = []; }
   function iconOffset(i){ var r = icos[i].getBoundingClientRect(); return r.left + r.width / 2 - window.innerWidth / 2; }
@@ -340,6 +363,7 @@
     var p = projects[i], was = current; current = i; clearLater();
     icos.forEach(function(b, k){ b.classList.toggle('on', k === i); });
     hint.classList.remove('on');
+    tint(p.slug);
     var vw = window.innerWidth, w = Math.min(280, vw - 32), ix = iconOffset(i);
     var x = Math.max(-vw / 2 + 16 + w / 2, Math.min(vw / 2 - 16 - w / 2, ix));
     card.href = '../#work/' + p.slug;
@@ -369,6 +393,7 @@
       if(current < 0) return;
       var ix = iconOffset(current); current = -1; clearLater();
       icos.forEach(function(b){ b.classList.remove('on'); });
+      tint('default');
       card.classList.remove('show', 'swap', 'live'); card.tabIndex = -1; rimD.classList.remove('on');
       var v = card.querySelector('video'); if(v) v.pause();
       // shrink back to a drop, rise, and melt into the island
