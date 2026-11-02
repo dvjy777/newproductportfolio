@@ -736,6 +736,17 @@
     box-shadow:0 28px 70px -34px color-mix(in srgb, var(--gl-accent, var(--accent)) 60%, transparent), 0 8px 26px -16px color-mix(in srgb, var(--gl-accent, var(--accent)) 35%, transparent);
   }
   .glance-head{ color:var(--gl-accent, var(--accent)); margin-bottom:16px; }
+  .gl-decision{ margin:0 0 26px; font-size:clamp(20px, 2.1vw, 27px); line-height:1.32; letter-spacing:-.01em; font-weight:500; color:var(--text); max-width:46ch; text-wrap:pretty; }
+  .gl-strip{ display:grid; gap:18px; padding-top:22px; border-top:1px solid var(--gl-line, rgba(29,95,255,.15)); }
+  @media(min-width:760px){ .gl-strip{ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:28px; align-items:start; } }
+  .gl-step{ display:flex; gap:16px; align-items:flex-start; }
+  .gl-step .label{ margin-bottom:6px; }
+  .gl-step p{ margin:0; font-size:15px; line-height:1.6; color:var(--text); max-width:48ch; }
+  .gl-shot{ flex:0 0 auto; width:64px; border-radius:12px; box-shadow:0 10px 24px -12px rgba(20,33,61,.35), 0 0 0 1px rgba(20,33,61,.06); }
+  .gl-arrow{ display:none; color:var(--gl-accent, var(--accent)); font-size:22px; line-height:1; padding-top:20px; }
+  @media(min-width:760px){ .gl-arrow{ display:block; } }
+  .gl-role{ margin:20px 0 0; font-size:13.5px; line-height:1.55; color:var(--text-muted); }
+  .gl-role .label{ display:inline; margin-right:10px; }
   .glance-grid{ display:grid; gap:18px 30px; }
   @media(min-width:760px){ .glance-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
   .glance-cell .label{ margin-bottom:6px; }
@@ -1564,7 +1575,9 @@
         problem:'Chance AI\'s image analysis is strong, but there\'s no easy way to browse or create skills. The app feels too broad and doesn\'t adapt to each person, which can lead to choice paralysis.',
         role:'Product designer on the AStudio team, focused on Create Visual Skill, the Home screen and the Community tab.',
         decision:'Replace the empty chat with a guided flow of suggestions, while keeping free prompting one tap away.',
-        outcome:'Hi-fi screens for the whole Create Visual Skill flow, including the alternate paths, and a user flow that ties them together.'
+        outcome:'Hi-fi screens for the whole Create Visual Skill flow, including the alternate paths, and a user flow that ties them together.',
+        before:{src:'images/chance/before-clean.jpg', alt:'Before: the original Create Visual Skill screen, an open chat'},
+        after:{src:'images/chance/v2-01-interest.jpg', alt:'After: the guided flow, starting from popular skills and your interests'}
       },
       timeline:[
         {when:'Week 1', items:['First client meeting', 'Problem identification', 'First proposal']},
@@ -2280,11 +2293,18 @@
     function glanceHtml(g, tint){
       if(!g) return '';
       var style = tint ? ' style="--gl-accent:'+tint.accent+'; --gl-line:'+tint.line+'; --gl-bg:'+tint.bg+'"' : '';
-      var cells = [['Problem', g.problem], ['My role', g.role], ['Key decision', g.decision], ['Outcome', g.outcome]]
-        .filter(function(c){ return c[1]; })
-        .map(function(c){ return '<div class="glance-cell"><div class="label">'+c[0]+'</div><p>'+c[1]+'</p></div>'; }).join('');
+      // the key decision leads; problem and outcome follow as a short story, with before and after screens when there are some
+      function step(label, text, shot){
+        if(!text) return '';
+        return '<div class="gl-step">' + (shot ? '<img class="gl-shot" src="'+shot.src+'" alt="'+shot.alt+'" loading="lazy">' : '') +
+          '<div><div class="label">'+label+'</div><p>'+text+'</p></div></div>';
+      }
       var stats = (g.stats || []).map(function(st){ return '<div class="glance-stat"><div class="num">'+st[0]+'</div><div class="cap">'+st[1]+'</div></div>'; }).join('');
-      return '<section class="glance" aria-label="At a glance"'+style+'><div class="glance-head label">At a glance</div><div class="glance-grid">'+cells+'</div>' +
+      return '<section class="glance" aria-label="At a glance"'+style+'><div class="glance-head label">At a glance · Key decision</div>' +
+        (g.decision ? '<p class="gl-decision">'+g.decision+'</p>' : '') +
+        '<div class="gl-strip'+(g.before || g.after ? ' with-shots' : '')+'">' + step('Problem', g.problem, g.before) +
+          (g.problem && g.outcome ? '<span class="gl-arrow" aria-hidden="true">→</span>' : '') + step('Outcome', g.outcome, g.after) + '</div>' +
+        (g.role ? '<p class="gl-role"><span class="label">My role</span>'+g.role+'</p>' : '') +
         (stats ? '<div class="glance-stats">'+stats+'</div>' : '') + '</section>';
     }
     // what users say about the problem, as a grid of soft colored squares
