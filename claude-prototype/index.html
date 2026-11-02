@@ -1181,6 +1181,7 @@ const DEMOS = [
 let current = 0, loop = !EMBED || ONE !== null, playing = false;
 async function play(i) {
   current = i; reset(); const tok = RUN; playing = true; scr.classList.add('demo'); renderRail();
+  if (EMBED && parent !== window) parent.postMessage({ playing: i }, location.origin);
   try {
     await wait(500, tok); await DEMOS[i].run(tok); hideFinger(); await wait(600, tok);
     if (tok === RUN && playing) play(loop ? i : (i + 1) % DEMOS.length);
@@ -1252,7 +1253,7 @@ if (EMBED) addEventListener('message', (e) => {
   if (e.data === 'pause' && playing) { playing = false; RUN++; hideFinger(); }
   else if (e.data === 'play' && !playing && !LIVE) play(current);
   else if (e.data && e.data.live !== undefined) { LIVE = !!e.data.live; if (LIVE) { stopDemo(); reset(); } else play(current); }
-  else if (e.data && e.data.demo !== undefined && DEMOS[e.data.demo]) { RUN++; hideFinger(); play(e.data.demo); }
+  else if (e.data && e.data.demo !== undefined && DEMOS[e.data.demo]) { if (e.data.loop !== undefined) loop = !!e.data.loop; LIVE = false; RUN++; hideFinger(); play(e.data.demo); }
 });
 
 </script>

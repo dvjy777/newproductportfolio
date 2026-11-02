@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Side Quests Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+  /* The case study hero: the prototype in the middle, every action as a tile on either side */
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; height:100%; overflow:hidden; background:#1A1915; color:#F4F1EA; font:14px/1.4 Inter, -apple-system, sans-serif; }
+  .cq{ height:100vh; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:40px; align-items:center; padding:14px 24px; }
+  .cq-side{ display:flex; flex-direction:column; gap:14px; width:100%; max-width:440px; }
+  .cq-left{ justify-self:end; }
+  .cq-right{ justify-self:start; }
+  .cq-brand{ display:flex; align-items:center; gap:10px; }
+  .cq-brand svg{ width:30px; height:30px; flex:0 0 auto; }
+  .cq-brand b{ display:block; font-size:15px; font-weight:600; }
+  .cq-brand span{ display:block; font-size:12px; color:#A8A396; }
+  .cq-intro{ margin:0; font-size:12px; line-height:1.45; color:#C9C4B8; }
+  .cq-group h4{ margin:0 0 6px; font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#A8A396; }
+  .cq-group ol{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:6px; }
+  .tile{
+    width:100%; aspect-ratio:1; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; gap:4px; padding:8px;
+    font:inherit; font-size:11.5px; line-height:1.2; text-align:left; color:#F4F1EA; cursor:pointer;
+    border-radius:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); transition:background .2s ease, border-color .2s ease;
+  }
+  .tile:hover{ background:rgba(255,255,255,.12); }
+  .tile .n{ font-size:10.5px; opacity:.7; }
+  .tile[aria-pressed="true"]{ background:#D97757; border-color:#D97757; color:#fff; }
+  .tile:focus-visible{ outline:2px solid #D97757; outline-offset:2px; }
+  .tile.try{ background:rgba(217,119,87,.16); border-color:rgba(217,119,87,.5); }
+  .cq-note{ margin:0; font-size:11.5px; line-height:1.45; color:#A8A396; }
+  .cq-phone{ height:calc(100vh - 28px); aspect-ratio:393/852; border-radius:min(5.4vh, 46px); overflow:hidden; background:#1F1E1D;
+    box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.08); transition:box-shadow .3s ease; }
+  .cq-phone.live{ box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 3px #D97757; }
+  .cq-phone iframe{ display:block; width:100%; height:100%; border:0; }
+  /* narrow screens: the phone fills the hero, every tile in one scrolling row above it */
+  @media (max-width:860px){
+    .cq{ grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); gap:12px; padding:12px 0 12px; align-items:stretch; }
+    .cq-side{ display:contents; }
+    .cq-brand, .cq-intro, .cq-note{ display:none; }
+    .cq-strip{ grid-row:1; display:flex; gap:12px; overflow-x:auto; padding:0 16px 4px; scrollbar-width:none; }
+    .cq-strip::-webkit-scrollbar{ display:none; }
+    .cq-group{ flex:0 0 auto; }
+    .cq-group ol{ display:flex; }
+    .tile{ width:74px; }
+    .cq-phone{ grid-row:2; justify-self:center; height:100%; max-height:calc(100vh - 120px); }
+  }
+  @media (min-width:861px){
+    .cq-strip{ display:contents; }
+    .cq-left{ grid-column:1; grid-row:1; }
+    .cq-phone{ grid-column:2; grid-row:1; }
+    .cq-right{ grid-column:3; grid-row:1; }
+  }
+</style>
+</head>
+<body>
+<div class="cq">
+  <div class="cq-strip">
+    <aside class="cq-side cq-left" aria-label="Prototype guide">
+      <div class="cq-brand"><svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#D97757" stroke-width="8.5" stroke-linecap="round" id="spark"></g></svg><div><b>Side Quests</b><span>Interactive prototype</span></div></div>
+      <p class="cq-intro">Use the phone yourself, or pick any action below to watch it on a loop. Try holding an answer, tapping a few words, then swiping the tray up.</p>
+      <nav class="cq-group" aria-label="Select">
+        <h4>01 · Select</h4>
+        <ol>
+          <li><button class="tile" data-demo="1"><span class="n">1</span>Hold to select</button></li>
+          <li><button class="tile" data-demo="12"><span class="n">2</span>Select all</button></li>
+          <li><button class="tile" data-demo="13"><span class="n">3</span>Select phrases</button></li>
+          <li><button class="tile" data-demo="2"><span class="n">4</span>Save in a color</button></li>
+          <li><button class="tile" data-demo="4"><span class="n">5</span>Add to prompt</button></li>
+        </ol>
+      </nav>
+      <nav class="cq-group" aria-label="Explore">
+        <h4>02 · Explore</h4>
+        <ol>
+          <li><button class="tile" data-demo="3"><span class="n">1</span>Swipe up</button></li>
+          <li><button class="tile" data-demo="5"><span class="n">2</span>Merge</button></li>
+          <li><button class="tile" data-demo="6"><span class="n">3</span>Keep as a branch</button></li>
+          <li><button class="tile" data-demo="7"><span class="n">4</span>New chat</button></li>
+          <li><button class="tile" data-demo="8"><span class="n">5</span>Dissolve</button></li>
+        </ol>
+      </nav>
+    </aside>
+    <aside class="cq-side cq-right" aria-label="More actions">
+      <nav class="cq-group" aria-label="Your turn">
+        <h4>Your turn</h4>
+        <ol><li><button class="tile try" data-live aria-pressed="true"><span class="n">↺</span>Try it yourself</button></li></ol>
+      </nav>
+      <nav class="cq-group" aria-label="Return">
+        <h4>03 · Return</h4>
+        <ol>
+          <li><button class="tile" data-demo="9"><span class="n">1</span>Branches</button></li>
+          <li><button class="tile" data-demo="10"><span class="n">2</span>Inside a branch</button></li>
+        </ol>
+      </nav>
+      <nav class="cq-group" aria-label="Re-find">
+        <h4>04 · Re-find</h4>
+        <ol>
+          <li><button class="tile" data-demo="11"><span class="n">1</span>Collapse</button></li>
+          <li><button class="tile" data-demo="0"><span class="n">2</span>Jump back</button></li>
+        </ol>
+      </nav>
+      <p class="cq-note">Demo content is scripted: a Kyoto trip conversation. Personal concept, not affiliated with Anthropic.</p>
+    </aside>
+  </div>
+  <div class="cq-phone live" id="phone"><iframe id="proto" src="index.html?embed=1&amp;live=1&amp;slow=1.4" title="Side Quests prototype"></iframe></div>
+</div>
+<script>
+// the spark, drawn the same way as on the portfolio
+(function(){
+  var lens = [40, 33, 44, 30, 42, 35, 46, 31, 41, 37, 44], g = document.getElementById('spark'), html = '';
+  lens.forEach(function(l, i){
+    var a = (i / lens.length) * Math.PI * 2 + (i % 2 ? .06 : -.04) - Math.PI / 2;
+    html += '<line x1="'+(50 + Math.cos(a) * 5).toFixed(1)+'" y1="'+(50 + Math.sin(a) * 5).toFixed(1)+'" x2="'+(50 + Math.cos(a) * l).toFixed(1)+'" y2="'+(50 + Math.sin(a) * l).toFixed(1)+'"/>';
+  });
+  g.innerHTML = html;
+})();
+
+var frame = document.getElementById('proto'), phone = document.getElementById('phone'), tiles = document.querySelectorAll('.tile');
+function mark(btn){ tiles.forEach(function(t){ t.setAttribute('aria-pressed', t === btn ? 'true' : 'false'); }); }
+tiles.forEach(function(t){
+  t.addEventListener('click', function(){
+    var live = t.hasAttribute('data-live');
+    mark(t);
+    phone.classList.toggle('live', live);
+    frame.contentWindow.postMessage(live ? { live:true } : { demo:+t.dataset.demo, loop:true }, location.origin);
+  });
+});
+// pass the portfolio's play and pause on to the prototype
+addEventListener('message', function(e){
+  if(e.origin !== location.origin || e.source === frame.contentWindow) return;
+  if(e.data === 'play' || e.data === 'pause') frame.contentWindow.postMessage(e.data, location.origin);
+});
+</script>
+</body>
+</html>
