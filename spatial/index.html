@@ -9,36 +9,32 @@
 <style>
   @font-face{ font-family:'Geist'; src:url('../fonts/Geist-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
   @font-face{ font-family:'Geist'; src:url('../fonts/Geist-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
-  @font-face{ font-family:'Geist'; src:url('../fonts/Geist-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
   @font-face{ font-family:'Geist Mono'; src:url('../fonts/GeistMono-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
   @font-face{ font-family:'Geist Mono'; src:url('../fonts/GeistMono-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
 
-  :root{
-    --bg:#050506; --ink:#f2f3f5; --muted:#8e939e; --dim:#5b606b; --accent:#8fb0ff;
-    --island-top:36vh;
-    --spring:cubic-bezier(.34,1.32,.5,1);
-    --ease:cubic-bezier(.32,.72,0,1);
-  }
+  :root{ --bg:#050506; --ink:#f2f3f5; --soft:rgba(242,243,245,.86); --muted:#8e939e; --dim:#5b606b; --accent:#a9c1ff; }
   *{ box-sizing:border-box; }
   html, body{ margin:0; height:100%; background:var(--bg); color:var(--ink); overflow:hidden; }
   body{ font-family:'Geist', -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing:antialiased; }
   a{ color:inherit; }
   .mono{ font-family:'Geist Mono', ui-monospace, monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; }
 
-  /* ---------- space: slow light, a floor that recedes ---------- */
+  /* ---------- space: slow light for the glass to bend, a floor that recedes ---------- */
   .space{ position:fixed; inset:0; overflow:hidden; pointer-events:none; }
-  .orb{ position:absolute; border-radius:50%; filter:blur(90px); opacity:.0; transition:opacity 2.4s ease; }
+  .orb{ position:absolute; border-radius:50%; filter:blur(70px); opacity:0; transition:opacity 2.4s ease; }
   .ready .orb{ opacity:1; }
-  .orb.a{ width:46vmax; height:46vmax; left:-12vmax; top:-14vmax; background:radial-gradient(circle, rgba(29,95,255,.22), transparent 65%); animation:drift-a 26s ease-in-out infinite alternate; }
-  .orb.b{ width:40vmax; height:40vmax; right:-10vmax; bottom:-16vmax; background:radial-gradient(circle, rgba(217,119,87,.16), transparent 65%); animation:drift-b 31s ease-in-out infinite alternate; }
-  .orb.c{ width:28vmax; height:28vmax; left:42%; top:52%; background:radial-gradient(circle, rgba(232,69,107,.10), transparent 65%); animation:drift-a 37s ease-in-out infinite alternate-reverse; }
+  .orb.a{ width:46vmax; height:46vmax; left:-12vmax; top:-14vmax; background:radial-gradient(circle, rgba(29,95,255,.24), transparent 65%); animation:drift-a 26s ease-in-out infinite alternate; }
+  .orb.b{ width:40vmax; height:40vmax; right:-10vmax; bottom:-16vmax; background:radial-gradient(circle, rgba(217,119,87,.18), transparent 65%); animation:drift-b 31s ease-in-out infinite alternate; }
+  /* a small light that wanders behind the island, so the glass always has something to bend */
+  .orb.c{ width:22vmax; height:22vmax; left:calc(50% - 11vmax); top:calc(var(--island-top, 36vh) - 11vmax); background:radial-gradient(circle, rgba(143,176,255,.30), rgba(232,69,107,.12) 45%, transparent 68%); animation:wander 18s ease-in-out infinite alternate; }
   @keyframes drift-a{ to{ transform:translate(8vmax, 6vmax) scale(1.08); } }
   @keyframes drift-b{ to{ transform:translate(-7vmax, -5vmax) scale(1.1); } }
+  @keyframes wander{ 0%{ transform:translate(-14vmax, 2vmax); } 50%{ transform:translate(4vmax, -3vmax) scale(.85); } 100%{ transform:translate(13vmax, 3vmax); } }
   .floor{ position:absolute; left:-50%; right:-50%; bottom:-8vh; height:62vh; transform:perspective(520px) rotateX(72deg); transform-origin:50% 100%;
     background-image:linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
     background-size:64px 64px; -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,.9), transparent 80%); mask-image:linear-gradient(to top, rgba(0,0,0,.9), transparent 80%);
     opacity:0; transition:opacity 2.4s ease .4s; }
-  .ready .floor{ opacity:.55; }
+  .ready .floor{ opacity:.5; }
 
   /* ---------- chrome ---------- */
   .top{ position:fixed; left:0; right:0; top:0; display:flex; justify-content:space-between; align-items:center; padding:22px max(20px, env(safe-area-inset-left)); z-index:5; }
@@ -46,7 +42,7 @@
   .top .name span{ display:block; color:var(--dim); margin-top:4px; }
   .top a.classic{ white-space:nowrap; color:var(--muted); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.1); transition:color .2s, border-color .2s; }
   .top a.classic:hover{ color:var(--ink); border-color:rgba(255,255,255,.25); }
-  .bottom{ position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; gap:22px; padding:22px 20px max(22px, env(safe-area-inset-bottom)); z-index:5; color:var(--dim); }
+  .bottom{ position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; flex-wrap:wrap; gap:8px 22px; padding:22px 20px max(22px, env(safe-area-inset-bottom)); z-index:5; color:var(--dim); }
   .bottom button, .bottom a{ font:inherit; letter-spacing:inherit; text-transform:inherit; background:none; border:0; color:inherit; cursor:pointer; padding:6px 2px; text-decoration:none; transition:color .2s; }
   .bottom button:hover, .bottom a:hover{ color:var(--ink); }
   .bottom .after{ display:none; }
@@ -54,90 +50,68 @@
   .done .bottom .after{ display:inline-block; }
   .top, .bottom{ opacity:0; transition:opacity 1.2s ease .6s; }
   .ready .top, .ready .bottom{ opacity:1; }
-  .hint{ position:fixed; left:50%; top:calc(var(--island-top) + 58px); transform:translateX(-50%); color:var(--dim); opacity:0; transition:opacity .6s ease; pointer-events:none; white-space:nowrap; }
+  .hint{ position:fixed; left:50%; transform:translateX(-50%); margin:0; color:var(--dim); opacity:0; transition:opacity .6s ease; pointer-events:none; white-space:nowrap; z-index:2; }
   .done .hint.on{ opacity:1; }
 
-  /* ---------- the island ----------
-     Shapes live in .goo, a layer run through a gooey filter so they melt into each other.
-     Words, photo and icons sit in a matching layer above it, so they stay sharp. */
-  .stage{ position:fixed; left:50%; top:var(--island-top); width:0; height:0; z-index:3; }
-  /* the filter needs a real box to draw in, so the layer spans the screen and the shapes shift back to the centre */
-  .goo{ position:absolute; left:-50vw; top:-60vh; width:100vw; height:160vh; filter:url(#goo); pointer-events:none; }
-  .shape{ position:absolute; margin-left:50vw; margin-top:60vh; background:#121216; }
-  .island, .island-c{ left:calc(var(--iw) / -2); top:calc(var(--ih) / -2); width:var(--iw); height:var(--ih); border-radius:calc(var(--ih) / 2);
-    transition:width .75s var(--ease), height .55s var(--ease), left .75s var(--ease), top .55s var(--ease), transform .7s var(--spring), opacity .6s ease; }
-  .stage.bouncy .island, .stage.bouncy .island-c{ transition:width .8s var(--spring), height .6s var(--spring), left .8s var(--spring), top .6s var(--spring), transform .7s var(--spring), opacity .6s ease; }
-  .stage.pre .island, .stage.pre .island-c{ transform:scale(.4); opacity:0; }
+  /* ---------- liquid glass ----------
+     One sheet of glass whose outline is redrawn every frame: the island, the card, and the neck
+     that stretches between them when a card drips out. The rims and words ride on top. */
+  .liquid{ position:fixed; inset:0; z-index:3; pointer-events:none; clip-path:path('M0 0Z');
+    -webkit-backdrop-filter:blur(16px) saturate(180%) brightness(1.08); backdrop-filter:blur(16px) saturate(180%) brightness(1.08);
+    background:linear-gradient(180deg, rgba(30,31,38,.50), rgba(14,14,18,.62)); }
+  .rim{ position:fixed; z-index:4; pointer-events:none; left:0; top:0;
+    box-shadow:inset 0 1px .5px rgba(255,255,255,.30), inset 0 -.5px 0 rgba(255,255,255,.10), inset 0 0 0 .5px rgba(255,255,255,.14), 0 12px 34px rgba(0,0,0,.32); }
+  .rim::before{ content:''; position:absolute; inset:0; border-radius:inherit;
+    background:linear-gradient(110deg, rgba(255,255,255,.10), rgba(255,255,255,0) 28%, rgba(255,255,255,0) 72%, rgba(169,193,255,.07)); }
+  .rim.island{ opacity:0; transition:opacity .5s ease; }
+  .ready .rim.island{ opacity:1; }
 
-  .island-c{ position:absolute; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 60%);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px rgba(255,255,255,.06), 0 24px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.6); }
-  .island-c::before{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-    background:linear-gradient(115deg, rgba(255,255,255,.09), rgba(255,255,255,0) 32%, rgba(255,255,255,0) 70%, rgba(143,176,255,.06)); }
-
-  .photo{ position:absolute; left:8px; top:50%; width:56px; height:56px; margin-top:-28px; border-radius:50%; overflow:hidden;
-    filter:grayscale(1) contrast(1.06) brightness(.92); transition:opacity .45s ease, transform .6s var(--spring); }
+  .island-c{ position:fixed; z-index:5; left:0; top:0; overflow:hidden; }
+  .photo{ position:absolute; left:6px; top:50%; width:36px; height:36px; margin-top:-18px; border-radius:50%; overflow:hidden;
+    filter:grayscale(1) contrast(1.06) brightness(.92); transition:opacity .45s ease, transform .6s cubic-bezier(.34,1.32,.5,1); }
   .photo canvas{ width:100%; height:100%; display:block; image-rendering:pixelated; }
-  .stage.is-icons .photo{ opacity:0; transform:scale(.6); }
+  .is-icons .photo{ opacity:0; transform:scale(.6); }
 
-  .say{ margin:0; position:absolute; left:80px; right:26px; top:50%; transform:translateY(-50%); font-size:17px; line-height:1.45; letter-spacing:-.005em; color:var(--ink); }
-  .say .w{ display:inline-block; opacity:0; filter:blur(6px); transform:translateY(5px); transition:opacity .55s ease, filter .55s ease, transform .55s var(--ease); transition-delay:calc(var(--i) * 45ms); }
+  .say{ margin:0; position:absolute; left:56px; right:22px; top:50%; transform:translateY(-50%); font-size:14.5px; line-height:1.5; letter-spacing:.005em; color:var(--soft); }
+  .say .w{ display:inline-block; opacity:0; filter:blur(5px); transform:translateY(4px); transition:opacity .55s ease, filter .55s ease, transform .55s cubic-bezier(.32,.72,0,1); transition-delay:calc(var(--i) * 45ms); }
   .say.in .w{ opacity:1; filter:none; transform:none; }
-  .say.out .w{ opacity:0; filter:blur(5px); transform:translateY(-4px); transition-duration:.4s; transition-delay:calc(var(--i) * 12ms); }
+  .say.out .w{ opacity:0; filter:blur(4px); transform:translateY(-3px); transition-duration:.4s; transition-delay:calc(var(--i) * 12ms); }
   .say .w.em{ color:var(--accent); }
 
-  .icons{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:10px; padding:0 12px; }
-  .ico{ position:relative; width:48px; height:48px; flex:0 0 48px; border-radius:50%; border:0; padding:0; cursor:pointer; color:inherit;
-    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), rgba(255,255,255,.03) 70%); box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(255,255,255,.05);
+  .icons{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px; padding:0 6px; }
+  .ico{ position:relative; width:40px; height:40px; flex:0 0 40px; border-radius:50%; border:0; padding:0; cursor:pointer; color:inherit;
+    background:rgba(255,255,255,.04); box-shadow:inset 0 .5px 0 rgba(255,255,255,.18), inset 0 0 0 .5px rgba(255,255,255,.06);
     display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.4);
-    transition:opacity .4s ease, transform .55s var(--spring), background .25s ease; transition-delay:calc(var(--i) * 70ms + .25s); }
-  .stage.is-icons .ico{ opacity:1; transform:none; }
-  .ico svg{ width:26px; height:26px; display:block; transition:transform .35s var(--spring); }
+    transition:opacity .4s ease, transform .55s cubic-bezier(.34,1.32,.5,1), background .25s ease; transition-delay:calc(var(--i) * 70ms + .2s); }
+  .is-icons .ico{ opacity:1; transform:none; }
+  .ico svg{ width:21px; height:21px; display:block; transition:transform .35s cubic-bezier(.34,1.32,.5,1); }
   .ico:hover svg, .ico.on svg, .ico:focus-visible svg{ transform:scale(1.14); }
-  .ico.on{ background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.18), rgba(255,255,255,.05) 70%); }
-  .ico:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
-  .stage:not(.is-icons) .ico{ pointer-events:none; transition-delay:0s; }
+  .ico.on{ background:rgba(255,255,255,.10); }
+  .ico:focus-visible{ outline:1.5px solid var(--accent); outline-offset:2px; }
+  body:not(.is-icons) .ico{ pointer-events:none; transition-delay:0s; }
 
-  /* ---------- the droplet card ---------- */
-  .drop{ left:var(--dx); top:var(--dy); width:var(--dw); height:var(--dh); border-radius:var(--dr);
-    /* closing: shrink first, then rise back into the bar */
-    transition:width .32s ease, height .32s ease, border-radius .32s ease, left .38s var(--ease) .1s, top .48s var(--spring) .12s; }
-  .drop.open{
-    /* opening: fall out of the bar as a drop, then swell into a card */
-    transition:top .5s var(--spring), left .55s var(--spring) .14s, width .55s var(--spring) .14s, height .55s var(--spring) .14s, border-radius .5s ease .14s; }
-  /* a little tail that stretches between bar and card, then snaps back: the neck of the drop */
-  .tail{ width:30px; height:30px; border-radius:50%; left:var(--tx); top:var(--ty); transition:top .42s var(--ease), left .3s var(--ease); }
-  .drop.jump{ transition:none !important; }
-  .drop.slide{ transition:left .5s var(--spring), top .5s var(--spring), width .5s var(--spring), height .5s var(--spring); }
-
-  .card{ position:absolute; z-index:4; border-radius:28px; overflow:hidden; text-decoration:none; color:var(--ink); display:block;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px rgba(255,255,255,.06), 0 30px 80px rgba(0,0,0,.6);
-    opacity:0; pointer-events:none; transition:opacity .18s ease; }
-  .card.show{ opacity:1; pointer-events:auto; transition:opacity .35s ease .38s; }
-  .card.show.swap{ transition:opacity .25s ease .12s; }
-  .card::before{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:2;
-    background:linear-gradient(120deg, rgba(255,255,255,.08), rgba(255,255,255,0) 30%); }
-  .card .media{ position:relative; height:186px; margin:8px 8px 0; border-radius:21px; overflow:hidden; }
-  .card .media .phone{ position:absolute; left:50%; top:18px; width:92px; margin-left:-46px; border-radius:16px; overflow:hidden; box-shadow:0 14px 34px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08); }
+  /* ---------- the card that drips out ---------- */
+  .card{ position:fixed; z-index:4; left:0; top:0; overflow:hidden; text-decoration:none; color:var(--ink); display:block; opacity:0; pointer-events:none; transition:opacity .16s ease; }
+  .card.live{ pointer-events:auto; }
+  .card.show{ opacity:1; transition:opacity .35s ease .3s; }
+  .card.show.swap{ transition:opacity .25s ease .1s; }
+  .card .media{ position:relative; height:150px; margin:6px 6px 0; border-radius:18px; overflow:hidden; }
+  .card .media .phone{ position:absolute; left:50%; top:16px; width:80px; margin-left:-40px; border-radius:14px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.45), 0 0 0 .5px rgba(255,255,255,.12); }
   .card .media .phone video, .card .media .phone img{ display:block; width:100%; }
-  .card .media .desk{ position:absolute; left:20px; right:-30px; top:20px; border-radius:10px; overflow:hidden; box-shadow:0 14px 34px rgba(0,0,0,.45); }
+  .card .media .desk{ position:absolute; left:18px; right:-30px; top:18px; border-radius:9px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.4); }
   .card .media .desk img{ display:block; width:100%; }
-  .card .body{ padding:16px 20px 0; }
-  .card .co{ color:var(--muted); }
-  .card h2{ margin:8px 0 6px; font-size:19px; line-height:1.28; font-weight:500; letter-spacing:-.01em; }
-  .card p{ margin:0; color:var(--muted); font-size:13.5px; line-height:1.5; }
-  .card .go{ display:block; padding:14px 20px 18px; color:var(--accent); }
+  .card .body{ padding:14px 18px 0; }
+  .card .co{ color:var(--muted); font-size:10.5px; }
+  .card h2{ margin:7px 0 5px; font-size:16.5px; line-height:1.3; font-weight:500; letter-spacing:-.005em; }
+  .card p{ margin:0; color:var(--muted); font-size:12.5px; line-height:1.5; }
+  .card .go{ display:block; padding:12px 18px 16px; color:var(--accent); font-size:10.5px; }
   .card .go i{ font-style:normal; display:inline-block; transition:transform .25s ease; }
   .card:hover .go i{ transform:translateX(4px); }
+  .rim.drop{ opacity:0; transition:opacity .2s ease; }
+  .rim.drop.on{ opacity:1; transition:opacity .3s ease .2s; }
 
-  .skip-anim .island, .skip-anim .island-c, .skip-anim .drop, .skip-anim .ico, .skip-anim .photo{ transition:none !important; }
-  @media (prefers-reduced-motion: reduce){
-    .orb{ animation:none; }
-    .island, .island-c, .drop, .ico, .photo, .say .w{ transition-duration:.01s !important; transition-delay:0s !important; }
-  }
-  @media (max-width:560px){
-    :root{ --island-top:30vh; }
-    .say{ font-size:15.5px; left:76px; right:20px; }
-  }
+  @media (prefers-reduced-motion: reduce){ .orb{ animation:none; } .say .w, .ico, .photo{ transition-duration:.01s !important; transition-delay:0s !important; } }
+  @media (max-width:560px){ .say{ font-size:13.5px; } }
 </style>
 </head>
 <body>
@@ -148,19 +122,15 @@
   <a class="classic mono" href="../">Classic site ↗</a>
 </header>
 
-<main class="stage pre" id="stage" style="--iw:72px; --ih:72px;">
-  <div class="goo" aria-hidden="true">
-    <div class="shape island"></div>
-    <div class="shape tail" id="tail" style="--tx:-15px; --ty:-15px;"></div>
-    <div class="shape drop" id="drop" style="--dx:-20px; --dy:-20px; --dw:40px; --dh:40px; --dr:20px;"></div>
-  </div>
-  <div class="island-c" id="island">
-    <div class="photo"><canvas id="pix" width="112" height="112" aria-label="David Jinho Yang" role="img"></canvas></div>
-    <p class="say" id="say" aria-live="polite"></p>
-    <nav class="icons" id="icons" aria-label="Latest projects"></nav>
-  </div>
-  <a class="card" id="card" href="#" tabindex="-1"></a>
+<div class="liquid" id="liquid" aria-hidden="true"></div>
+<div class="rim island" id="rimIsland" aria-hidden="true"></div>
+<div class="rim drop" id="rimDrop" aria-hidden="true"></div>
+<main class="island-c" id="island">
+  <div class="photo"><canvas id="pix" width="72" height="72" aria-label="David Jinho Yang" role="img"></canvas></div>
+  <p class="say" id="say" aria-live="polite"></p>
+  <nav class="icons" id="icons" aria-label="Latest projects"></nav>
 </main>
+<a class="card" id="card" href="#" tabindex="-1"></a>
 <p class="hint mono" id="hint">Hover a project</p>
 
 <footer class="bottom mono">
@@ -171,18 +141,14 @@
   <a class="after" href="../files/David-Yang-Resume.pdf" target="_blank" rel="noopener">Resume</a>
 </footer>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
-    <feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -11" result="g"/>
-    <feComposite in="SourceGraphic" in2="g" operator="atop"/></filter>
-</svg>
-
 <script>
 (function(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var hover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
-  var stage = document.getElementById('stage'), say = document.getElementById('say'), iconsEl = document.getElementById('icons');
-  var drop = document.getElementById('drop'), card = document.getElementById('card'), hint = document.getElementById('hint');
+  var root = document.documentElement, body = document.body;
+  var liquid = document.getElementById('liquid'), rimI = document.getElementById('rimIsland'), rimD = document.getElementById('rimDrop');
+  var island = document.getElementById('island'), say = document.getElementById('say'), iconsEl = document.getElementById('icons');
+  var card = document.getElementById('card'), hint = document.getElementById('hint');
 
   var lines = [
     'I design <em>products, AI agents,</em> and <em>spatial experiences.</em>',
@@ -236,34 +202,88 @@
   function pixelate(n){
     if(!img.complete || !img.naturalWidth) return;
     off.width = n; off.height = n; octx.drawImage(img, 0, 0, n, n);
-    pctx.imageSmoothingEnabled = false; pctx.clearRect(0, 0, 112, 112); pctx.drawImage(off, 0, 0, n, n, 0, 0, 112, 112);
+    pctx.imageSmoothingEnabled = false; pctx.clearRect(0, 0, 72, 72); pctx.drawImage(off, 0, 0, n, n, 0, 0, 72, 72);
   }
   function resolvePortrait(){
-    var steps = [3, 5, 8, 12, 16, 20], k = 0;
+    var steps = [3, 5, 8, 12, 16], k = 0;
     (function next(){ pixelate(steps[k]); if(++k < steps.length) setTimeout(next, reduce ? 0 : 130); })();
   }
   img.onload = function(){ pixelate(3); };
   img.src = '../images/headshot.jpg';
 
-  // ---------- island geometry ----------
-  function setIsland(w, h){ stage.style.setProperty('--iw', w + 'px'); stage.style.setProperty('--ih', h + 'px'); }
-  var CIRCLE = 72;
-  function barWidth(){ return Math.min(760, window.innerWidth - 32); }
-  function iconBarWidth(){ return projects.length * 48 + (projects.length - 1) * 10 + 24; }
-  // how tall the bar must be to hold a line of text
+  // ---------- springs ----------
+  // every shape value eases toward its target with a little give, like the island on a phone
+  function S(v, k, c){ return { v:v, t:v, vel:0, k:k, c:c }; }
+  var B = { w:S(8, 190, 24), h:S(8, 190, 24) };                                     // the island
+  var D = { x:S(0, 230, 22), y:S(0, 200, 19), w:S(0, 230, 22), h:S(0, 230, 22) };   // the drop
+  var springs = [B.w, B.h, D.x, D.y, D.w, D.h];
+  var dropAlive = false, running = false, last = 0;
+  function to(s, t){ s.t = t; if(reduce){ s.v = t; s.vel = 0; } kick(); }
+  function jump(s, t){ s.t = t; s.v = t; s.vel = 0; }
+  function kick(){ if(!running){ running = true; last = performance.now(); requestAnimationFrame(frame); } }
+  function frame(now){
+    var dt = Math.min(.032, (now - last) / 1000); last = now;
+    var moving = false;
+    springs.forEach(function(s){
+      var a = s.k * (s.t - s.v) - s.c * s.vel;
+      s.vel += a * dt; s.v += s.vel * dt;
+      if(Math.abs(s.t - s.v) > .05 || Math.abs(s.vel) > .05) moving = true; else { s.v = s.t; s.vel = 0; }
+    });
+    render();
+    if(moving) requestAnimationFrame(frame); else running = false;
+  }
+
+  function topY(){ return Math.round(window.innerHeight * (window.innerWidth <= 560 ? .30 : .36)); }
+  function rr(x, y, w, h, r){
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    return 'M'+(x + r)+' '+y+'H'+(x + w - r)+'A'+r+' '+r+' 0 0 1 '+(x + w)+' '+(y + r)+'V'+(y + h - r)+'A'+r+' '+r+' 0 0 1 '+(x + w - r)+' '+(y + h)+
+      'H'+(x + r)+'A'+r+' '+r+' 0 0 1 '+x+' '+(y + h - r)+'V'+(y + r)+'A'+r+' '+r+' 0 0 1 '+(x + r)+' '+y+'Z';
+  }
+  function place(el, x, y, w, h, r){ el.style.transform = 'translate('+x+'px,'+y+'px)'; el.style.width = w + 'px'; el.style.height = h + 'px'; el.style.borderRadius = r + 'px'; }
+  var NECK = 30;   // past this gap the drop lets go of the island
+  function render(){
+    var cx = window.innerWidth / 2, cy = topY();
+    var bw = Math.max(0, B.w.v), bh = Math.max(0, B.h.v), br = Math.min(bh / 2, 26);
+    var bx = cx - bw / 2, by = cy - bh / 2;
+    var d = rr(bx, by, bw, bh, br);
+    place(rimI, bx, by, bw, bh, br); place(island, bx, by, bw, bh, br);
+    if(dropAlive){
+      var dw = Math.max(0, D.w.v), dh = Math.max(0, D.h.v), dr = Math.min(dw / 2, dh / 2, 24);
+      var dx = cx + D.x.v - dw / 2, dy = cy + D.y.v;
+      d += rr(dx, dy, dw, dh, dr);
+      place(rimD, dx, dy, dw, dh, dr); place(card, dx, dy, dw, dh, dr);
+      // the neck: two pinched curves joining the bottom of the island to the top of the drop
+      var y1 = by + bh, y2 = dy, gap = y2 - y1;
+      if(gap > -2 && gap < NECK && dw > 4){
+        var k = 1 - Math.max(0, gap) / NECK;                       // 1 touching, 0 letting go
+        var nx = Math.max(bx + br, Math.min(bx + bw - br, cx + D.x.v));
+        var m = Math.min(dw / 2, 22) * (.55 + .45 * k), w = m * Math.pow(k, 1.4) * .7, ym = (y1 + y2) / 2, h = y2 - y1;
+        d += 'M'+(nx - m)+' '+(y1 - 3)+'C'+(nx - m * .9)+' '+(y1 + h * .35)+' '+(nx - w)+' '+(ym - h * .1)+' '+(nx - w)+' '+ym+
+             'C'+(nx - w)+' '+(ym + h * .1)+' '+(nx - m * .9)+' '+(y2 - h * .35)+' '+(nx - m)+' '+(y2 + 3)+
+             'H'+(nx + m)+'C'+(nx + m * .9)+' '+(y2 - h * .35)+' '+(nx + w)+' '+(ym + h * .1)+' '+(nx + w)+' '+ym+
+             'C'+(nx + w)+' '+(ym - h * .1)+' '+(nx + m * .9)+' '+(y1 + h * .35)+' '+(nx + m)+' '+(y1 - 3)+'Z';
+      }
+    }
+    liquid.style.clipPath = "path('" + d + "')";
+    hint.style.top = (cy + bh / 2 + 16) + 'px';
+  }
+
+  // ---------- island sizes ----------
+  var DOT = 48;
+  function barWidth(){ return Math.min(640, window.innerWidth - 32); }
+  function iconBarWidth(){ return projects.length * 40 + (projects.length - 1) * 8 + 12; }
   var measure = document.createElement('p');
-  measure.className = 'say'; measure.style.cssText = 'position:absolute;visibility:hidden;top:0;transform:none;left:0;right:auto;';
+  measure.className = 'say'; measure.style.cssText = 'position:absolute;visibility:hidden;top:0;left:0;right:auto;transform:none;';
   document.body.appendChild(measure);
   function heightFor(html){
-    measure.style.width = (barWidth() - (window.innerWidth <= 560 ? 96 : 106)) + 'px';
-    measure.innerHTML = html;
-    return Math.max(CIRCLE, Math.ceil(measure.offsetHeight) + 34);
+    measure.style.width = (barWidth() - 78) + 'px'; measure.innerHTML = html;
+    return Math.max(DOT, Math.ceil(measure.offsetHeight) + 24);
   }
+  function setIsland(w, h){ to(B.w, w); to(B.h, h); }
 
   var token = 0;
   function wait(ms){ var t = token; return new Promise(function(res, rej){ setTimeout(function(){ t === token ? res() : rej('skip'); }, reduce ? Math.min(ms, 30) : ms); }); }
   function words(html){
-    // wrap every word so it can arrive on its own; accent spans stay accented
     var out = [], i = 0;
     html.split(/(<em>.*?<\/em>)/).forEach(function(part){
       var em = /^<em>/.test(part); part = part.replace(/<\/?em>/g, '');
@@ -274,17 +294,17 @@
 
   async function intro(){
     var t = ++token;
-    document.body.classList.remove('done'); stage.classList.remove('is-icons'); closeCard(true);
-    stage.classList.add('pre'); setIsland(CIRCLE, CIRCLE); say.innerHTML = '';
+    body.classList.remove('done'); body.classList.remove('is-icons'); closeCard(true);
+    say.innerHTML = ''; jump(B.w, 8); jump(B.h, 8); render();
     try{
       await wait(350);
-      document.body.classList.add('ready');
-      stage.classList.add('bouncy'); stage.classList.remove('pre');
+      body.classList.add('ready');
+      setIsland(DOT, DOT);
       resolvePortrait();
       await wait(1300);
       for(var k = 0; k < lines.length; k++){
         setIsland(barWidth(), heightFor(lines[k]));
-        await wait(k ? 420 : 700);
+        await wait(k ? 420 : 650);
         say.className = 'say'; say.innerHTML = words(lines[k]);
         void say.offsetWidth; say.classList.add('in');
         await wait(lines[k].length * 22 + 1500);
@@ -293,84 +313,70 @@
         say.innerHTML = '';
       }
       // fold back into the portrait, then open again with the projects
-      setIsland(CIRCLE, CIRCLE);
+      setIsland(DOT, DOT);
       await wait(900);
       showIcons();
     } catch(e){}
   }
-  function showIcons(instant){
+  function showIcons(){
     token++;
     try{ sessionStorage.setItem('spatialSeen', '1'); }catch(e){}
     say.innerHTML = ''; say.className = 'say';
-    stage.classList.remove('pre'); stage.classList.add('bouncy');
-    if(instant){ stage.classList.add('skip-anim'); }
-    document.body.classList.add('ready');
-    setIsland(iconBarWidth(), CIRCLE);
-    stage.classList.add('is-icons');
-    document.body.classList.add('done');
+    body.classList.add('ready', 'is-icons', 'done');
+    setIsland(iconBarWidth(), DOT + 4);
     hint.textContent = hover ? 'Hover a project' : 'Tap a project';
     hint.classList.add('on');
-    pixelate(20);
-    if(instant) requestAnimationFrame(function(){ requestAnimationFrame(function(){ stage.classList.remove('skip-anim'); }); });
+    pixelate(16);
   }
 
   // ---------- the droplet card ----------
-  var current = -1, closeTimer = null, tail = document.getElementById('tail'), tailTimer = null;
-  function stretchTail(cx){
-    clearTimeout(tailTimer);
-    tail.style.setProperty('--tx', (cx - 15) + 'px'); tail.style.setProperty('--ty', (CIRCLE / 2 + 2) + 'px');
-    tailTimer = setTimeout(function(){ tail.style.setProperty('--ty', '-15px'); }, reduce ? 0 : 300);
-  }
-  function setDrop(x, y, w, h, r){
-    drop.style.setProperty('--dx', x + 'px'); drop.style.setProperty('--dy', y + 'px');
-    drop.style.setProperty('--dw', w + 'px'); drop.style.setProperty('--dh', h + 'px'); drop.style.setProperty('--dr', r + 'px');
-  }
-  function iconCenter(i){
-    var r = icos[i].getBoundingClientRect(), s = stage.getBoundingClientRect();
-    return r.left + r.width / 2 - s.left;
-  }
+  var current = -1, closeTimer = null, stageT = [];
+  function later(fn, ms){ stageT.push(setTimeout(fn, reduce ? 0 : ms)); }
+  function clearLater(){ stageT.forEach(clearTimeout); stageT = []; }
+  function iconOffset(i){ var r = icos[i].getBoundingClientRect(); return r.left + r.width / 2 - window.innerWidth / 2; }
   function openCard(i){
     clearTimeout(closeTimer);
     if(i === current) return;
-    var p = projects[i], was = current; current = i;
+    var p = projects[i], was = current; current = i; clearLater();
     icos.forEach(function(b, k){ b.classList.toggle('on', k === i); });
     hint.classList.remove('on');
-    var vw = window.innerWidth, w = Math.min(300, vw - 32);
-    var cx = iconCenter(i), x = Math.max(-vw / 2 + 16, Math.min(vw / 2 - 16 - w, cx - w / 2)), y = CIRCLE / 2 + 30;
+    var vw = window.innerWidth, w = Math.min(280, vw - 32), ix = iconOffset(i);
+    var x = Math.max(-vw / 2 + 16 + w / 2, Math.min(vw / 2 - 16 - w / 2, ix));
     card.href = '../#work/' + p.slug;
     card.setAttribute('aria-label', p.company + ': ' + p.title + '. View case study');
     card.innerHTML = '<div class="media" style="background:'+p.bg+'">'+p.media+'</div>' +
       '<div class="body"><div class="co mono">'+p.company+'</div><h2>'+p.title+'</h2><p>'+p.blurb+'</p></div>' +
       '<span class="go mono">View case study <i>→</i></span>';
-    // the card is as tall as its words, and the drop swells to match
-    card.style.width = w + 'px'; card.style.height = 'auto';
-    var h = card.offsetHeight;
+    card.style.width = w + 'px'; card.style.height = 'auto'; card.style.transform = 'translate(-9999px,0)';
+    var h = card.offsetHeight, y = (DOT + 4) / 2 + NECK + 6;
     if(was < 0){
-      // start as a small drop inside the bar, right under the icon
-      drop.classList.remove('open', 'slide'); drop.classList.add('jump'); setDrop(cx - 20, -20, 40, 40, 20); void drop.offsetWidth;
-      drop.classList.remove('jump'); drop.classList.add('open');
-      stretchTail(cx);
-    } else { drop.classList.remove('open'); drop.classList.add('slide'); }
-    setDrop(x, y, w, h, 28);
-    card.style.left = x + 'px'; card.style.top = y + 'px'; card.style.height = h + 'px';
+      // a small drop forms inside the island under the icon, falls, lets go, then swells into the card
+      dropAlive = true;
+      jump(D.x, ix); jump(D.y, -12); jump(D.w, 24); jump(D.h, 24);
+      to(D.y, y); to(D.w, 30); to(D.h, 30);
+      later(function(){ to(D.x, x); to(D.w, w); to(D.h, h); }, 170);
+    } else { to(D.x, x); to(D.y, y); to(D.w, w); to(D.h, h); }
     card.classList.toggle('swap', was >= 0);
     card.tabIndex = 0;
-    card.classList.add('show');
+    card.classList.add('show'); rimD.classList.add('on');
+    // it only listens for the pointer once it has landed, so a passing drop never steals the hover
+    later(function(){ card.classList.add('live'); }, was < 0 ? 480 : 0);
     var v = card.querySelector('video'); if(v && !reduce){ var pr = v.play(); if(pr && pr.catch) pr.catch(function(){}); }
   }
   function closeCard(now){
     clearTimeout(closeTimer);
     function go(){
       if(current < 0) return;
-      var cx = iconCenter(current); current = -1;
+      var ix = iconOffset(current); current = -1; clearLater();
       icos.forEach(function(b){ b.classList.remove('on'); });
-      card.classList.remove('show', 'swap'); card.tabIndex = -1;
-      drop.classList.remove('open', 'slide');
-      setDrop(cx - 20, -20, 40, 40, 20);
-      setTimeout(function(){ stretchTail(cx); }, 260);
+      card.classList.remove('show', 'swap', 'live'); card.tabIndex = -1; rimD.classList.remove('on');
       var v = card.querySelector('video'); if(v) v.pause();
+      // shrink back to a drop, rise, and melt into the island
+      to(D.w, 30); to(D.h, 30); to(D.x, ix);
+      later(function(){ to(D.y, -12); to(D.w, 20); to(D.h, 20); }, 160);
+      later(function(){ if(current < 0){ dropAlive = false; render(); } }, 900);
     }
-    if(now) go(); else closeTimer = setTimeout(go, 160);
+    if(now === true) go(); else closeTimer = setTimeout(go, 160);
   }
   icos.forEach(function(b, i){
     // a mouse opens the card on hover; a touch opens it on the first tap and follows it on the second
@@ -390,14 +396,18 @@
   document.addEventListener('click', function(e){ if(current >= 0 && !card.contains(e.target) && !iconsEl.contains(e.target)) closeCard(true); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeCard(true); });
   window.addEventListener('resize', function(){
-    if(stage.classList.contains('is-icons')){ closeCard(true); setIsland(iconBarWidth(), CIRCLE); }
+    root.style.setProperty('--island-top', topY() + 'px');
+    if(body.classList.contains('is-icons')){ closeCard(true); setIsland(iconBarWidth(), DOT + 4); }
+    render();
   });
+  root.style.setProperty('--island-top', topY() + 'px');
 
   document.getElementById('skip').addEventListener('click', function(){ showIcons(); });
   document.getElementById('replay').addEventListener('click', function(){ intro(); });
 
+  render();
   var seen = false; try{ seen = sessionStorage.getItem('spatialSeen') === '1'; }catch(e){}
-  if(seen || reduce){ setTimeout(function(){ img.complete ? pixelate(20) : (img.onload = function(){ pixelate(20); }); showIcons(); }, 200); }
+  if(seen || reduce){ body.classList.add('ready'); setIsland(DOT, DOT); setTimeout(function(){ pixelate(16); showIcons(); }, 300); }
   else intro();
 })();
 </script>
