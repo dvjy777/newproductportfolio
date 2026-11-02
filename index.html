@@ -1084,6 +1084,36 @@
   .pm-opt[aria-pressed="true"]{ background:var(--nav-accent, var(--accent)); color:#fff; }
   .pm-opt:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:2px; }
   .pm-desc{ margin:12px auto 0; max-width:34em; font-size:14.5px; line-height:1.5; color:var(--text-muted); min-height:1.5em; }
+  /* cards beside a phone that pick what it plays: the four endings, the v1 to v2 fixes */
+  .endings{ margin-top:20px; }
+  .end-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-top:12px; }
+  .pick{
+    display:flex; flex-direction:column; justify-content:flex-start; align-items:stretch; width:100%; text-align:left; font:inherit; color:var(--text); border:0; border-radius:18px; padding:16px 16px 15px; cursor:pointer;
+    background:color-mix(in srgb, var(--nav-accent, var(--accent)) 7%, #ffffff); transition:background .2s ease, box-shadow .2s ease;
+  }
+  .pick:hover{ background:color-mix(in srgb, var(--nav-accent, var(--accent)) 13%, #ffffff); }
+  .pick[aria-pressed="true"]{ background:color-mix(in srgb, var(--nav-accent, var(--accent)) 15%, #ffffff); box-shadow:inset 0 0 0 1.5px var(--nav-accent, var(--accent)); }
+  .pick:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:2px; }
+  .pick svg{ display:block; flex:0 0 auto; width:24px; height:24px; fill:none; stroke:var(--nav-accent, var(--accent)); stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .pick b{ display:block; margin-top:10px; font-size:15px; font-weight:600; }
+  .pick > span{ display:block; margin-top:3px; font-size:13.5px; line-height:1.45; color:var(--text-muted); }
+  .fixes{ display:grid; gap:10px; margin-top:20px; }
+  .pick.fix{ position:relative; padding-right:44px; }
+  .pick.fix.static{ cursor:default; background:#F4F1EA; }
+  .fix-was, .fix-now{ display:flex; gap:10px; font-size:14px; line-height:1.45; }
+  .fix-was{ color:var(--text-muted); text-decoration:line-through; text-decoration-color:rgba(61,57,41,.35); }
+  .fix-now{ margin-top:6px; font-weight:500; }
+  .fix-was i, .fix-now i{ flex:0 0 auto; font-style:normal; font-size:11px; font-weight:600; letter-spacing:.04em; padding:2px 6px; border-radius:6px; height:fit-content; text-decoration:none; }
+  .fix-was i{ background:rgba(61,57,41,.08); }
+  .fix-now i{ background:var(--nav-accent, var(--accent)); color:#fff; }
+  .fix-play{ position:absolute; right:16px; top:50%; transform:translateY(-50%); font-style:normal; font-size:11px; color:var(--nav-accent, var(--accent)); }
+  /* the top prototype can be watched or used */
+  .try-demo .proto-stage{ flex-direction:column; align-items:center; gap:18px; border:0; border-radius:26px; }
+  .try-toggle{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .try-hint{ margin:0; font-size:14px; color:var(--text-muted); text-align:center; opacity:0; transition:opacity .3s ease; }
+  .try-demo.live .try-hint{ opacity:1; }
+  .try-demo.live .proto-screen iframe{ pointer-events:auto; }
+  .try-demo.live .proto-screen{ box-shadow:0 24px 60px rgba(61,57,41,.22), 0 0 0 3px var(--nav-accent, var(--accent)); }
   .sketch-screen{ display:block; width:100%; height:auto; }
   .demo-label b{ display:block; font-size:14px; font-weight:600; color:var(--text); }
   .demo-label span{ display:block; margin-top:2px; font-size:12.5px; line-height:1.45; color:var(--text-muted); }
@@ -1215,7 +1245,7 @@
   var projects = [
     {
       slug:'claude', company:'Claude', tagline:'Large Language Model Interface · IN PROGRESS',
-      title:'Anchored branching: side questions that stay in the conversation', word:'Claude',
+      title:'Side Quests: wander off, never lose the main story', word:'Claude',
       inProgress:true, coverLight:true,
       logo:sparkSvg('#D97757'),
       accent:'#C15F3C',
@@ -1229,7 +1259,7 @@
         {label:'Try the prototype &#8599;', url:'claude-prototype/'},
         {label:'Watch the motion demo &#8599;', url:'claude-prototype/?mode=present'}
       ],
-      demo:{src:'claude-prototype/?embed=1&slow=1.6', title:'The mobile prototype playing its demo loop', caption:'The mobile prototype, playing its own demo loop'},
+      demo:{src:'claude-prototype/?embed=1&slow=1.6', live:true, title:'The mobile prototype', hint:'Press and hold an answer, tap a few words, then swipe the tray up.', caption:'The real prototype, running right here'},
       glanceTint:{ accent:'#B4532F', line:'rgba(217,119,87,.28)', bg:'linear-gradient(120deg, rgba(217,119,87,.10), rgba(244,241,234,.6))' },
       glance:{
         problem:'A side question in Claude either buries the main thread or starts a new chat that forgets the context. Chats pile up, and going back is so hard that people start over.',
@@ -1237,7 +1267,7 @@
         decision:'Elevate, don\'t invent. Claude already keeps branches but hides them. Here a branch starts from the words you select and stays inside the chat you know.',
         outcome:'A clickable desktop prototype and an interactive mobile prototype with a timed test mode. Usability testing is next.'
       },
-      overview:'Claude already branches: editing a message quietly creates a new version behind small ‹ 1/2 › arrows, but almost nobody knows it\'s there. Anchored branching makes it visible. Select any words in an answer, ask about them on the side, and decide afterwards what to keep. The main conversation never moves.',
+      overview:'Claude already branches: editing a message quietly creates a new version behind small ‹ 1/2 › arrows, but almost nobody knows it\'s there. Side Quests make it visible. Select any words in an answer, ask about them on the side, and decide afterwards what to keep. The main conversation never moves.',
       statements:[
         {label:'Problem statement', quote:'Branching exists in Claude, but it\'s too buried to use. So people take side questions to new chats that pile up, lose their context, and rarely get revisited.', note:'Chat is linear, but curiosity isn\'t. A follow-up about one phrase lands at the bottom of the thread and buries the original question, and going back means scrolling.'},
         {label:'How might we', quote:'How might we let people explore a side question from the exact phrase that raised it, without leaving the conversation, and decide afterwards what to keep?', note:'One rule guided everything: build on the Claude people already know, instead of changing the layout they rely on.'}
@@ -1251,7 +1281,7 @@
           ['Claude Code', '/btw and /fork side chats', 'Typed commands, for developers only']
         ]}, caption:'Everyone branches from the message. Nobody branches from the phrase.'},
         '<strong>Where Claude fits.</strong> I compared 15 products by how deep they let you explore and how much they disrupt existing habits. Comment threads in Docs, Slack and Figma are familiar but don\'t explore with AI. AI-native canvases go deep but ask you to learn something new. The gap is deep exploration with low disruption.',
-        {wide:true, media:[{src:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
+        {wide:true, media:[{src:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with Side Quests moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
         '<strong>What people already do.</strong> On Reddit, Claude users say long chats get "chaotic" after 30 to 40 messages, so they restart and keep context in notes apps. And finding things again is normal behavior, not an edge case: in Yahoo\'s search logs, up to 40% of queries were attempts to re-find something [[1]].',
         '<strong>User interviews.</strong> I talked with three regular Claude users, had each walk me through a recent chat, and saved the concept for last.',
         {quotes:[
@@ -1282,14 +1312,14 @@
           {label:'Select phrases', demo:13, d:'Tap just the phrases you want. They collect in a glass tray.'},
           {label:'Add to prompt', demo:4, d:'Swipe the tray down and the selection drops into your prompt as a quote.'}
         ]}},
-        '<strong>Mini chat: anchor, explore, decide.</strong> Swipe the tray up and a mini chat opens, anchored to the selection, while the main chat stays put. When you\'re done, it ends one of four ways.',
-        {phone:{options:[
-          {label:'Swipe up', demo:3, d:'The tray and prompt bar fuse like droplets into a mini chat.'},
-          {label:'Merge', demo:5, d:'Folds back under the answer it came from, with the phrase underlined.'},
-          {label:'Branch', demo:6, d:'Saved behind the edge handle, ready to reopen later.'},
-          {label:'New chat', demo:7, d:'Grows into its own conversation, carrying the selection and question.'},
-          {label:'Dissolve', demo:8, d:'Drag it down and it\'s gone. Undo brings it back.'}
+        '<strong>Mini chat: anchor, explore, decide.</strong> Swipe the tray up and a mini chat opens, anchored to the selection, while the main chat stays put. When you\'re done, the side quest ends one of four ways. Tap one to watch it.',
+        {endings:{start:{label:'Swipe up to open', demo:3, d:'The tray and prompt bar fuse like droplets into a mini chat.'}, items:[
+          {icon:'merge', t:'Merge', demo:5, d:'Folds back under the answer it came from, with the phrase underlined.'},
+          {icon:'branch', t:'Keep as a branch', demo:6, d:'Saved behind the edge handle, ready to reopen later.'},
+          {icon:'newchat', t:'New chat', demo:7, d:'Grows into its own conversation, carrying the question with it.'},
+          {icon:'dissolve', t:'Dissolve', demo:8, d:'Gone. The main chat never changed, and Undo brings it back.'}
         ]}},
+        {phone:{bare:true, options:[{label:'Swipe up', demo:3, d:'The tray and prompt bar fuse like droplets into a mini chat.'}]}},
         '<strong>Branches and saved highlights.</strong> Swipe left from the edge to see every branch in the chat and every phrase you saved in a color. Sub-branches open one level at a time, so the list never becomes a tree.',
         {phone:{options:[
           {label:'Branches', demo:9, d:'Tap a branch to reveal Open, Merge and Dissolve.'},
@@ -1303,14 +1333,15 @@
         ]}},
         '<strong>Desktop.</strong> The side chat lives in the right panel Claude already uses for artifacts. Collapse folds a long chat into one card per question, and History lists every prompt so you can jump instead of scroll.',
         {wide:true, media:[{src:'images/claude/desktop-side-chat.jpg', alt:'Claude desktop with a phrase underlined in the answer and a side chat open in the right panel, asking whether a weekday is really quieter, with Merge into main, Make a branch, New chat and Dissolve'}], caption:'The side chat in Claude\'s right panel'},
-        '<strong>v1 to v2.</strong> Building the prototype in code surfaced problems static frames never showed.',
-        {table:{compact:true, head:['In v1', 'In v2'], rows:[
-          ['Confetti on merge felt like a game', 'A droplet merge: card and prompt bar fuse like two drops'],
-          ['The selection tray covered the answer', 'The answer scrolls up to stay visible above the tray'],
-          ['"New chat" just sent the text away', 'The card expands into a chat you can keep talking in'],
-          ['Quoting into the prompt was one-way', 'Pull the quote back up, or Undo, to get the selection back'],
-          ['Example chats were about coding', 'Search-style tasks, closer to how people use Claude on mobile']
-        ]}},
+        '<strong>v1 to v2.</strong> Building the prototype in code surfaced problems static frames never showed. Tap a fix to watch the v2 version.',
+        {fixes:[
+          {was:'Confetti on merge felt like a game', now:'A droplet merge: the card and prompt bar fuse like two drops', demo:5},
+          {was:'The selection tray covered the answer', now:'The answer scrolls up to stay visible above the tray', demo:13},
+          {was:'"New chat" just sent the text away', now:'The card expands into a chat you can keep talking in', demo:7},
+          {was:'Quoting into the prompt was one-way', now:'Swipe the tray down to quote it, then pull it back up or Undo', demo:4},
+          {was:'Example chats were about coding', now:'Search-style tasks, closer to how people use Claude on mobile'}
+        ]},
+        {phone:{bare:true, options:[{label:'Droplet merge', demo:5, d:'A droplet merge: the card and prompt bar fuse like two drops.'}]}},
         '<strong>Built to be tested.</strong> The prototype has a test mode with seven tasks, each timed automatically. The study will measure time to the first side question, which ending people choose, and whether they get back to the main thread without scrolling.'
       ],
       lessons:[
@@ -1896,6 +1927,8 @@
         return '<button type="button" class="cite" data-ref="'+n+'" aria-label="See reference '+n+'">'+n+'</button>';
       });
     }
+    var PICK_ICONS = {merge:'<path d="M7 3v4c0 4 5 5 5 9v5M17 3v4c0 4-5 5-5 9"/><path d="M8.5 18 12 21.5 15.5 18"/>', branch:'<circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10M18 9c0 5-6 4-11 8.5"/>', newchat:'<path d="M4 5h16v11H9l-5 4V5z"/><path d="M13 8h4v4M17 8l-5 5"/>', dissolve:'<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z" stroke-dasharray="2.6 2.6"/>'};
+    function pickAttrs(o, label){ return ' data-pick data-demo="'+o.demo+'" data-d="'+o.d.replace(/"/g, '&quot;')+'" data-label="'+label.replace(/"/g, '&quot;')+'"'; }
     function entryHtml(t){
       if(typeof t === 'string') return '<p class="body-text">'+cites(t)+'</p>';
       if(t.flow) return flowHtml(t);
@@ -1940,14 +1973,25 @@
       if(t.paths) return '<figure class="case-fig case-paths">' + t.paths.map(function(row){
           return '<div class="path-row">' + row.map(function(step, i){ return (i ? '<span class="path-arrow" aria-hidden="true">→</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>'; }).join('') + '</div>';
         }).join('') + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      // the ways a side chat ends, as cards that play each one on the phone beside them
+      if(t.endings) return '<div class="endings">' +
+        (t.endings.start ? '<button type="button" class="pm-opt end-start" aria-pressed="true"'+pickAttrs(t.endings.start, t.endings.start.label)+'>'+t.endings.start.label+'</button>' : '') +
+        '<div class="end-grid">' + t.endings.items.map(function(o){
+          return '<button type="button" class="pick" aria-pressed="false"'+pickAttrs(o, o.t)+'><svg viewBox="0 0 24 24" aria-hidden="true">'+PICK_ICONS[o.icon]+'</svg><b>'+o.t+'</b><span>'+o.d+'</span></button>';
+        }).join('') + '</div></div>';
+      // before and after fixes; the ones with a demo play it on the phone beside them
+      if(t.fixes) return '<div class="fixes">' + t.fixes.map(function(o, i){
+          var inner = '<span class="fix-was"><i>v1</i>'+o.was+'</span><span class="fix-now"><i>v2</i>'+o.now+'</span>';
+          return o.demo !== undefined ? '<button type="button" class="pick fix" aria-pressed="'+(i ? 'false' : 'true')+'"'+pickAttrs({demo:o.demo, d:o.now + '.'}, o.now)+'>'+inner+'<em class="fix-play" aria-hidden="true">&#9654;</em></button>' : '<div class="pick fix static">'+inner+'</div>';
+        }).join('') + '</div>';
       // one phone that loops an action, with buttons underneath to switch actions
       if(t.phone){
         var o0 = t.phone.options[0];
         return '<figure class="case-fig phone-module" data-module><div class="pm-stage"><div class="proto-screen">' +
           '<iframe src="claude-prototype/?embed=1&slow=1.6&demo='+o0.demo+'" title="Prototype: '+o0.label+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
-          '<div class="pm-options" role="group" aria-label="Choose an action to watch">' +
+          (t.phone.bare ? '' : '<div class="pm-options" role="group" aria-label="Choose an action to watch">' +
           t.phone.options.map(function(o, i){ return '<button type="button" class="pm-opt" data-demo="'+o.demo+'" data-d="'+o.d.replace(/"/g, '&quot;')+'" aria-pressed="'+(i ? 'false' : 'true')+'">'+o.label+'</button>'; }).join('') +
-          '</div><p class="pm-desc" aria-live="polite">'+o0.d+'</p>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+          '</div>') + '<p class="pm-desc" aria-live="polite">'+o0.d+'</p>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       }
       // a prototype recording on a bare phone screen (the screens carry their own status bar)
       if(t.protoVideo) return '<figure class="case-fig proto-demo"><div class="proto-stage"><div class="proto-screen"><video src="'+t.protoVideo.src+'" poster="'+(t.protoVideo.poster||'')+'" autoplay muted loop playsinline aria-label="'+(t.protoVideo.alt||'')+'"></video></div></div>' +
@@ -2037,7 +2081,7 @@
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
     }
-    function textLike(t){ return typeof t === 'string' || !!(t && (t.sub || t.bullets || t.pull || t.soon || t.defs)); }
+    function textLike(t){ return typeof t === 'string' || !!(t && (t.sub || t.bullets || t.pull || t.soon || t.defs || t.endings || t.fixes)); }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
@@ -2100,8 +2144,10 @@
          p.logo ? '<div class="hero-logo">'+p.logo+'</div>' + (p.heroNote ? '<div class="hero-note">'+p.heroNote+'</div>' : '') :
          p.cover ? '<img src="'+p.cover+'" alt="'+p.company+'">' : '<span>'+p.word+'</span>')+'</div>')+
       '<div class="case-intro'+(links.length ? ' has-links' : '')+'">' + metaHtml + linksHtml + '</div>' + glanceHtml(p.glance, p.glanceTint) +
-      (p.demo ? '<figure class="case-fig proto-demo"><div class="proto-stage" style="background:'+(p.coverBg || p.gradient)+'"><div class="proto-screen">' +
-        '<iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
+      (p.demo ? '<figure class="case-fig proto-demo'+(p.demo.live ? ' try-demo' : '')+'"'+(p.demo.live ? ' data-try' : '')+'><div class="proto-stage" style="background:'+(p.coverBg || p.gradient)+'">' +
+        (p.demo.live ? '<div class="try-toggle" role="group" aria-label="Prototype mode"><button type="button" class="pm-opt" data-live="1" aria-pressed="false">Try it yourself</button><button type="button" class="pm-opt" data-live="0" aria-pressed="true">Watch the demo</button></div>' : '') +
+        '<div class="proto-screen"><iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div>' +
+        (p.demo.hint ? '<p class="try-hint">'+p.demo.hint+'</p>' : '') + '</div>' +
         (p.demo.caption ? '<figcaption>'+p.demo.caption+'</figcaption>' : '') + '</figure>' : '') +
       timelineHtml(p.timeline, p.glanceTint) +
       '<div class="case-block"><h4 class="label">'+(p.overviewTitle || 'Overview')+'</h4><p class="body-text">'+p.overview+'</p></div>'+
@@ -2156,14 +2202,27 @@
     });
     caseView.querySelectorAll('[data-module]').forEach(function(m){
       var frame = m.querySelector('iframe'), desc = m.querySelector('.pm-desc');
-      m.querySelectorAll('.pm-opt').forEach(function(b){
+      // the phone's own buttons, plus any cards in the text beside it
+      var pair = m.closest('.case-pair'), btns = [].slice.call(m.querySelectorAll('.pm-opt')).concat(pair ? [].slice.call(pair.querySelectorAll('[data-pick]')) : []);
+      btns.forEach(function(b){
         b.addEventListener('click', function(){
-          m.querySelectorAll('.pm-opt').forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          btns.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
           desc.textContent = b.dataset.d;
-          frame.title = 'Prototype: ' + b.textContent;
+          frame.title = 'Prototype: ' + (b.dataset.label || b.textContent);
           if(frame.contentWindow) frame.contentWindow.postMessage({demo:+b.dataset.demo}, location.origin);
         });
       });
+    });
+    // the top prototype: watch its loop, or switch to using it by hand
+    caseView.querySelectorAll('[data-try]').forEach(function(fig){
+      var frame = fig.querySelector('iframe'), btns = fig.querySelectorAll('[data-live]');
+      function set(live){
+        fig.classList.toggle('live', live);
+        btns.forEach(function(x){ x.setAttribute('aria-pressed', (x.dataset.live === '1') === live ? 'true' : 'false'); });
+        frame.tabIndex = live ? 0 : -1;
+        if(frame.contentWindow) frame.contentWindow.postMessage({live:live}, location.origin);
+      }
+      btns.forEach(function(b){ b.addEventListener('click', function(){ set(b.dataset.live === '1'); }); });
     });
     buildCaseNav(p);
     if(heroGlow(p)) glowWithVideo(caseView.querySelector('.case-hero'), p.heroPhone.glow);

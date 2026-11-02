@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Anchored Branching Prototype</title>
+<title>Side Quests Prototype</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -417,6 +417,8 @@ const EMBED = new URLSearchParams(location.search).get('embed') === '1';
 // &demo=N loops just that one demo; without it the embed cycles through all of them
 const SLOWQ = parseFloat(new URLSearchParams(location.search).get('slow'));
 const ONE = EMBED && /^\d+$/.test(new URLSearchParams(location.search).get('demo') || '') ? +new URLSearchParams(location.search).get('demo') : null;
+// &live=1 starts paused so a visitor can use it; {live:true|false} switches it from the page
+let LIVE = EMBED && new URLSearchParams(location.search).get('live') === '1';
 const MODE = EMBED || new URLSearchParams(location.search).get('mode') === 'present' ? 'present' : 'test';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -1190,12 +1192,12 @@ function stopDemo() { playing = false; RUN++; scr.classList.remove('demo'); hide
 function renderRail() {
   const rail = $('#rail');
   if (MODE === 'present') {
-    rail.innerHTML = `<div><div class="eyebrow">Motion study</div><h1>Anchored branching</h1><p class="lead">Every action in the mobile redesign, played on a loop. Turn on slow motion for recording.</p></div>
+    rail.innerHTML = `<div><div class="eyebrow">Motion study</div><h1>Side Quests</h1><p class="lead">Every action in the mobile redesign, played on a loop. Turn on slow motion for recording.</p></div>
     <div class="list">${DEMOS.map((d, i) => d.hide ? '' : `<button class="item ${i === current && playing ? 'on' : ''}" data-demo="${i}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span><b>${d.title}</b><span class="d">${d.d}</span></span></button>`).join('')}</div>
     <div class="row"><button class="btn" id="slowBtn" aria-pressed="${SLOW > 1}">Slow motion</button><button class="btn" id="loopBtn" aria-pressed="${loop}">Loop this action</button><button class="btn" id="tryBtn">${playing ? 'Try it yourself' : 'Resume playback'}</button></div>`;
   } else {
     const n = Object.keys(done).length;
-    rail.innerHTML = `<div><div class="eyebrow">Usability test</div><h1>Anchored branching</h1><p class="lead">Hand the phone to the participant and read each task aloud. Tasks tick themselves off when completed.</p></div>
+    rail.innerHTML = `<div><div class="eyebrow">Usability test</div><h1>Side Quests</h1><p class="lead">Hand the phone to the participant and read each task aloud. Tasks tick themselves off when completed.</p></div>
     <div class="card"><h2>Tasks · ${n} of ${TASKS.length}</h2>${TASKS.map((k, i) => `<div class="task ${done[i] ? 'done' : ''}"><span class="box">${done[i] ? ic('check', 14) : ''}</span><span class="t">${esc(k.text)}</span><span class="time">${done[i] ? done[i] + 's' : ''}</span></div>`).join('')}</div>
     <div class="card"><h2>Event log</h2><div class="log" id="logBox">${LOG.length ? LOG.map((l) => `<div><span>${l.t}s</span><span>${esc(l.evt)}${l.detail ? ' · ' + esc(short(l.detail, 48)) : ''}</span></div>`).join('') : '<div><span>–</span><span>Waiting for the first interaction</span></div>'}</div></div>
     <div class="row"><button class="btn" id="copyBtn">Copy log</button><button class="btn" id="resetBtn">Reset session</button></div>
@@ -1243,12 +1245,13 @@ function fit() {
 addEventListener('resize', () => { fit(); if (S.block) placeTray(); });
 if (SLOWQ > 0 && SLOWQ <= 4) { SLOW = SLOWQ; document.documentElement.style.setProperty('--slow', SLOW); }
 fit(); reset(); renderRail();
-if (MODE === 'present') play(ONE !== null && DEMOS[ONE] ? ONE : 0); else caption.innerHTML = 'Try it: hold an answer, swipe the tray, swipe left for branches.';
+if (MODE === 'present' && !LIVE) play(ONE !== null && DEMOS[ONE] ? ONE : 0); else caption.innerHTML = 'Try it: hold an answer, swipe the tray, swipe left for branches.';
 // the portfolio page pauses embeds that are scrolled out of view
 if (EMBED) addEventListener('message', (e) => {
   if (e.origin !== location.origin) return;
   if (e.data === 'pause' && playing) { playing = false; RUN++; hideFinger(); }
-  else if (e.data === 'play' && !playing) play(current);
+  else if (e.data === 'play' && !playing && !LIVE) play(current);
+  else if (e.data && e.data.live !== undefined) { LIVE = !!e.data.live; if (LIVE) { stopDemo(); reset(); } else play(current); }
   else if (e.data && e.data.demo !== undefined && DEMOS[e.data.demo]) { RUN++; hideFinger(); play(e.data.demo); }
 });
 

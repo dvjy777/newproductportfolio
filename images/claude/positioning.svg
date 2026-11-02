@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="100 596 1760 1124" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t">
-<title id="t">Positioning map: exploration depth against disruption to existing habits. Claude today sits low; Claude with anchored branches moves straight up into the deep, low-disruption corner.</title>
+<title id="t">Positioning map: exploration depth against disruption to existing habits. Claude today sits low; Claude with Side Quests moves straight up into the deep, low-disruption corner.</title>
 <rect x="100" y="596" width="1760" height="1124" fill="#ffffff"/>
 <rect x="230" y="616" width="1500" height="1000" fill="#F5F5F5"/>
 <rect x="230" y="616" width="690" height="360" fill="#E9E9E9"/>
@@ -35,7 +35,7 @@
 <circle cx="695.0" cy="1366.0" r="30.0" fill="#D97757"/>
 <text x="739" y="1366" font-size="27" font-weight="600" fill="#111" text-anchor="start">Claude today</text>
 <circle cx="695.0" cy="776.0" r="30.0" fill="#E8C4B8"/>
-<text x="739" y="776" font-size="27" font-weight="600" fill="#111" text-anchor="start">Claude + anchored branches</text>
+<text x="739" y="776" font-size="27" font-weight="600" fill="#111" text-anchor="start">Claude + Side Quests</text>
 <text x="212" y="637" font-size="21" fill="#777" text-anchor="end">Spatial</text>
 <text x="212" y="1612" font-size="21" fill="#777" text-anchor="end">Linear</text>
 <text x="150" y="1116" font-size="24" fill="#444" text-anchor="middle" transform="rotate(-90 150 1116)">Exploration depth</text>
