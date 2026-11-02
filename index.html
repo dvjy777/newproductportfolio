@@ -807,6 +807,26 @@
     opacity:0; pointer-events:none; transform:translateX(-50%) translateY(-10px) scale(.96);
     transition:opacity .35s ease, transform .4s cubic-bezier(.32,.72,.24,1), width .4s cubic-bezier(.32,.72,.24,1), border-radius .4s ease;
   }
+
+  /* at the end of a case study the notch splits, like a droplet, into back · top · next */
+  .case-end{ position:fixed; z-index:40; left:50%; top:calc(var(--head-bottom, 84px) + 10px); transform:translateX(-50%); height:40px;
+    opacity:0; pointer-events:none; transition:opacity .2s ease .38s; }
+  .case-end.on{ opacity:1; pointer-events:auto; transition-delay:0s; }
+  .ce-goo{ position:absolute; inset:-20px -30px; filter:url(#ce-goo); pointer-events:none; }
+  .ce-blob{ position:absolute; top:20px; height:40px; border-radius:20px; background:#0c0c0e;
+    left:calc(30px + var(--cx)); width:var(--cw);
+    transition:left .6s cubic-bezier(.34,1.45,.5,1), width .6s cubic-bezier(.34,1.45,.5,1); }
+  .case-end.on .ce-blob{ left:calc(30px + var(--x)); width:var(--w); }
+  .case-end.on .ce-blob.b0, .case-end.on .ce-blob.b2{ transition-duration:.85s; transition-delay:.06s; }
+  .ce-btns{ position:relative; display:flex; gap:12px; height:40px; }
+  .ce-btns a, .ce-btns button{ display:flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 18px; border:0; background:none; cursor:pointer; white-space:nowrap;
+    color:#f2f3f5; text-decoration:none; font-family:'Geist Mono', monospace; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    opacity:0; transform:scale(.85); transition:opacity .2s ease, transform .3s ease; border-radius:20px; }
+  .case-end.on .ce-btns > *{ opacity:1; transform:none; transition-delay:.28s; }
+  .ce-btns > *:hover{ color:#8fb0ff; }
+  .ce-btns .ce-next b{ color:#8fb0ff; font-weight:600; }
+  .case-nav.ended{ opacity:0 !important; pointer-events:none !important; transition:opacity .15s ease; }
+  @media (prefers-reduced-motion: reduce){ .ce-blob, .ce-btns > *, .case-end{ transition:none !important; } }
   .case-nav.shown, .case-nav.open{ opacity:1; pointer-events:auto; transform:translateX(-50%); }
   .case-nav.open{ width:min(440px, calc(100vw - 32px)); border-radius:28px; }
   .case-nav-head, .case-nav-rail{ display:none; }
@@ -1298,6 +1318,7 @@
   <div style="min-height:1px;"></div>
 </div>
 <div class="toast" id="toast"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="ce-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b"/><feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="g"/><feComposite in="SourceGraphic" in2="g" operator="atop"/></filter></svg>
 
 <script>
 (function(){
@@ -2594,6 +2615,30 @@
     bar.setAttribute('aria-hidden', 'true');
     caseView.appendChild(bar);
     caseView.appendChild(nav);
+    var list = projects.filter(function(x){ return !x.comingSoon; });
+    var next = list[(list.indexOf(p) + 1) % list.length];
+    var end = document.createElement('div');
+    end.className = 'case-end';
+    end.innerHTML = '<div class="ce-goo" aria-hidden="true"><span class="ce-blob b0"></span><span class="ce-blob b1"></span><span class="ce-blob b2"></span></div>' +
+      '<nav class="ce-btns" aria-label="End of case study"><button type="button" class="ce-back">← Back</button><button type="button" class="ce-top">↑ Top</button>' +
+      '<a class="ce-next" href="#work/'+next.slug+'">Next · <b>'+next.company+'</b> →</a></nav>';
+    caseView.appendChild(end);
+    end.querySelector('.ce-back').addEventListener('click', function(){ location.hash = ''; });
+    end.querySelector('.ce-top').addEventListener('click', function(){
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+    // each blob sits under its button when split, and all three gather into the notch when not
+    function placeBlobs(){
+      var btns = end.querySelectorAll('.ce-btns > *'), blobs = end.querySelectorAll('.ce-blob');
+      var total = end.querySelector('.ce-btns').offsetWidth, notch = Math.min(300, total);
+      btns.forEach(function(b, i){
+        blobs[i].style.setProperty('--x', b.offsetLeft + 'px'); blobs[i].style.setProperty('--w', b.offsetWidth + 'px');
+        blobs[i].style.setProperty('--cx', ((total - notch) / 2) + 'px'); blobs[i].style.setProperty('--cw', notch + 'px');
+      });
+    }
+    placeBlobs();
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(placeBlobs);
 
     var toggle = nav.querySelector('.case-nav-toggle');
     function setOpen(open){ nav.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); if(!open) revealNav(); }
@@ -2612,7 +2657,7 @@
     nav.addEventListener('mouseleave', function(){ nav.classList.remove('held'); revealNav(); });
     nav.addEventListener('focusin', function(){ nav.classList.add('held'); revealNav(); });
     nav.addEventListener('focusout', function(){ nav.classList.remove('held'); revealNav(); });
-    caseNav = { nav:nav, bar:bar, items:items, links:nav.querySelectorAll('a'), current:-1, quietUntil:Date.now() + 800 };
+    caseNav = { nav:nav, end:end, bar:bar, items:items, links:nav.querySelectorAll('a'), current:-1, quietUntil:Date.now() + 800 };
     updateCaseNav();
   }
   function updateCaseNav(){
@@ -2621,6 +2666,10 @@
     var headBottom = head ? head.getBoundingClientRect().bottom : 0;
     caseNav.bar.style.top = headBottom + 'px';
     caseNav.nav.style.setProperty('--head-bottom', headBottom + 'px');
+    caseNav.end.style.setProperty('--head-bottom', headBottom + 'px');
+    var atEnd = window.scrollY > 200 && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    caseNav.end.classList.toggle('on', atEnd);
+    caseNav.nav.classList.toggle('ended', atEnd);
     var top = caseView.getBoundingClientRect().top + window.scrollY;
     var span = Math.max(1, caseView.offsetHeight - window.innerHeight);
     var prog = Math.min(1, Math.max(0, (window.scrollY - top + headBottom) / span));
