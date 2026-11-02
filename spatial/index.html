@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>David Jinho Yang · Spatial</title>
+<meta name="description" content="David Jinho Yang designs products, AI agents and spatial experiences.">
+<meta name="theme-color" content="#050506">
+<style>
+  @font-face{ font-family:'Geist'; src:url('../fonts/Geist-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face{ font-family:'Geist'; src:url('../fonts/Geist-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+  @font-face{ font-family:'Geist'; src:url('../fonts/Geist-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
+  @font-face{ font-family:'Geist Mono'; src:url('../fonts/GeistMono-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face{ font-family:'Geist Mono'; src:url('../fonts/GeistMono-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+
+  :root{
+    --bg:#050506; --ink:#f2f3f5; --muted:#8e939e; --dim:#5b606b; --accent:#8fb0ff;
+    --island-top:36vh;
+    --spring:cubic-bezier(.34,1.32,.5,1);
+    --ease:cubic-bezier(.32,.72,0,1);
+  }
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; height:100%; background:var(--bg); color:var(--ink); overflow:hidden; }
+  body{ font-family:'Geist', -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; }
+  .mono{ font-family:'Geist Mono', ui-monospace, monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; }
+
+  /* ---------- space: slow light, a floor that recedes ---------- */
+  .space{ position:fixed; inset:0; overflow:hidden; pointer-events:none; }
+  .orb{ position:absolute; border-radius:50%; filter:blur(90px); opacity:.0; transition:opacity 2.4s ease; }
+  .ready .orb{ opacity:1; }
+  .orb.a{ width:46vmax; height:46vmax; left:-12vmax; top:-14vmax; background:radial-gradient(circle, rgba(29,95,255,.22), transparent 65%); animation:drift-a 26s ease-in-out infinite alternate; }
+  .orb.b{ width:40vmax; height:40vmax; right:-10vmax; bottom:-16vmax; background:radial-gradient(circle, rgba(217,119,87,.16), transparent 65%); animation:drift-b 31s ease-in-out infinite alternate; }
+  .orb.c{ width:28vmax; height:28vmax; left:42%; top:52%; background:radial-gradient(circle, rgba(232,69,107,.10), transparent 65%); animation:drift-a 37s ease-in-out infinite alternate-reverse; }
+  @keyframes drift-a{ to{ transform:translate(8vmax, 6vmax) scale(1.08); } }
+  @keyframes drift-b{ to{ transform:translate(-7vmax, -5vmax) scale(1.1); } }
+  .floor{ position:absolute; left:-50%; right:-50%; bottom:-8vh; height:62vh; transform:perspective(520px) rotateX(72deg); transform-origin:50% 100%;
+    background-image:linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+    background-size:64px 64px; -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,.9), transparent 80%); mask-image:linear-gradient(to top, rgba(0,0,0,.9), transparent 80%);
+    opacity:0; transition:opacity 2.4s ease .4s; }
+  .ready .floor{ opacity:.55; }
+
+  /* ---------- chrome ---------- */
+  .top{ position:fixed; left:0; right:0; top:0; display:flex; justify-content:space-between; align-items:center; padding:22px max(20px, env(safe-area-inset-left)); z-index:5; }
+  .top .name{ color:var(--ink); text-decoration:none; }
+  .top .name span{ display:block; color:var(--dim); margin-top:4px; }
+  .top a.classic{ white-space:nowrap; color:var(--muted); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.1); transition:color .2s, border-color .2s; }
+  .top a.classic:hover{ color:var(--ink); border-color:rgba(255,255,255,.25); }
+  .bottom{ position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; gap:22px; padding:22px 20px max(22px, env(safe-area-inset-bottom)); z-index:5; color:var(--dim); }
+  .bottom button, .bottom a{ font:inherit; letter-spacing:inherit; text-transform:inherit; background:none; border:0; color:inherit; cursor:pointer; padding:6px 2px; text-decoration:none; transition:color .2s; }
+  .bottom button:hover, .bottom a:hover{ color:var(--ink); }
+  .bottom .after{ display:none; }
+  .done .bottom .during{ display:none; }
+  .done .bottom .after{ display:inline-block; }
+  .top, .bottom{ opacity:0; transition:opacity 1.2s ease .6s; }
+  .ready .top, .ready .bottom{ opacity:1; }
+  .hint{ position:fixed; left:50%; top:calc(var(--island-top) + 58px); transform:translateX(-50%); color:var(--dim); opacity:0; transition:opacity .6s ease; pointer-events:none; white-space:nowrap; }
+  .done .hint.on{ opacity:1; }
+
+  /* ---------- the island ----------
+     Shapes live in .goo, a layer run through a gooey filter so they melt into each other.
+     Words, photo and icons sit in a matching layer above it, so they stay sharp. */
+  .stage{ position:fixed; left:50%; top:var(--island-top); width:0; height:0; z-index:3; }
+  /* the filter needs a real box to draw in, so the layer spans the screen and the shapes shift back to the centre */
+  .goo{ position:absolute; left:-50vw; top:-60vh; width:100vw; height:160vh; filter:url(#goo); pointer-events:none; }
+  .shape{ position:absolute; margin-left:50vw; margin-top:60vh; background:#121216; }
+  .island, .island-c{ left:calc(var(--iw) / -2); top:calc(var(--ih) / -2); width:var(--iw); height:var(--ih); border-radius:calc(var(--ih) / 2);
+    transition:width .75s var(--ease), height .55s var(--ease), left .75s var(--ease), top .55s var(--ease), transform .7s var(--spring), opacity .6s ease; }
+  .stage.bouncy .island, .stage.bouncy .island-c{ transition:width .8s var(--spring), height .6s var(--spring), left .8s var(--spring), top .6s var(--spring), transform .7s var(--spring), opacity .6s ease; }
+  .stage.pre .island, .stage.pre .island-c{ transform:scale(.4); opacity:0; }
+
+  .island-c{ position:absolute; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 60%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px rgba(255,255,255,.06), 0 24px 70px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.6); }
+  .island-c::before{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,.09), rgba(255,255,255,0) 32%, rgba(255,255,255,0) 70%, rgba(143,176,255,.06)); }
+
+  .photo{ position:absolute; left:8px; top:50%; width:56px; height:56px; margin-top:-28px; border-radius:50%; overflow:hidden;
+    filter:grayscale(1) contrast(1.06) brightness(.92); transition:opacity .45s ease, transform .6s var(--spring); }
+  .photo canvas{ width:100%; height:100%; display:block; image-rendering:pixelated; }
+  .stage.is-icons .photo{ opacity:0; transform:scale(.6); }
+
+  .say{ margin:0; position:absolute; left:80px; right:26px; top:50%; transform:translateY(-50%); font-size:17px; line-height:1.45; letter-spacing:-.005em; color:var(--ink); }
+  .say .w{ display:inline-block; opacity:0; filter:blur(6px); transform:translateY(5px); transition:opacity .55s ease, filter .55s ease, transform .55s var(--ease); transition-delay:calc(var(--i) * 45ms); }
+  .say.in .w{ opacity:1; filter:none; transform:none; }
+  .say.out .w{ opacity:0; filter:blur(5px); transform:translateY(-4px); transition-duration:.4s; transition-delay:calc(var(--i) * 12ms); }
+  .say .w.em{ color:var(--accent); }
+
+  .icons{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:10px; padding:0 12px; }
+  .ico{ position:relative; width:48px; height:48px; flex:0 0 48px; border-radius:50%; border:0; padding:0; cursor:pointer; color:inherit;
+    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), rgba(255,255,255,.03) 70%); box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(255,255,255,.05);
+    display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(.4);
+    transition:opacity .4s ease, transform .55s var(--spring), background .25s ease; transition-delay:calc(var(--i) * 70ms + .25s); }
+  .stage.is-icons .ico{ opacity:1; transform:none; }
+  .ico svg{ width:26px; height:26px; display:block; transition:transform .35s var(--spring); }
+  .ico:hover svg, .ico.on svg, .ico:focus-visible svg{ transform:scale(1.14); }
+  .ico.on{ background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.18), rgba(255,255,255,.05) 70%); }
+  .ico:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  .stage:not(.is-icons) .ico{ pointer-events:none; transition-delay:0s; }
+
+  /* ---------- the droplet card ---------- */
+  .drop{ left:var(--dx); top:var(--dy); width:var(--dw); height:var(--dh); border-radius:var(--dr);
+    /* closing: shrink first, then rise back into the bar */
+    transition:width .32s ease, height .32s ease, border-radius .32s ease, left .38s var(--ease) .1s, top .48s var(--spring) .12s; }
+  .drop.open{
+    /* opening: fall out of the bar as a drop, then swell into a card */
+    transition:top .5s var(--spring), left .55s var(--spring) .14s, width .55s var(--spring) .14s, height .55s var(--spring) .14s, border-radius .5s ease .14s; }
+  /* a little tail that stretches between bar and card, then snaps back: the neck of the drop */
+  .tail{ width:30px; height:30px; border-radius:50%; left:var(--tx); top:var(--ty); transition:top .42s var(--ease), left .3s var(--ease); }
+  .drop.jump{ transition:none !important; }
+  .drop.slide{ transition:left .5s var(--spring), top .5s var(--spring), width .5s var(--spring), height .5s var(--spring); }
+
+  .card{ position:absolute; z-index:4; border-radius:28px; overflow:hidden; text-decoration:none; color:var(--ink); display:block;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px rgba(255,255,255,.06), 0 30px 80px rgba(0,0,0,.6);
+    opacity:0; pointer-events:none; transition:opacity .18s ease; }
+  .card.show{ opacity:1; pointer-events:auto; transition:opacity .35s ease .38s; }
+  .card.show.swap{ transition:opacity .25s ease .12s; }
+  .card::before{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:2;
+    background:linear-gradient(120deg, rgba(255,255,255,.08), rgba(255,255,255,0) 30%); }
+  .card .media{ position:relative; height:186px; margin:8px 8px 0; border-radius:21px; overflow:hidden; }
+  .card .media .phone{ position:absolute; left:50%; top:18px; width:92px; margin-left:-46px; border-radius:16px; overflow:hidden; box-shadow:0 14px 34px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08); }
+  .card .media .phone video, .card .media .phone img{ display:block; width:100%; }
+  .card .media .desk{ position:absolute; left:20px; right:-30px; top:20px; border-radius:10px; overflow:hidden; box-shadow:0 14px 34px rgba(0,0,0,.45); }
+  .card .media .desk img{ display:block; width:100%; }
+  .card .body{ padding:16px 20px 0; }
+  .card .co{ color:var(--muted); }
+  .card h2{ margin:8px 0 6px; font-size:19px; line-height:1.28; font-weight:500; letter-spacing:-.01em; }
+  .card p{ margin:0; color:var(--muted); font-size:13.5px; line-height:1.5; }
+  .card .go{ display:block; padding:14px 20px 18px; color:var(--accent); }
+  .card .go i{ font-style:normal; display:inline-block; transition:transform .25s ease; }
+  .card:hover .go i{ transform:translateX(4px); }
+
+  .skip-anim .island, .skip-anim .island-c, .skip-anim .drop, .skip-anim .ico, .skip-anim .photo{ transition:none !important; }
+  @media (prefers-reduced-motion: reduce){
+    .orb{ animation:none; }
+    .island, .island-c, .drop, .ico, .photo, .say .w{ transition-duration:.01s !important; transition-delay:0s !important; }
+  }
+  @media (max-width:560px){
+    :root{ --island-top:30vh; }
+    .say{ font-size:15.5px; left:76px; right:20px; }
+  }
+</style>
+</head>
+<body>
+<div class="space" aria-hidden="true"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div><div class="floor"></div></div>
+
+<header class="top">
+  <a class="name mono" href="../">David Jinho Yang<span>Product designer + prototyper</span></a>
+  <a class="classic mono" href="../">Classic site ↗</a>
+</header>
+
+<main class="stage pre" id="stage" style="--iw:72px; --ih:72px;">
+  <div class="goo" aria-hidden="true">
+    <div class="shape island"></div>
+    <div class="shape tail" id="tail" style="--tx:-15px; --ty:-15px;"></div>
+    <div class="shape drop" id="drop" style="--dx:-20px; --dy:-20px; --dw:40px; --dh:40px; --dr:20px;"></div>
+  </div>
+  <div class="island-c" id="island">
+    <div class="photo"><canvas id="pix" width="112" height="112" aria-label="David Jinho Yang" role="img"></canvas></div>
+    <p class="say" id="say" aria-live="polite"></p>
+    <nav class="icons" id="icons" aria-label="Latest projects"></nav>
+  </div>
+  <a class="card" id="card" href="#" tabindex="-1"></a>
+</main>
+<p class="hint mono" id="hint">Hover a project</p>
+
+<footer class="bottom mono">
+  <button type="button" class="during" id="skip">Skip intro</button>
+  <button type="button" class="after" id="replay">Replay intro</button>
+  <a class="after" href="mailto:jy3424@nyu.edu">Email</a>
+  <a class="after" href="https://www.linkedin.com/in/david-yang-3916671b6/" target="_blank" rel="noopener">LinkedIn</a>
+  <a class="after" href="../files/David-Yang-Resume.pdf" target="_blank" rel="noopener">Resume</a>
+</footer>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
+    <feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -11" result="g"/>
+    <feComposite in="SourceGraphic" in2="g" operator="atop"/></filter>
+</svg>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+  var stage = document.getElementById('stage'), say = document.getElementById('say'), iconsEl = document.getElementById('icons');
+  var drop = document.getElementById('drop'), card = document.getElementById('card'), hint = document.getElementById('hint');
+
+  var lines = [
+    'I design <em>products, AI agents,</em> and <em>spatial experiences.</em>',
+    'I\'ve lately been exploring the intersection of <em>affective computing</em> and <em>brain-computer interfaces.</em>',
+    'I make <em>music,</em> travel, and make <em>films</em> in my free time.',
+    'Here are my <em>latest projects.</em>'
+  ];
+
+  // the Claude spark, the same uneven rays as the case study banner
+  function spark(color){
+    var lens = [40, 33, 44, 30, 42, 35, 46, 31, 41, 37, 44], rays = '';
+    lens.forEach(function(l, i){
+      var a = (i / lens.length) * Math.PI * 2 + (i % 2 ? .06 : -.04) - Math.PI / 2;
+      rays += '<line x1="'+(50 + Math.cos(a) * 5).toFixed(1)+'" y1="'+(50 + Math.sin(a) * 5).toFixed(1)+'" x2="'+(50 + Math.cos(a) * l).toFixed(1)+'" y2="'+(50 + Math.sin(a) * l).toFixed(1)+'"/>';
+    });
+    return '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="'+color+'" stroke-width="8.5" stroke-linecap="round">'+rays+'</g></svg>';
+  }
+  var projects = [
+    { slug:'claude', company:'Claude', title:'Side Quests: wander off, never lose the main story', tag:'LLM interface · in progress',
+      blurb:'Highlight a phrase in Claude\'s answer, ask about it on the side, then decide what to keep.',
+      icon:spark('#D97757'),
+      media:'<div class="desk"><img src="../images/claude/desktop-side-chat.jpg" alt=""></div>',
+      bg:'radial-gradient(ellipse 80% 90% at 50% 20%, rgba(217,119,87,.35), rgba(217,119,87,0) 70%), #1c1714' },
+    { slug:'chance-ai', company:'Chance AI x AStudio', title:'Reimagining Visual Agent', tag:'AI agent · 2026 · in progress',
+      blurb:'Redesigning how people find, create and share visual skills in a visual AI agent.',
+      // a lens: what the agent sees
+      icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="gc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9db8ff"/><stop offset="1" stop-color="#1d5fff"/></linearGradient></defs><circle cx="16" cy="16" r="11" fill="none" stroke="url(#gc)" stroke-width="3"/><circle cx="16" cy="16" r="4.2" fill="url(#gc)"/><circle cx="20.5" cy="11.5" r="1.6" fill="#fff" opacity=".85"/></svg>',
+      media:'<div class="phone"><video src="../images/chance/chance-demo.mp4" poster="../images/chance/chance-demo-poster.jpg" muted loop playsinline preload="none"></video></div>',
+      bg:'linear-gradient(135deg, #0a1730, #1d5fff 70%, #9db8ff)' },
+    { slug:'inyun', company:'INYUN', title:'A matching experience built on real-time collaboration', tag:'Product design · 2026',
+      blurb:'Strangers get to know each other by sketching together, not by swiping through profiles.',
+      // the identity signifier: a soft blob
+      icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><defs><radialGradient id="gi" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#ffd7c2"/><stop offset=".45" stop-color="#f5b96e"/><stop offset="1" stop-color="#e8456b"/></radialGradient></defs><path d="M16.4 4.5c5.6.2 10.6 4.4 10.9 10.2.3 6-4.6 12.4-11 12.8C9.9 27.9 4.6 23 4.7 16.6 4.8 10 10 4.3 16.4 4.5z" fill="url(#gi)"/></svg>',
+      media:'<div class="phone"><video src="../images/inyun/inyun-duo-david.mp4" poster="../images/inyun/inyun-duo-david-poster.jpg" muted loop playsinline preload="none"></video></div>',
+      bg:'radial-gradient(ellipse 60% 90% at 30% 50%, rgba(232,69,107,.45), transparent 70%), radial-gradient(ellipse 60% 90% at 75% 40%, rgba(245,185,110,.35), transparent 70%), #120d0f' },
+    { slug:'ekpyrosis', company:'Ekpyrosis', title:'An installation where emotions become light and space', tag:'Immersive installation · 2026',
+      blurb:'You name a feeling on your phone, and the room answers in light.',
+      // a glowing orb, like the zone posters
+      icon:'<svg viewBox="0 0 32 32" aria-hidden="true"><defs><radialGradient id="ge" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffd1dc"/><stop offset=".7" stop-color="#d9476b" stop-opacity=".55"/><stop offset="1" stop-color="#d9476b" stop-opacity="0"/></radialGradient></defs><circle cx="16" cy="16" r="14" fill="url(#ge)"/></svg>',
+      media:'<div class="phone"><video src="../images/ekpyrosis/ekpyrosis-demo.mp4" poster="../images/ekpyrosis/ekpyrosis-demo-poster.jpg" muted loop playsinline preload="none"></video></div>',
+      bg:'radial-gradient(circle at 50% 45%, rgba(255,209,220,.28), transparent 60%), #0a0a0a' }
+  ];
+  iconsEl.innerHTML = projects.map(function(p, i){
+    return '<button type="button" class="ico" style="--i:'+i+'" data-i="'+i+'" aria-label="'+p.company+': '+p.title+'">'+p.icon+'</button>';
+  }).join('');
+  var icos = iconsEl.querySelectorAll('.ico');
+
+  // ---------- the pixelated portrait ----------
+  var img = new Image(), pix = document.getElementById('pix'), pctx = pix.getContext('2d');
+  var off = document.createElement('canvas'), octx = off.getContext('2d');
+  function pixelate(n){
+    if(!img.complete || !img.naturalWidth) return;
+    off.width = n; off.height = n; octx.drawImage(img, 0, 0, n, n);
+    pctx.imageSmoothingEnabled = false; pctx.clearRect(0, 0, 112, 112); pctx.drawImage(off, 0, 0, n, n, 0, 0, 112, 112);
+  }
+  function resolvePortrait(){
+    var steps = [3, 5, 8, 12, 16, 20], k = 0;
+    (function next(){ pixelate(steps[k]); if(++k < steps.length) setTimeout(next, reduce ? 0 : 130); })();
+  }
+  img.onload = function(){ pixelate(3); };
+  img.src = '../images/headshot.jpg';
+
+  // ---------- island geometry ----------
+  function setIsland(w, h){ stage.style.setProperty('--iw', w + 'px'); stage.style.setProperty('--ih', h + 'px'); }
+  var CIRCLE = 72;
+  function barWidth(){ return Math.min(760, window.innerWidth - 32); }
+  function iconBarWidth(){ return projects.length * 48 + (projects.length - 1) * 10 + 24; }
+  // how tall the bar must be to hold a line of text
+  var measure = document.createElement('p');
+  measure.className = 'say'; measure.style.cssText = 'position:absolute;visibility:hidden;top:0;transform:none;left:0;right:auto;';
+  document.body.appendChild(measure);
+  function heightFor(html){
+    measure.style.width = (barWidth() - (window.innerWidth <= 560 ? 96 : 106)) + 'px';
+    measure.innerHTML = html;
+    return Math.max(CIRCLE, Math.ceil(measure.offsetHeight) + 34);
+  }
+
+  var token = 0;
+  function wait(ms){ var t = token; return new Promise(function(res, rej){ setTimeout(function(){ t === token ? res() : rej('skip'); }, reduce ? Math.min(ms, 30) : ms); }); }
+  function words(html){
+    // wrap every word so it can arrive on its own; accent spans stay accented
+    var out = [], i = 0;
+    html.split(/(<em>.*?<\/em>)/).forEach(function(part){
+      var em = /^<em>/.test(part); part = part.replace(/<\/?em>/g, '');
+      part.split(/\s+/).filter(Boolean).forEach(function(w){ out.push('<span class="w'+(em ? ' em' : '')+'" style="--i:'+(i++)+'">'+w+'</span>'); });
+    });
+    return out.join(' ');
+  }
+
+  async function intro(){
+    var t = ++token;
+    document.body.classList.remove('done'); stage.classList.remove('is-icons'); closeCard(true);
+    stage.classList.add('pre'); setIsland(CIRCLE, CIRCLE); say.innerHTML = '';
+    try{
+      await wait(350);
+      document.body.classList.add('ready');
+      stage.classList.add('bouncy'); stage.classList.remove('pre');
+      resolvePortrait();
+      await wait(1300);
+      for(var k = 0; k < lines.length; k++){
+        setIsland(barWidth(), heightFor(lines[k]));
+        await wait(k ? 420 : 700);
+        say.className = 'say'; say.innerHTML = words(lines[k]);
+        void say.offsetWidth; say.classList.add('in');
+        await wait(lines[k].length * 22 + 1500);
+        say.classList.add('out');
+        await wait(520);
+        say.innerHTML = '';
+      }
+      // fold back into the portrait, then open again with the projects
+      setIsland(CIRCLE, CIRCLE);
+      await wait(900);
+      showIcons();
+    } catch(e){}
+  }
+  function showIcons(instant){
+    token++;
+    try{ sessionStorage.setItem('spatialSeen', '1'); }catch(e){}
+    say.innerHTML = ''; say.className = 'say';
+    stage.classList.remove('pre'); stage.classList.add('bouncy');
+    if(instant){ stage.classList.add('skip-anim'); }
+    document.body.classList.add('ready');
+    setIsland(iconBarWidth(), CIRCLE);
+    stage.classList.add('is-icons');
+    document.body.classList.add('done');
+    hint.textContent = hover ? 'Hover a project' : 'Tap a project';
+    hint.classList.add('on');
+    pixelate(20);
+    if(instant) requestAnimationFrame(function(){ requestAnimationFrame(function(){ stage.classList.remove('skip-anim'); }); });
+  }
+
+  // ---------- the droplet card ----------
+  var current = -1, closeTimer = null, tail = document.getElementById('tail'), tailTimer = null;
+  function stretchTail(cx){
+    clearTimeout(tailTimer);
+    tail.style.setProperty('--tx', (cx - 15) + 'px'); tail.style.setProperty('--ty', (CIRCLE / 2 + 2) + 'px');
+    tailTimer = setTimeout(function(){ tail.style.setProperty('--ty', '-15px'); }, reduce ? 0 : 300);
+  }
+  function setDrop(x, y, w, h, r){
+    drop.style.setProperty('--dx', x + 'px'); drop.style.setProperty('--dy', y + 'px');
+    drop.style.setProperty('--dw', w + 'px'); drop.style.setProperty('--dh', h + 'px'); drop.style.setProperty('--dr', r + 'px');
+  }
+  function iconCenter(i){
+    var r = icos[i].getBoundingClientRect(), s = stage.getBoundingClientRect();
+    return r.left + r.width / 2 - s.left;
+  }
+  function openCard(i){
+    clearTimeout(closeTimer);
+    if(i === current) return;
+    var p = projects[i], was = current; current = i;
+    icos.forEach(function(b, k){ b.classList.toggle('on', k === i); });
+    hint.classList.remove('on');
+    var vw = window.innerWidth, w = Math.min(300, vw - 32);
+    var cx = iconCenter(i), x = Math.max(-vw / 2 + 16, Math.min(vw / 2 - 16 - w, cx - w / 2)), y = CIRCLE / 2 + 30;
+    card.href = '../#work/' + p.slug;
+    card.setAttribute('aria-label', p.company + ': ' + p.title + '. View case study');
+    card.innerHTML = '<div class="media" style="background:'+p.bg+'">'+p.media+'</div>' +
+      '<div class="body"><div class="co mono">'+p.company+'</div><h2>'+p.title+'</h2><p>'+p.blurb+'</p></div>' +
+      '<span class="go mono">View case study <i>→</i></span>';
+    // the card is as tall as its words, and the drop swells to match
+    card.style.width = w + 'px'; card.style.height = 'auto';
+    var h = card.offsetHeight;
+    if(was < 0){
+      // start as a small drop inside the bar, right under the icon
+      drop.classList.remove('open', 'slide'); drop.classList.add('jump'); setDrop(cx - 20, -20, 40, 40, 20); void drop.offsetWidth;
+      drop.classList.remove('jump'); drop.classList.add('open');
+      stretchTail(cx);
+    } else { drop.classList.remove('open'); drop.classList.add('slide'); }
+    setDrop(x, y, w, h, 28);
+    card.style.left = x + 'px'; card.style.top = y + 'px'; card.style.height = h + 'px';
+    card.classList.toggle('swap', was >= 0);
+    card.tabIndex = 0;
+    card.classList.add('show');
+    var v = card.querySelector('video'); if(v && !reduce){ var pr = v.play(); if(pr && pr.catch) pr.catch(function(){}); }
+  }
+  function closeCard(now){
+    clearTimeout(closeTimer);
+    function go(){
+      if(current < 0) return;
+      var cx = iconCenter(current); current = -1;
+      icos.forEach(function(b){ b.classList.remove('on'); });
+      card.classList.remove('show', 'swap'); card.tabIndex = -1;
+      drop.classList.remove('open', 'slide');
+      setDrop(cx - 20, -20, 40, 40, 20);
+      setTimeout(function(){ stretchTail(cx); }, 260);
+      var v = card.querySelector('video'); if(v) v.pause();
+    }
+    if(now) go(); else closeTimer = setTimeout(go, 160);
+  }
+  icos.forEach(function(b, i){
+    // a mouse opens the card on hover; a touch opens it on the first tap and follows it on the second
+    var openedByTouch = false;
+    b.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') openCard(i); });
+    b.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse') closeCard(); });
+    b.addEventListener('pointerdown', function(e){ openedByTouch = e.pointerType !== 'mouse' && current !== i; });
+    b.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(openedByTouch){ openedByTouch = false; openCard(i); return; }
+      location.href = '../#work/' + projects[i].slug;
+    });
+    b.addEventListener('focus', function(){ openCard(i); });
+  });
+  card.addEventListener('mouseenter', function(){ clearTimeout(closeTimer); });
+  card.addEventListener('mouseleave', function(){ closeCard(); });
+  document.addEventListener('click', function(e){ if(current >= 0 && !card.contains(e.target) && !iconsEl.contains(e.target)) closeCard(true); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeCard(true); });
+  window.addEventListener('resize', function(){
+    if(stage.classList.contains('is-icons')){ closeCard(true); setIsland(iconBarWidth(), CIRCLE); }
+  });
+
+  document.getElementById('skip').addEventListener('click', function(){ showIcons(); });
+  document.getElementById('replay').addEventListener('click', function(){ intro(); });
+
+  var seen = false; try{ seen = sessionStorage.getItem('spatialSeen') === '1'; }catch(e){}
+  if(seen || reduce){ setTimeout(function(){ img.complete ? pixelate(20) : (img.onload = function(){ pixelate(20); }); showIcons(); }, 200); }
+  else intro();
+})();
+</script>
+</body>
+</html>
