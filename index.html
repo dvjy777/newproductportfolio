@@ -1080,6 +1080,46 @@
   .way .w-mono{ font:500 11px ui-monospace, Menlo, monospace; fill:#F0E7D3; } .way .w-mono.dim{ fill:#9A958C; }
 
   .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  /* sketch and final in one frame, split by a draggable divider */
+  .ev-stage{ --pos:50%; position:relative; margin:0 auto; width:min(300px, 100%); aspect-ratio:393/852; border-radius:34px; overflow:hidden;
+    background:#fff; box-shadow:0 24px 60px rgba(61,57,41,.18), 0 0 0 1px rgba(61,57,41,.12); touch-action:pan-y; }
+  .ev-stage.wide{ width:100%; aspect-ratio:1440/940; border-radius:18px; }
+  .ev-stage img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+  .ev-final{ clip-path:inset(0 0 0 var(--pos)); }
+  .ev-handle{ position:absolute; top:0; bottom:0; left:var(--pos); width:2px; margin-left:-1px; background:#fff; box-shadow:0 0 0 1px rgba(61,57,41,.2); pointer-events:none; }
+  .ev-handle::after{ content:'‹ ›'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:40px; height:40px; border-radius:50%;
+    display:grid; place-items:center; font-size:15px; letter-spacing:2px; color:var(--nav-accent, var(--accent)); background:#fff; box-shadow:0 4px 14px rgba(61,57,41,.25); }
+  .ev-tag{ position:absolute; top:12px; padding:4px 10px; border-radius:999px; font-size:11.5px; font-weight:600; pointer-events:none; }
+  .ev-tag.l{ left:12px; background:rgba(255,255,255,.9); color:var(--text); box-shadow:0 0 0 1px rgba(61,57,41,.12); }
+  .ev-tag.r{ right:12px; background:rgba(31,30,29,.85); color:#fff; }
+  .ev-stage:not(.wide) .ev-tag{ top:52px; }
+  .ev-range{ position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:ew-resize; }
+  .ev-range:focus-visible + .ev-handle, .ev-stage:focus-within .ev-handle::after{ outline:2px solid var(--nav-accent, var(--accent)); }
+  .evolve .pm-options{ margin-top:18px; }
+  .evolve{ text-align:center; }
+
+  /* the positioning map draws itself: competitors pop in, the opportunity lights up, Claude moves up */
+  .svg-slot svg{ display:block; width:100%; height:auto; }
+  .svg-fig .pt{ opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.6);
+    transition:opacity .5s ease, transform .7s cubic-bezier(.3,1.4,.5,1); transition-delay:calc(var(--i) * 70ms); }
+  .svg-fig .opp{ opacity:0; transition:opacity .9s ease 1.1s; }
+  .svg-fig .arrow .shaft{ stroke-dasharray:530; stroke-dashoffset:530; transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1) 1.7s; }
+  .svg-fig .arrow .head{ opacity:0; transition:opacity .3s ease 2.6s; }
+  .svg-fig .pt.today{ transition-delay:1.3s; }
+  .svg-fig .pt.sq{ transition-delay:2.6s; }
+  .svg-fig .ring{ opacity:0; transform-box:fill-box; transform-origin:center; }
+  .svg-fig.in .pt{ opacity:1; transform:none; }
+  .svg-fig.in .opp{ opacity:1; }
+  .svg-fig.in .arrow .shaft{ stroke-dashoffset:0; }
+  .svg-fig.in .arrow .head{ opacity:1; }
+  .svg-fig.in .ring{ animation:sq-ring 2.4s ease-out 3.2s infinite; }
+  @keyframes sq-ring{ 0%{ opacity:.7; transform:scale(1); } 100%{ opacity:0; transform:scale(2.2); } }
+  @media (prefers-reduced-motion: reduce){
+    .svg-fig .pt, .svg-fig .opp, .svg-fig .arrow .head{ opacity:1; transform:none; transition:none; }
+    .svg-fig .arrow .shaft{ stroke-dashoffset:0; transition:none; }
+    .svg-fig.in .ring{ animation:none; }
+  }
+
   /* interview findings, each card linked to the design it shaped */
   .heard{ max-width:none; }
   .heard-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:12px; }
@@ -1463,7 +1503,7 @@
           {name:'Claude Code', art:'cli', how:'/btw and /fork side chats', catch:'Typed commands, for developers only'}
         ], caption:'Everyone branches from the message. Nobody branches from the phrase.'},
         '<strong>Where Claude fits.</strong> I compared 15 products by how deep they let you explore and how much they disrupt existing habits. Comment threads in Docs, Slack and Figma are familiar but don\'t explore with AI. AI-native canvases go deep but ask you to learn something new. The gap is deep exploration with low disruption.',
-        {wide:true, media:[{src:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with Side Quests moves straight up into the deep, low-disruption corner.'}], caption:'Move up, not sideways · placements are my estimates'},
+        {wide:true, svg:'images/claude/positioning.svg', alt:'Positioning map of exploration depth against disruption to existing habits. Claude today sits low; Claude with Side Quests moves straight up into the deep, low-disruption corner.', caption:'Move up, not sideways · placements are my estimates'},
         '<strong>What people already do.</strong> On Reddit, Claude users say long chats get "chaotic" after 30 to 40 messages, so they restart and keep context in notes apps. And finding things again is normal behavior, not an edge case: in Yahoo\'s search logs, up to 40% of queries were attempts to re-find something [[1]].',
         '<strong>User interviews.</strong> I talked with three regular Claude users, had each walk me through a recent chat, and saved the concept for last.',
         {quotes:[
@@ -1480,14 +1520,15 @@
         ], caption:'From interviews to design. Initials show who raised each point, where my notes record it.'}
       ],
       journey:[
-        '<strong>Early sketches.</strong> I started in grayscale, wireframing every flow on mobile first and then on desktop. The first example chats were about p5.js coding. Later I switched them to everyday search questions.',
-        {sketches:[
-          {src:'images/claude/sketch-mobile-07.jpg', title:'Block highlighting', d:'Hold an answer to split it into blocks'},
-          {src:'images/claude/sketch-mobile-09.jpg', title:'Mini chat', d:'Swipe the tray up to ask about the selection'},
-          {src:'images/claude/sketch-mobile-05.jpg', title:'Branches', d:'Swipe left for every branch in the chat'},
-          {src:'images/claude/sketch-mobile-04.jpg', title:'Collapsed chat', d:'One card per question, tap to jump back'}
-        ], caption:'Low-fi mobile sketches'},
-        {wide:true, media:[{src:'images/claude/sketch-desktop-side-chat.jpg', alt:'Low-fi desktop wireframe: selecting a phrase brings up a toolbar with Side chat, Reply, color dots and Copy'}, {src:'images/claude/sketch-desktop-collapse.jpg', alt:'Low-fi desktop wireframe: the collapsed overview with a summary by topic and one card per question'}], caption:'Low-fi desktop: selecting a phrase, and the collapsed overview'},
+        '<strong>Early sketches.</strong> I started in grayscale, wireframing every flow on mobile first and then on desktop. The first example chats were about p5.js coding. Later I switched them to everyday search questions. Drag the divider to compare each sketch with where it ended up.',
+        {evolve:[
+          {label:'Select', sketch:'images/claude/sketch-phone-select.jpg', final:'images/claude/final-select.jpg', d:'Blocks stayed. The tray gained Select all, five save colors, and Mini chat and Add to prompt buttons.'},
+          {label:'Explore', sketch:'images/claude/sketch-phone-mini.jpg', final:'images/claude/final-mini.jpg', d:'The mini chat kept its anchor quote and gained the four endings at the bottom.'},
+          {label:'Return', sketch:'images/claude/sketch-phone-branches.jpg', final:'images/claude/final-branches.jpg', d:'Branches got a Saved tab beside them, and actions moved behind a tap.'},
+          {label:'Re-find', sketch:'images/claude/sketch-phone-collapse.jpg', final:'images/claude/final-collapse.jpg', d:'Cards gained keywords, branch counts and search, and the main pill flipped between Collapse and Expand.'},
+          {label:'Desktop', wide:true, sketch:'images/claude/sketch-desktop-side-chat.jpg', final:'images/claude/desktop-side-chat.jpg', d:'The side chat moved into the right panel Claude already uses for artifacts.'},
+          {label:'Desktop overview', wide:true, sketch:'images/claude/sketch-desktop-collapse.jpg', final:'images/claude/desktop-collapse.jpg', d:'The collapsed overview kept its summary by topic and one card per question.'}
+        ]},
         {feature:'Block highlighting', n:'01', tag:'Select', promise:'Hold an answer to split it into blocks', d:'Phone text selection is fiddly. Blocks are big, forgiving targets you can tap with one thumb, and mobile Claude has no way to act on a selection today.', points:[
           ['Tap blocks, or Select all', 'The selection collects in a glass tray above the prompt bar.'],
           ['The answer stays visible', 'It scrolls up so the tray never covers what you\'re selecting.'],
@@ -2194,6 +2235,19 @@
       if(t.paths) return '<figure class="case-fig case-paths">' + t.paths.map(function(row){
           return '<div class="path-row">' + row.map(function(step, i){ return (i ? '<span class="path-arrow" aria-hidden="true">→</span>' : '') + '<span class="path-step'+(step === '?' ? ' open' : '')+'">'+step+'</span>'; }).join('') + '</div>';
         }).join('') + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      // an early sketch and the final screen in one frame, split by a divider you drag
+      if(t.evolve){
+        var e0 = t.evolve[0];
+        return '<figure class="case-fig evolve" data-evolve data-reveal><div class="ev-stage'+(e0.wide ? ' wide' : '')+'" style="--pos:50%">' +
+          '<img class="ev-sketch" src="'+e0.sketch+'" alt="Early sketch: '+e0.label+'" loading="lazy"><img class="ev-final" src="'+e0.final+'" alt="Final design: '+e0.label+'" loading="lazy">' +
+          '<span class="ev-tag l">Sketch</span><span class="ev-tag r">Final</span><span class="ev-handle" aria-hidden="true"></span>' +
+          '<input class="ev-range" type="range" min="0" max="100" value="50" aria-label="Compare sketch and final"></div>' +
+          '<div class="pm-options" role="group" aria-label="Choose a screen">' + t.evolve.map(function(o, i){
+            return '<button type="button" class="pm-opt" aria-pressed="'+(i ? 'false' : 'true')+'" data-sketch="'+o.sketch+'" data-final="'+o.final+'" data-wide="'+(o.wide ? 1 : 0)+'" data-d="'+o.d.replace(/"/g, '&quot;')+'">'+o.label+'</button>';
+          }).join('') + '</div><p class="pm-desc" aria-live="polite">'+e0.d+'</p>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
+      }
+      // a chart drawn inline so its parts can animate in
+      if(t.svg) return '<figure class="case-fig svg-fig" data-reveal><div class="svg-slot" data-svg="'+t.svg+'"><img src="'+t.svg+'" alt="'+t.alt.replace(/"/g, '&quot;')+'"></div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // what interviews raised, each linked to the part of the design it shaped
       if(t.heard) return '<figure class="case-fig heard"><div class="heard-grid" data-reveal>' + t.heard.map(function(h, i){
           return '<div class="heard-card '+['coral', 'sand', 'rose', 'sage', 'coral'][i % 5]+'" style="--i:'+i+'">' +
@@ -2327,7 +2381,7 @@
     // Visuals narrow enough to sit in the right half, beside the paragraphs before them
     function rightColumn(t){
       if(!t || typeof t === 'string' || t.wide) return false;
-      if(sideBySide(t) || t.quotes || t.phone || t.carousel || t.protoVideo || t.paths) return true;
+      if(sideBySide(t) || t.evolve || t.quotes || t.phone || t.carousel || t.protoVideo || t.paths) return true;
       if(t.table) return t.table.head.length <= 2;
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
@@ -2470,6 +2524,39 @@
           if(frame.contentWindow) frame.contentWindow.postMessage({demo:+b.dataset.demo}, location.origin);
         });
       });
+    });
+    // sketch and final: drag the divider, or pick another screen
+    caseView.querySelectorAll('[data-evolve]').forEach(function(fig){
+      var stage = fig.querySelector('.ev-stage'), range = fig.querySelector('.ev-range'), desc = fig.querySelector('.pm-desc'),
+          sk = fig.querySelector('.ev-sketch'), fi = fig.querySelector('.ev-final'), btns = fig.querySelectorAll('.pm-opt');
+      function set(v){ stage.style.setProperty('--pos', v + '%'); }
+      range.addEventListener('input', function(){ set(range.value); });
+      btns.forEach(function(b){
+        b.addEventListener('click', function(){
+          btns.forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          sk.src = b.dataset.sketch; fi.src = b.dataset.final; sk.alt = 'Early sketch: ' + b.textContent; fi.alt = 'Final design: ' + b.textContent;
+          stage.classList.toggle('wide', b.dataset.wide === '1'); desc.textContent = b.dataset.d;
+        });
+      });
+      // once on screen, the divider sweeps across to show there are two layers
+      if(!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) && 'IntersectionObserver' in window){
+        var io = new IntersectionObserver(function(es){
+          if(!es[0].isIntersecting) return; io.disconnect();
+          var t0 = null;
+          (function step(ts){
+            if(t0 === null) t0 = ts; var k = Math.min(1, (ts - t0) / 1600);
+            var v = 50 + 32 * Math.sin(k * Math.PI * 2) * (1 - k); set(v.toFixed(1)); range.value = v;
+            if(k < 1) requestAnimationFrame(step); else { set(50); range.value = 50; }
+          })(performance.now());
+        }, { threshold:.5 });
+        io.observe(stage);
+      }
+    });
+    // charts drawn inline, so their parts can animate
+    caseView.querySelectorAll('.svg-slot[data-svg]').forEach(function(slot){
+      fetch(slot.dataset.svg).then(function(r){ return r.ok ? r.text() : Promise.reject(); }).then(function(txt){
+        if(txt.indexOf('<svg') === -1) return; slot.innerHTML = txt; slot.classList.add('live');
+      }).catch(function(){});
     });
     // links from a finding down to the part of the design it shaped
     caseView.querySelectorAll('[data-jump]').forEach(function(b){
