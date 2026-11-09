@@ -69,11 +69,38 @@
 
   /* ---------- header ---------- */
   header.site{
-    position:sticky; top:0; z-index:40;
-    background:var(--bg);
+    position:relative; z-index:40;
     display:flex; align-items:center; justify-content:space-between;
     padding:22px 0;
-    border-bottom:1px solid var(--border);
+  }
+
+  /* ---------- layout: a centred content column with a side nav in the left margin ---------- */
+  :root{ --col:920px; }
+  #home-view, #case-view{ max-width:var(--col); margin-inline:auto; }
+  .side-nav{ display:flex; gap:22px; max-width:var(--col); margin:4px auto 0; }
+  .side-nav a{
+    position:relative; font-size:14px; line-height:1.2; text-decoration:none; color:var(--text-muted);
+    transition:color .2s ease;
+  }
+  .side-nav a:hover{ color:var(--text); }
+  .side-nav a.on{ color:var(--accent); }
+  /* phones: the mascot's hint bubble hangs below the header, so the nav row starts under it */
+  @media (max-width:640px){ .side-nav{ margin-top:52px; } }
+  /* wide screens have room in the margin: the nav stands in a column at the left edge,
+     level with the headline, and stays put while the page scrolls */
+  @media (min-width:1180px){
+    .side-nav{ position:fixed; z-index:30; left:28px; top:150px; margin:0; flex-direction:column; gap:12px; }
+    .side-nav a{ padding-left:14px; }
+    .side-nav a::before{
+      content:''; position:absolute; left:0; top:50%; width:5px; height:5px; margin-top:-2.5px; border-radius:50%;
+      background:var(--accent); opacity:0; transform:scale(.4); transition:opacity .2s ease, transform .2s ease;
+    }
+    .side-nav a.on::before{ opacity:1; transform:none; }
+  }
+  /* the interactive hero at the top of a case study needs more room than the reading column,
+     so on wide screens it breaks out to 1180px (still clear of the side nav) */
+  @media (min-width:1180px){
+    #case-view .case-hero{ margin-inline:calc(50% - min(590px, 50vw - 130px)); }
   }
   .brand{ line-height:1.4; display:block; text-decoration:none; color:inherit; }
   .brand .name{
@@ -1342,6 +1369,13 @@
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-describedby="holdHint"><span class="dot"><span class="eye eye-l"></span><span class="eye eye-r"></span></span></button>
   </div>
 </header>
+
+<nav class="side-nav" id="sideNav" aria-label="Site">
+  <a href="#work" data-sec="work">Work</a>
+  <a href="#experience" data-sec="experience">Experience</a>
+  <a href="#about" data-sec="about">About</a>
+  <a href="#fun" data-sec="fun">Fun</a>
+</nav>
 
 <div class="overlay" id="overlay">
   <button class="overlay-close" id="overlayClose" aria-label="Close menu"><span class="dot"></span></button>
@@ -2891,7 +2925,7 @@
   function updateCaseNav(){
     if(!caseNav || !caseView.classList.contains('active')) return;
     var head = document.querySelector('header.site');
-    var headBottom = head ? head.getBoundingClientRect().bottom : 0;
+    var headBottom = head ? Math.max(0, head.getBoundingClientRect().bottom) : 0;
     caseNav.bar.style.top = headBottom + 'px';
     caseNav.nav.style.setProperty('--head-bottom', headBottom + 'px');
     caseNav.end.style.setProperty('--head-bottom', headBottom + 'px');
@@ -2956,7 +2990,7 @@
     homeView.classList.remove('hidden');
     caseView.classList.remove('active');
     document.title = 'David Jinho Yang';
-    if(hash === 'work' || hash === 'about' || hash === 'fun'){
+    if(hash === 'work' || hash === 'experience' || hash === 'about' || hash === 'fun'){
       var target = document.getElementById(hash);
       if(target){ setTimeout(function(){ target.scrollIntoView({behavior:'smooth', block:'start'}); }, 30); }
     } else if(!hash){
@@ -2965,6 +2999,34 @@
   }
   window.addEventListener('hashchange', route);
   route();
+
+  // side nav: light up the section you're reading (a case study counts as Work)
+  (function(){
+    var links = [].slice.call(document.querySelectorAll('#sideNav a'));
+    var tick = false;
+    function spy(){
+      tick = false;
+      var cur = 'work';
+      if(!caseView.classList.contains('active')){
+        var line = window.innerHeight * 0.35;
+        links.forEach(function(a){
+          var sec = document.getElementById(a.dataset.sec);
+          if(sec && sec.getBoundingClientRect().top <= line) cur = a.dataset.sec;
+        });
+        if(window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = links[links.length - 1].dataset.sec;
+      }
+      links.forEach(function(a){
+        var on = a.dataset.sec === cur;
+        a.classList.toggle('on', on);
+        if(on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+      });
+    }
+    function queue(){ if(!tick){ tick = true; requestAnimationFrame(spy); } }
+    window.addEventListener('scroll', queue, { passive:true });
+    window.addEventListener('resize', queue);
+    window.addEventListener('hashchange', function(){ setTimeout(spy, 60); });
+    spy();
+  })();
 
   document.getElementById('homeLink').addEventListener('click', function(e){
     e.preventDefault();
