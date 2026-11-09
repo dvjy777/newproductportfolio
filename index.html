@@ -40,27 +40,9 @@
   }
 
   *{ box-sizing:border-box; }
-  /* pearl glow behind the whole page: two cool hues only (periwinkle and lilac), kept pale,
-     slowly drifting. It's a fixed layer, so it stays put while the page scrolls. */
-  body::before{
-    content:''; position:fixed; inset:-25%; z-index:-1; pointer-events:none;
-    background:
-      radial-gradient(36% 34% at 16% 20%, rgba(203,213,255,.5), transparent 70%),
-      radial-gradient(34% 36% at 84% 24%, rgba(226,214,250,.5), transparent 70%),
-      radial-gradient(38% 34% at 74% 80%, rgba(203,213,255,.42), transparent 70%),
-      radial-gradient(34% 32% at 24% 78%, rgba(226,214,250,.42), transparent 70%);
-    filter:blur(40px);
-    animation:pearl 40s ease-in-out infinite alternate;
-  }
-  @keyframes pearl{
-    0%{ transform:translate3d(0,0,0) rotate(0deg); }
-    50%{ transform:translate3d(3%,-2%,0) rotate(6deg); }
-    100%{ transform:translate3d(-2%,3%,0) rotate(-5deg); }
-  }
-  @media (prefers-reduced-motion: reduce){ body::before{ animation:none; } }
   body{
     margin:0;
-    background:#fbfbfd;
+    background:var(--bg);
     color:var(--text);
     font-family:'Geist', -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing:antialiased;
