@@ -389,11 +389,9 @@
   .section-head h2{ font-family:'General Sans',sans-serif; font-weight:500; font-size:22px; }
 
   #timeline{ display:flex; flex-direction:column; }
-  .exp-layout{ display:grid; gap:40px; }
-  @media(min-width:980px){
-    .exp-layout{ grid-template-columns:minmax(0,680px) minmax(0,1fr); gap:clamp(40px,6vw,96px); align-items:start; }
-    .ethos{ position:sticky; top:110px; }
-  }
+  /* the ethos sits under the timeline, not beside it, so neither gets squeezed */
+  .exp-layout{ display:grid; gap:56px; }
+  .ethos{ max-width:680px; }
   .ethos-head{ margin-bottom:18px; }
   /* spatial transitions: words drift forward out of blur, then recede into depth */
   .ethos-stage{ display:grid; perspective:900px; transform-style:preserve-3d;
