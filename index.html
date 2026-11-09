@@ -1055,6 +1055,25 @@
   .pc-col .path-step{ white-space:normal; text-align:center; }
   .pc-col .path-step.open{ font-size:22px; }
   .pc-arrow{ color:#7d9cf0; text-align:center; line-height:1; padding:6px 0; }
+  /* audit: annotated screens beside their numbered issues */
+  .audit .au-row{ display:grid; gap:20px 48px; align-items:center; }
+  .audit .au-row + .au-row{ margin-top:48px; }
+  @media(min-width:860px){ .audit .au-row{ grid-template-columns:minmax(0,.62fr) minmax(0,1fr); } }
+  .audit .au-shots{ display:grid; gap:12px; background:#F5F7FD; padding:clamp(14px,2vw,22px); }
+  @media(min-width:860px){ .audit .au-row.two{ grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); } }
+  .audit .au-shots.two{ grid-template-columns:1fr 1fr; }
+  .audit .au-shots img{ width:100%; display:block; max-height:72vh; object-fit:contain; }
+  .audit .au-label{ margin:0 0 14px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+  .audit ol{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:20px; }
+  .audit li{ display:grid; grid-template-columns:26px minmax(0,1fr); gap:14px; }
+  .audit .au-num{ width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:#F6D35B; color:#3a2f00; font-size:13px; font-weight:600; }
+  .audit .au-issue{ margin:2px 0 4px; font-size:15px; font-weight:600; line-height:1.4; color:var(--text); }
+  .audit .au-fix{ margin:0; font-size:15px; line-height:1.5; color:var(--text-muted); }
+  .audit .au-fix::before{ content:'Fix → '; color:var(--nav-accent, var(--accent)); font-weight:500; }
+  .audit .au-sev{ display:inline-block; margin-left:8px; padding:1px 8px; border-radius:99px; font-size:11px; font-weight:500; letter-spacing:.04em; vertical-align:2px; }
+  .audit .au-sev.high{ background:#fde7e5; color:#b3261e; }
+  .audit .au-sev.medium{ background:#fdf1d8; color:#8a5a00; }
+  .audit .au-sev.low{ background:#eef0f4; color:#5b6472; }
   /* a carousel: one large screen at a time */
   .carousel .cr-stage{ position:relative; display:grid; background:#F5F7FD; padding:clamp(14px,2.5vw,28px); }
   .carousel .cr-slide{ grid-area:1/1; width:100%; max-height:78vh; object-fit:contain; opacity:0; transition:opacity .35s ease; pointer-events:none; }
@@ -1705,19 +1724,18 @@
         {title:'App audit', entries:[
           '<strong>Creating a skill starts from zero, every time.</strong> Every time someone creates a visual skill, Chance AI gives them the same blank interface, and the result screen looks the same too. Each skill is built from scratch, with no context carried over from past visits. So people rarely revisit the skills they\'ve made, creating new ones stops feeling exciting, and no habit forms.',
           '<strong>Create Visual Skill.</strong> I walked through the original flow screen by screen and marked six issues: what\'s wrong, how to fix it, and how much it matters.',
-          {carousel:[
-            {src:'images/chance/before-entry.jpg', alt:'Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom', cap:'1 · Create Visual Skill entry'},
-            {src:'images/chance/before-builder.jpg', alt:'Original Skill Builder chat, annotated: 5 a linear chat, 6 a developer-style task breakdown', cap:'2 · Skill Builder chat'},
-            {src:'images/chance/before-building.jpg', alt:'Original building screen, annotated: 5 publishing and edits stuck in the same linear chat', cap:'3 · Building the skill'}
-          ], caption:'The original flow, annotated'},
-          {table:{head:['Issue', 'Fix', 'Severity'], rows:[
-            ['1 · No onboarding or context', 'Ask about interests or intent before the prompt', 'High'],
-            ['2 · Example prompts are fixed', 'Refresh prompts each visit from history and interests', 'High'],
-            ['3 · The icon looks like other lenses', 'Use a distinct graphic, unlike user-made skills', 'Medium'],
-            ['4 · The prompt bar sits at the bottom', 'Center the prompt bar on the first screen', 'Low'],
-            ['5 · A linear chat, like any LLM', 'Split the chat into guided, interest-based steps', 'High'],
-            ['6 · The task breakdown is for developers', 'Swap the task list for a friendlier waiting state', 'Medium']
-          ]}, wide:true, caption:'Six issues, six fixes'},
+          {audit:[
+            {src:['images/chance/before-entry.jpg'], alt:['Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom'], label:'Entry screen', issues:[
+              [1, 'No onboarding or context', 'Ask about interests or intent before the prompt', 'High'],
+              [2, 'Example prompts are fixed', 'Refresh prompts each visit from history and interests', 'High'],
+              [3, 'The icon looks like other lenses', 'Use a distinct graphic, unlike user-made skills', 'Medium'],
+              [4, 'The prompt bar sits at the bottom', 'Center the prompt bar on the first screen', 'Low']
+            ]},
+            {src:['images/chance/before-builder.jpg', 'images/chance/before-building.jpg'], alt:['Original Skill Builder chat, annotated: 5 a linear chat, 6 a developer-style task breakdown', 'Original building screen, annotated: 5 publishing and edits stuck in the same linear chat'], label:'Skill Builder chat and building', issues:[
+              [5, 'A linear chat, like any LLM', 'Split the chat into guided, interest-based steps', 'High'],
+              [6, 'The task breakdown is for developers', 'Swap the task list for a friendlier waiting state', 'Medium']
+            ]}
+          ], caption:'The original flow, annotated: six issues, six fixes'},
           '<strong>Home screen.</strong> The home screen had the opposite problem: too much at once, and nothing pointing to the feature that makes Chance AI personal.',
           {table:{head:['Issue', 'Fix'], rows:[
             ['Too many choices at once, so people freeze (Hick\'s law)', 'Lead with one skill of the day, then the skills you use'],
@@ -2342,6 +2360,13 @@
       // label + text pairs, e.g. brand purpose, target and personality
       if(t.defs) return '<dl class="case-defs">' + t.defs.map(function(d){ return '<div>'+(d[2] ? '<div class="def-art" aria-hidden="true">'+d[2]+'</div>' : '')+'<dt>'+d[0]+'</dt><dd>'+d[1]+'</dd></div>'; }).join('') + '</dl>';
       // simple paths of square blue steps, e.g. how people use a feature
+      // audit: each annotated screen sits beside its own numbered issues, so the numbers line up without flipping back and forth
+      if(t.audit) return '<figure class="case-fig audit">' + t.audit.map(function(a){
+          return '<div class="au-row'+(a.src.length > 1 ? ' two' : '')+'"><div class="au-shots'+(a.src.length > 1 ? ' two' : '')+'">' + a.src.map(function(src, i){ return '<img src="'+src+'" alt="'+a.alt[i]+'" loading="lazy">'; }).join('') + '</div>' +
+            '<div class="au-list"><p class="au-label">'+a.label+'</p><ol>' + a.issues.map(function(x){
+              return '<li><span class="au-num" aria-hidden="true">'+x[0]+'</span><div><p class="au-issue">'+x[1]+'<span class="au-sev '+x[3].toLowerCase()+'">'+x[3]+'</span></p><p class="au-fix">'+x[2]+'</p></div></li>';
+            }).join('') + '</ol></div></div>';
+        }).join('') + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // one large image at a time, with arrows and dots to step through the rest
       if(t.carousel) return '<figure class="case-fig carousel" data-carousel><div class="cr-stage">' +
           t.carousel.map(function(m, i){ return '<img class="cr-slide'+(i ? '' : ' on')+'" src="'+m.src+'" alt="'+m.alt+'" loading="lazy"'+(i ? ' aria-hidden="true"' : '')+'>'; }).join('') +
