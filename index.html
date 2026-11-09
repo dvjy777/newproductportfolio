@@ -1055,6 +1055,10 @@
   .pc-col .path-step{ white-space:normal; text-align:center; }
   .pc-col .path-step.open{ font-size:22px; }
   .pc-arrow{ color:#7d9cf0; text-align:center; line-height:1; padding:6px 0; }
+  /* a decision, called out: accent rule, small label, large statement */
+  .case-decision{ margin:28px 0; padding:4px 0 4px 20px; border-left:3px solid var(--nav-accent, var(--accent)); }
+  .case-decision .cd-label{ margin:0 0 8px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--nav-accent, var(--accent)); font-weight:500; }
+  .case-decision .cd-text{ margin:0; font-size:clamp(20px,2.2vw,26px); line-height:1.3; font-weight:600; color:var(--text); letter-spacing:-.01em; }
   /* audit: annotated screens beside their numbered issues */
   .audit .au-row{ display:grid; gap:20px 48px; align-items:center; }
   .audit .au-row + .au-row{ margin-top:48px; }
@@ -1901,14 +1905,15 @@
           {sub:'The final card: glass or dark fade?', minor:true},
           'That left two versions of the same card, both with placement B: one on the v4 glass panel and one on the v5 dark fade. They share the same content; only the way the text sits on the photo changes.',
           {wide:true, center:true, media:[{src:'images/chance/card-b-glass.jpg', alt:'Skill card, B glass: a translucent white panel holds the topic chip, title, description and a small Try it button, with likes above it and the avatar alone at the top'}, {src:'images/chance/card-b-scrim.jpg', alt:'Skill card, B dark fade: the photo darkens toward the bottom, white text sits on it, the avatar and likes share one pill at the top, and Try it spans the card'}], cols:3, caption:'Skill card · Snap v6 · B glass (left) and B · dark fade (right)'},
-          'I chose the dark fade. Measured against five UX principles, it came out ahead on each:',
-          {table:{head:['Principle', 'B · glass', 'B · dark fade (chosen)'], rows:[
-            ['Aesthetic and minimalist design', 'A solid panel and a separate likes bubble cover about half of the snap.', 'Text sits straight on the photo, so more of the snap stays visible.'],
-            ['Contrast and accessibility', 'Light glass over light photos blends in, so the panel loses its edge.', 'White text on the fade stays readable over any photo.'],
-            ['Fitts\'s law', 'Try it is a small pill in the corner of the panel.', 'Try it spans the card at 36px tall, meeting the third goal: easier access.'],
-            ['Proximity', 'The avatar sits at the top while the likes sit at the bottom.', 'The avatar and likes share one pill: who made it and how popular it is, read together.'],
-            ['Visual hierarchy', 'Title and description share one panel and look alike.', 'A bold white title over a dimmer description, so the difference shows without an extra bubble.']
-          ]}, wide:true, caption:'Why the dark fade won'},
+          {decision:'The snap comes first. Nothing on the card gets to cover the image more than it has to.', label:'My call · the dark fade'},
+          'I chose the dark fade because every choice on it gives more of the photo back:',
+          {bullets:[
+            '<strong>Less on top of the photo.</strong> On glass, a solid panel and a separate likes bubble cover about half of the snap. On the fade, the text sits straight on the photo.',
+            '<strong>One pill instead of two.</strong> The avatar and likes share a single pill at the top, so who made it and how popular it is read together, with one less shape over the image.',
+            '<strong>Hierarchy without another bubble.</strong> A bold white title over a dimmer description, so the title stands out without its own panel.',
+            '<strong>Readable over any photo.</strong> Light glass blends into light photos and loses its edge. White text on the fade stays readable.',
+            '<strong>Easier to tap.</strong> Try it spans the card at 36px tall instead of a small pill in the corner, meeting the third goal: easier access.'
+          ]},
           'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.',
           {sub:'Final screen', minor:true},
           {wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a product-photo catalog with a back button'}, {src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}], cols:3, caption:'Visual skills · Nov 4 and the final version (Nov 8, v6)'}
@@ -2351,6 +2356,8 @@
       // sub-headings, lists, pull quotes and placeholders inside a chapter
       if(t.sub) return '<h5 class="case-sub'+(t.minor ? ' minor' : '')+'">'+t.sub+'</h5>';
       if(t.bullets) return (t.ordered ? '<ol' : '<ul')+' class="case-bullets">' + t.bullets.map(function(b){ return '<li>'+cites(b)+'</li>'; }).join('') + (t.ordered ? '</ol>' : '</ul>');
+      // a design decision David made, called out on its own
+      if(t.decision) return '<div class="case-decision"><p class="cd-label">'+(t.label || 'My call')+'</p><p class="cd-text">'+t.decision+'</p></div>';
       if(t.pull) return '<blockquote class="case-pull">“'+t.pull+'”</blockquote>';
       if(t.soon) return '<p class="body-text case-soon">'+t.soon+'</p>';
       // a large How might we statement, the same as the ones under the overview
@@ -2548,7 +2555,7 @@
       // images and videos stack in the right column; embedded YouTube players keep the full width
       return !!t.media && !t.media.some(function(m){ return m.youtube; });
     }
-    function textLike(t){ return typeof t === 'string' || !!(t && (t.feature || t.sub || t.bullets || t.pull || t.soon || t.defs || t.endings || t.fixes)); }
+    function textLike(t){ return typeof t === 'string' || !!(t && (t.feature || t.sub || t.bullets || t.pull || t.decision || t.soon || t.defs || t.endings || t.fixes)); }
     function entriesHtml(list){
       var html = '';
       for(var i = 0; i < list.length; i++){
