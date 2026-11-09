@@ -74,33 +74,33 @@
     padding:22px 0;
   }
 
-  /* ---------- layout: a centred content column with a side nav in the left margin ---------- */
-  :root{ --col:920px; }
-  #home-view, #case-view{ max-width:var(--col); margin-inline:auto; }
-  .side-nav{ display:flex; gap:22px; max-width:var(--col); margin:4px auto 0; }
+  /* ---------- layout ----------
+     Small screens: one centred column (max 920px) with the nav as a row under the header.
+     Wide screens: a 12-column grid with 24px outer margins and 16px gutters. The nav sits in
+     columns 1-2, the content spans columns 3-10, and 11-12 mirror the left margin. */
+  #home-view, #case-view{ max-width:920px; margin-inline:auto; }
+  .side-nav{ display:flex; gap:22px; max-width:920px; margin:4px auto 0; }
   .side-nav a{
-    position:relative; font-size:14px; line-height:1.2; text-decoration:none; color:var(--text-muted);
-    transition:color .2s ease;
+    position:relative; font-size:15px; line-height:1; text-decoration:none;
+    color:color-mix(in srgb, var(--text) 40%, transparent); transition:color .2s ease;
   }
   .side-nav a:hover{ color:var(--text); }
   .side-nav a.on{ color:var(--accent); }
   /* phones: the mascot's hint bubble hangs below the header, so the nav row starts under it */
   @media (max-width:640px){ .side-nav{ margin-top:52px; } }
-  /* wide screens have room in the margin: the nav stands in a column at the left edge,
-     level with the headline, and stays put while the page scrolls */
-  @media (min-width:1180px){
-    .side-nav{ position:fixed; z-index:30; left:28px; top:150px; margin:0; flex-direction:column; gap:12px; }
-    .side-nav a{ padding-left:14px; }
+  @media (min-width:1024px){
+    body{ padding-inline:24px; }
+    /* one grid column = (page width - 11 gutters) / 12; percentages here are of the page width */
+    #home-view, #case-view{ max-width:none; margin-left:calc((100% - 176px) / 12 * 2 + 32px); width:calc((100% - 176px) / 12 * 8 + 112px); }
+    .side-nav{ position:fixed; z-index:30; left:24px; top:150px; margin:0; flex-direction:column; gap:12px; }
+    .side-nav a{ padding-left:13px; }
     .side-nav a::before{
       content:''; position:absolute; left:0; top:50%; width:5px; height:5px; margin-top:-2.5px; border-radius:50%;
       background:var(--accent); opacity:0; transform:scale(.4); transition:opacity .2s ease, transform .2s ease;
     }
     .side-nav a.on::before{ opacity:1; transform:none; }
-  }
-  /* the interactive hero at the top of a case study needs more room than the reading column,
-     so on wide screens it breaks out to 1180px (still clear of the side nav) */
-  @media (min-width:1180px){
-    #case-view .case-hero{ margin-inline:calc(50% - min(590px, 50vw - 130px)); }
+    /* the interactive hero at the top of a case study also takes columns 11-12 */
+    #case-view .case-hero{ margin-right:calc((100vw - 224px) / -6 - 32px); }
   }
   .brand{ line-height:1.4; display:block; text-decoration:none; color:inherit; }
   .brand .name{
@@ -444,7 +444,18 @@
   }
 
   /* ---------- project cards ---------- */
-  .work-grid{ display:flex; flex-direction:column; gap:44px; }
+  .work-grid{ display:flex; flex-direction:column; gap:32px; }
+  /* two columns that stack on their own, so cards of different heights interlock (masonry) */
+  .work-grid.two{ flex-direction:row; align-items:flex-start; gap:16px; }
+  .work-col{ flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:32px; }
+  .work-grid .thumb{ aspect-ratio:var(--ar, 16/10); padding:16px; }
+  .work-grid .thumb .tag{ display:none; }
+  .card-cap{ margin-top:12px; font-size:15px; line-height:1.5; }
+  .card-cap .sl{ margin:0 6px; }
+  .card-cap .nm{ color:var(--text); }
+  .card-cap .sl{ color:color-mix(in srgb, var(--text) 25%, transparent); }
+  .card-cap .mt{ color:color-mix(in srgb, var(--text) 55%, transparent); }
+  .card:hover .card-cap .nm{ color:var(--card-accent, var(--accent)); }
   .card{ cursor:pointer; display:block; text-decoration:none; color:inherit; }
   .thumb{
     position:relative; border-radius:0; overflow:hidden;
@@ -2212,8 +2223,7 @@
           '<span class="tag">'+p.company+'</span>'+
           '<span class="soon-badge">Coming soon</span>'+
         '</div>'+
-        '<h3>'+p.title+'</h3>'+
-        '<div class="meta label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>';
+        cardCaption(p);
       grid.appendChild(d);
       return;
     }
@@ -2230,10 +2240,41 @@
         (p.inProgress ? '<span class="progress-pill">In progress</span>' : '')+
         (p.blurb ? '<div class="thumb-hover"><p>'+p.blurb+'</p><span>View case study →</span></div>' : '')+
         '<span class="tag">'+p.company+'</span></div>'+
-      '<h3>'+p.title+'</h3>'+
-      '<div class="meta label">'+p.company.toUpperCase()+' · '+(p.inProgress ? p.tagline.replace(/\s*·\s*IN PROGRESS$/i, '') : p.tagline)+'</div>';
+      cardCaption(p);
+    a.setAttribute('aria-label', p.company + ': ' + p.title);
     grid.appendChild(a);
   });
+
+  // caption under each card: "Name / Kind Year", e.g. "INYUN / Product design 2026"
+  function cardCaption(p){
+    var kind = p.tagline.split('·')[0].trim().toLowerCase();
+    kind = kind.replace(/\b(ai|ar|vr|ux|ui)\b/g, function(w){ return w.toUpperCase(); });
+    kind = kind.charAt(0).toUpperCase() + kind.slice(1);
+    var yr = (p.tagline.match(/\b(19|20)\d{2}\b/) || [])[0];
+    var when = yr ? ' '+yr : (p.inProgress ? ', in progress' : '');
+    return '<div class="card-cap"><span class="nm">'+p.company+'</span><span class="sl">/</span><span class="mt">'+kind+when+'</span></div>';
+  }
+
+  // wide screens: deal the cards into two columns (1st left, 2nd right, ...) and vary the
+  // image heights so the columns interlock; phones get one column in the original order
+  (function(){
+    var cards = [].slice.call(grid.children);
+    var ratios = ['16/10', '4/3', '4/3', '16/10', '16/10', '4/3'];
+    var mq = window.matchMedia('(min-width:700px)');
+    function arrange(){
+      grid.innerHTML = '';
+      grid.classList.toggle('two', mq.matches);
+      if(mq.matches){
+        var cols = [document.createElement('div'), document.createElement('div')];
+        cols.forEach(function(c){ c.className = 'work-col'; grid.appendChild(c); });
+        cards.forEach(function(c, i){ c.firstElementChild.style.setProperty('--ar', ratios[i % ratios.length]); cols[i % 2].appendChild(c); });
+      } else {
+        cards.forEach(function(c){ c.firstElementChild.style.removeProperty('--ar'); grid.appendChild(c); });
+      }
+    }
+    arrange();
+    if(mq.addEventListener) mq.addEventListener('change', arrange); else mq.addListener(arrange);
+  })();
 
   // homepage recordings: play while visible, and let the Ekpyrosis light follow its video
   (function(){
