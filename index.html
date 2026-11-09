@@ -980,7 +980,7 @@
   .flowmap.plain .flow-row{ justify-content:safe center; gap:18px; }
   /* centred screen pairs, spaced like the flows */
   .case-fig.centered{ max-width:none; }
-  .case-fig.centered .fig-grid{ display:flex; justify-content:center; flex-wrap:wrap; gap:40px; }
+  .case-fig.centered .fig-grid{ display:flex; justify-content:center; align-items:flex-start; flex-wrap:wrap; gap:40px; }
   .case-fig.centered .fig-grid img{ width:min(280px, 42vw); height:auto; }
   .case-fig.centered figcaption{ text-align:center; }
   .flowmap.plain .flow-stage-label{ text-align:center; }
@@ -1245,6 +1245,14 @@
   .case-list .cl-label{ display:block; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
   .case-list .cl-row + .cl-row .cl-label{ display:none; }
   @media(max-width:699px){ .case-list .cl-row + .cl-row .cl-label{ display:block; } .case-list .cl-head .cl-label{ display:none; } }
+  /* a row of single cards, one column each, with the note under its own card */
+  .screens4.cards .s4-grid{ gap:24px 16px; }
+  @media(min-width:860px){ .screens4.cards .s4-grid{ grid-template-columns:repeat(var(--s4-cols, 4), minmax(0,1fr)); } }
+  .screens4.cards img{ aspect-ratio:auto; object-fit:contain; border-radius:0; box-shadow:none; }
+  .screens4.cards i{ display:block; margin-top:10px; font-style:normal; font-size:11.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--nav-accent, var(--accent)); }
+  .screens4.cards b{ margin-top:2px; font-size:14px; line-height:1.3; }
+  .screens4.cards span{ font-size:13px; }
+  .screens4.cards .pick-on b::after{ content:' ✓'; color:var(--nav-accent, var(--accent)); }
   .case-list p{ margin:0; font-size:15px; line-height:1.55; color:var(--text-muted); }
   .case-list .cl-head p{ color:var(--text); font-weight:600; }
   /* a light flow without boxes: screens, plain labels and arrows on the page itself */
@@ -1273,8 +1281,6 @@
   .pm-options{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:18px; }
   .pm-opt{
     font:inherit; font-size:14px; font-weight:500; padding:9px 16px; border-radius:999px; border:0; cursor:pointer;
-  /* single cards instead of phone screens: show the whole card, no frame */
-  .flowmap.cards .flow-node img{ aspect-ratio:auto; object-fit:contain; box-shadow:none; border-radius:0; background:none; }
     color:var(--text); background:color-mix(in srgb, var(--nav-accent, var(--accent)) 10%, #ffffff);
     transition:background .2s ease, color .2s ease;
   }
@@ -1792,7 +1798,7 @@
           ]},
           {wide:true, center:true, media:[{src:'images/chance/skills-hifi-v2.jpg', alt:'Visual skills hi-fi v2: the community board renamed Visual skills'}], cols:3, caption:'Visual skills · Hi-fi (Branched) v2'},
           {sub:'Third iteration: the skill card', minor:true},
-          'Meanwhile, the client\'s in-house team shared a Visual skills screen of their own (Nov 4): a clean two-column grid of skill cards, each with a stock-style product photo, a title, a one-line description and a Try it button. The grid was easy to scan, but nothing on it said who made a skill or whether anyone used it. It read like a catalog of tools, not a community.',
+          'The Nov 4 version of the screen switched to a clean two-column grid of skill cards, each with a stock-style product photo, a title, a one-line description and a Try it button. The grid was easy to scan, but nothing on it said who made a skill or whether anyone used it. It read like a catalog of tools, not a community.',
           {wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a back button and title, topic chips, and a two-column grid of skill cards with product photos, titles, descriptions and Try it buttons'}], cols:3, caption:'Visual skills · Nov 4, the starting point for the card'},
           'So I kept the top of our Branched v2 screen (the Chance logo, search bar and topic chips), took the grid from the Nov 4 screen, and focused the next round on one thing: the skill card. I had three goals for it:',
           {bullets:[
@@ -1803,47 +1809,44 @@
           {hmw:'How might we make the Visual skills page feel like a living community gallery rather than a catalog of tools?', label:'How might we · Visual skills'},
           {hmw:'How might we help users quickly decide which visual skill to try by showing what real people have made with it?', label:'How might we · The skill card'},
           {sub:'Skill card iterations', minor:true},
-          {flow:{plain:true, cards:true, stages:[
-            {label:'Skill card · five rounds', nodes:[
-              {img:'images/chance/card-it1.jpg', title:'Real snap, creator chip', tag:'v1'},
-              {img:'images/chance/card-it2.jpg', title:'Title bubble, topic icon', tag:'v2'},
-              {img:'images/chance/card-it3.jpg', title:'Full bleed, illustrations', tag:'v3'},
-              {img:'images/chance/card-it4.jpg', title:'Snaps back, avatar only', tag:'v4'},
-              {img:'images/chance/card-it5.jpg', title:'Dark fade, wide Try it', tag:'v5', hub:true}
-            ]}
-          ]}, caption:'From catalog card to community card · tap any card to enlarge'},
-          {bullets:[
-            '<strong>v1.</strong> Replaced the stock photo with the snap a real user took, and put the creator\'s handle on the card. The title and description sat on a translucent layer over the image.',
-            '<strong>v2.</strong> The title and description blurred together, so the title got its own glass bubble. I also added a likes count and a topic icon in the top right.',
-            '<strong>v3.</strong> Removed the border and margin so the image fills the card, merged the title and description panels, and kept only the creator\'s photo. I also tried flat illustrations instead of snaps.',
-            '<strong>v4.</strong> The illustrations lost what made the card social, a real person\'s photo, so the snaps came back. The avatar lost its glass, and the likes moved to the left.',
-            '<strong>v5.</strong> Swapped the white glass for a dark fade at the bottom with white text, and stretched Try it across the card.'
-          ]},
+          {screens:[
+            {src:'images/chance/card-it1.jpg', tag:'v1', title:'Real snap, creator chip', d:'Swapped the stock photo for a real user\'s snap and put the creator\'s handle on the card. Title and description sit on a translucent layer.', alt:'Skill card v1: a coat photo with a creator handle chip and a translucent text layer'},
+            {src:'images/chance/card-it2.jpg', tag:'v2', title:'Title bubble, topic icon', d:'Title and description blurred together, so the title got its own glass bubble. Added likes and a topic icon.', alt:'Skill card v2: the title in its own glass bubble, likes count and a topic icon top right'},
+            {src:'images/chance/card-it3.jpg', tag:'v3', title:'Full bleed, illustrations', d:'Removed the border and margin, merged the panels and kept only the creator\'s photo. Tried flat illustrations.', alt:'Skill card v3: a flat illustration of a coat filling the card, with one glass panel'},
+            {src:'images/chance/card-it4.jpg', tag:'v4', title:'Snaps back, avatar only', d:'Illustrations lost the real person behind the card, so the snaps came back. Avatar without glass, likes on the left.', alt:'Skill card v4: the coat photo again, a bare avatar and likes above the glass panel'},
+            {src:'images/chance/card-it5.jpg', tag:'v5', title:'Dark fade, wide Try it', d:'Swapped the white glass for a dark fade with white text, and stretched Try it across the card.', alt:'Skill card v5: white text on a dark fade and a full-width Try it button'},
+            {src:'images/chance/card-b-scrim.jpg', tag:'Final', title:'Labeled topic chip', d:'v5 with the topic as a labeled chip above the title (placement B below).', alt:'Final skill card: avatar and likes pill on top, a labeled Style chip, white title and full-width Try it on a dark fade', pick:true}
+          ], cards:true, caption:'From catalog card to community card, five rounds and the final card · tap any card to enlarge'},
           {sub:'Where should the topic icon go?', minor:true},
           'The topic icon helps people recognize what kind of skill they\'re looking at, but every spot I tried competed with something else on the card. I laid out five placements side by side:',
-          {wide:true, media:[{src:'images/chance/card-topic-placement.jpg', alt:'Five versions of the same skill card: A, topic icon top right; B, a labeled chip above the title; C, the icon inline before the title; D, the icon next to the likes count; E, a small badge on the creator\'s avatar'}], caption:'Five places for the topic icon'},
-          {table:{head:['Placement', 'Evaluation'], rows:[
-            ['A · Top right (current)', 'The icon alone feels alienating; it doesn\'t say what it means.'],
-            ['B · Labeled chip in the panel', '<strong>Best option.</strong> The label next to the icon makes it easy to identify.'],
-            ['C · Inline with the title', 'Another good option, but the icon doesn\'t blend in with the title text.'],
-            ['D · Next to likes', 'The icon stands awkwardly in the middle of the card and covers the image.'],
-            ['E · Badge on the avatar', 'There\'s no real link between the creator\'s profile and the topic.']
-          ]}, wide:true, caption:'B won: a label turns an unfamiliar icon into something people recognize'},
+          {screens:[
+            {src:'images/chance/card-topic-a.jpg', tag:'A', title:'Top right (current)', d:'The icon alone feels alienating; it doesn\'t say what it means.', alt:'Placement A: topic icon alone in the top right corner'},
+            {src:'images/chance/card-topic-b.jpg', tag:'B', title:'Labeled chip in the panel', d:'Best option. The label next to the icon makes it easy to identify.', alt:'Placement B: a Style chip with icon and label above the title', pick:true},
+            {src:'images/chance/card-topic-c.jpg', tag:'C', title:'Inline with the title', d:'Another good option, but the icon doesn\'t blend in with the title text.', alt:'Placement C: the icon placed before the title text'},
+            {src:'images/chance/card-topic-d.jpg', tag:'D', title:'Next to likes', d:'The icon stands awkwardly in the middle of the card and covers the image.', alt:'Placement D: the icon beside the likes count above the panel'},
+            {src:'images/chance/card-topic-e.jpg', tag:'E', title:'Badge on the avatar', d:'There\'s no real link between the creator\'s profile and the topic.', alt:'Placement E: a small topic badge on the creator\'s avatar'}
+          ], cards:true, caption:'Five places for the topic icon · B won: a label turns an unfamiliar icon into something people recognize'},
           {sub:'Ideas I tried and dropped', minor:true},
-          'Before settling on the card, I tested three more ideas: a preview of the skill\'s result (a one-line answer for skills that analyze a photo, a thumbnail for skills that make a new image), a small camera button instead of Try it, and limiting the title and description to one line each.',
-          {wide:true, media:[{src:'images/chance/card-explorations.jpg', alt:'Six skill card variants: a text result bubble, an image result thumbnail, a small camera button instead of Try it, one-line text, and two versions combining all three'}], caption:'Result preview, quieter action and one-line text, tried and dropped'},
+          'Before settling on the card, I tested three more ideas, alone and combined:',
+          {screens:[
+            {src:'images/chance/card-idea-1a.jpg', tag:'1a', title:'Result: analysis', d:'For skills that only read the photo, a one-line answer from the skill.', alt:'A result bubble reading Fit 8/10, swap in white loafers, over the coat photo'},
+            {src:'images/chance/card-idea-1b.jpg', tag:'1b', title:'Result: image', d:'For skills that make a new image, a thumbnail of the output.', alt:'A small output thumbnail in the top right of the Dot Your Photo card'},
+            {src:'images/chance/card-idea-2.jpg', tag:'2', title:'Quieter action', d:'The whole card is tappable; a camera button replaces Try it.', alt:'A round camera button in place of the Try it button'},
+            {src:'images/chance/card-idea-3.jpg', tag:'3', title:'One-line text', d:'Title and description cut to one line each, so rows line up.', alt:'Design Has Reasons with its title and description cut to one line'},
+            {src:'images/chance/card-idea-all-a.jpg', tag:'1a + 2 + 3', title:'All, analysis skill', d:'Result bubble, camera button and one-line text together.', alt:'Design Has Reasons with a result bubble, camera button and one-line text'},
+            {src:'images/chance/card-idea-all-i.jpg', tag:'1b + 2 + 3', title:'All, image skill', d:'Output thumbnail, camera button and one-line text together.', alt:'Minion Buddy with an output thumbnail, camera button and one-line text'}
+          ], cards:true, caption:'Result preview, quieter action and one-line text, tried and dropped'},
           'I dropped them for the same two reasons. Each one added more than people could read at a glance. And the extra text and images covered the snapshot, which is the main way people understand what a skill was used for.',
           {sub:'The final card: glass or dark fade?', minor:true},
           'That left two versions of the same card, both with placement B: one on the v4 glass panel and one on the v5 dark fade. They share the same content; only the way the text sits on the photo changes.',
           {wide:true, center:true, media:[{src:'images/chance/card-b-glass.jpg', alt:'Skill card, B glass: a translucent white panel holds the topic chip, title, description and a small Try it button, with likes above it and the avatar alone at the top'}, {src:'images/chance/card-b-scrim.jpg', alt:'Skill card, B dark fade: the photo darkens toward the bottom, white text sits on it, the avatar and likes share one pill at the top, and Try it spans the card'}], cols:3, caption:'Skill card · Snap v6 · B glass (left) and B · dark fade (right)'},
-          'I chose the dark fade. Measured against common UX principles, it did better in almost every case:',
+          'I chose the dark fade. Measured against five UX principles, it came out ahead on each:',
           {table:{head:['Principle', 'B · glass', 'B · dark fade (chosen)'], rows:[
             ['Aesthetic and minimalist design', 'A solid panel and a separate likes bubble cover about half of the snap.', 'Text sits straight on the photo, so more of the snap stays visible.'],
             ['Contrast and accessibility', 'Light glass over light photos blends in, so the panel loses its edge.', 'White text on the fade stays readable over any photo.'],
-            ['Fitts\'s law', 'Try it is a small pill in the corner of the panel.', 'Try it spans the card at 36px tall, matching the goal of easier access.'],
+            ['Fitts\'s law', 'Try it is a small pill in the corner of the panel.', 'Try it spans the card at 36px tall, meeting the third goal: easier access.'],
             ['Proximity', 'The avatar sits at the top while the likes sit at the bottom.', 'The avatar and likes share one pill: who made it and how popular it is, read together.'],
-            ['Visual hierarchy', 'Title and description share one panel and look alike.', 'A bold white title over a dimmer description, so the difference shows without an extra bubble.'],
-            ['Jakob\'s law', 'A glass panel on a photo is less familiar on mobile.', 'Text on a dark fade is a pattern people already know from Pinterest and the App Store.']
+            ['Visual hierarchy', 'Title and description share one panel and look alike.', 'A bold white title over a dimmer description, so the difference shows without an extra bubble.']
           ]}, wide:true, caption:'Why the dark fade won'},
           'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.',
           {sub:'Final screen', minor:true},
@@ -2274,8 +2277,9 @@
           t.carousel.map(function(m, i){ return '<button type="button" class="cr-dot'+(i ? '' : ' on')+'" data-i="'+i+'" data-cap="'+(m.cap || '')+'" aria-label="Show '+(m.cap || 'screen '+(i+1))+'"></button>'; }).join('') +
           '</span></div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // product screens in a row of four columns
-      if(t.screens) return '<figure class="case-fig screens4"><div class="s4-grid">' + t.screens.map(function(m){
-          return '<div class="s4-item"><img src="'+m.src+'" alt="'+m.alt+'" loading="lazy"><b>'+m.title+'</b>'+(m.d ? '<span>'+m.d+'</span>' : '')+'</div>';
+      // with cards:true, single cards in one row, each with its own note underneath
+      if(t.screens) return '<figure class="case-fig screens4'+(t.cards ? ' cards' : '')+'"><div class="s4-grid"'+(t.cards ? ' style="--s4-cols:'+t.screens.length+'"' : '')+'>' + t.screens.map(function(m){
+          return '<div class="s4-item'+(m.pick ? ' pick-on' : '')+'"><img src="'+m.src+'" alt="'+m.alt+'" loading="lazy">'+(m.tag ? '<i>'+m.tag+'</i>' : '')+'<b>'+m.title+'</b>'+(m.d ? '<span>'+m.d+'</span>' : '')+'</div>';
         }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // before / after: drag the handle to wipe between two screens
       if(t.compare) return '<figure class="case-fig compare-fig"><div class="cmp" data-compare style="--pos:50%"><img src="'+t.compare.before+'" alt="'+t.compare.alt+'" loading="lazy"><div class="cmp-after"><img src="'+t.compare.after+'" alt="" loading="lazy"></div>' +
@@ -2391,7 +2395,7 @@
         if(f.stages[i + 1] && f.stages[i + 1].beside){ html += '<div class="flow-pair">' + stageHtml(f.stages[i]) + stageHtml(f.stages[i + 1]) + '</div>'; i++; }
         else html += stageHtml(f.stages[i]);
       }
-      return '<figure class="case-fig flowmap'+(f.plain ? ' plain' : '')+(f.cards ? ' cards' : '')+'"><div class="flow-panel">' + html +
+      return '<figure class="case-fig flowmap'+(f.plain ? ' plain' : '')+'"><div class="flow-panel">' + html +
         (f.full ? '<button type="button" class="flow-full" data-lightbox="'+f.full+'">See my detailed flow diagram ↗</button>' : '') +
         '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
     }
