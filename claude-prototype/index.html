@@ -1198,7 +1198,7 @@ function renderRail() {
     <div class="row"><button class="btn" id="slowBtn" aria-pressed="${SLOW > 1}">Slow motion</button><button class="btn" id="loopBtn" aria-pressed="${loop}">Loop this action</button><button class="btn" id="tryBtn">${playing ? 'Try it yourself' : 'Resume playback'}</button></div>`;
   } else {
     const n = Object.keys(done).length;
-    rail.innerHTML = `<div><div class="eyebrow">Usability test</div><h1>Side Quests</h1><p class="lead">Hand the phone to the participant and read each task aloud. Tasks tick themselves off when completed.</p></div>
+    rail.innerHTML = `<div><div class="eyebrow">Usability test</div><h1>Side Quests</h1></div>
     <div class="card"><h2>Tasks · ${n} of ${TASKS.length}</h2>${TASKS.map((k, i) => `<div class="task ${done[i] ? 'done' : ''}"><span class="box">${done[i] ? ic('check', 14) : ''}</span><span class="t">${esc(k.text)}</span><span class="time">${done[i] ? done[i] + 's' : ''}</span></div>`).join('')}</div>
     <div class="card"><h2>Event log</h2><div class="log" id="logBox">${LOG.length ? LOG.map((l) => `<div><span>${l.t}s</span><span>${esc(l.evt)}${l.detail ? ' · ' + esc(short(l.detail, 48)) : ''}</span></div>`).join('') : '<div><span>–</span><span>Waiting for the first interaction</span></div>'}</div></div>
     <div class="row"><button class="btn" id="copyBtn">Copy log</button><button class="btn" id="resetBtn">Reset session</button></div>
