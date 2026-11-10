@@ -1770,9 +1770,9 @@
         ]},
         {kicker:'Ch.1', title:'Redefining the Chat Interface & Home Screen Renewal', summary:'Turning the open chat for creating skills into a guided flow, then reworking it after mentor and client feedback.', entries:[
           {lv:2, p:'The client\'s first request was to redesign the Create Visual Skill page, which was a simple chat interface. My question was not why we must abandon the chat interface, but why we needed a new one and what it could do to boost user creativity.'},
-          '<strong>When it comes to deep research, a chat interface is helpful.</strong> But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up [[1]].',
-          '<strong>Fewer choices, clearer decisions.</strong> According to Hick\'s law, users find it more difficult to make a decision when they are given more choices [[2]] [[3]] [[4]]. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity [[5]]. Hence:',
-          {lv:2, hmw:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?', label:'How might we · Create Visual Skill'},
+          {lv:1, p:'<strong>When it comes to deep research, a chat interface is helpful.</strong> But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up [[1]].'},
+          {lv:1, p:'<strong>Fewer choices, clearer decisions.</strong> According to Hick\'s law, users find it more difficult to make a decision when they are given more choices [[2]] [[3]] [[4]]. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity [[5]]. Hence:'},
+          {lv:1, hmw:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?', label:'How might we · Create Visual Skill'},
           {sub:'Step 1. Create Visual Skill'},
           {sub:'First iteration', minor:true},
           '<strong>Key decisions made:</strong> topic suggestion, skill suggestion, build summary, user-friendly loading copy.',
@@ -1856,13 +1856,13 @@
             'The top banner showed a carousel of images that included skills such as Snap to Know, which was a default image analyzer that was also easily accessible through the main tab (a one-tap action from the camera icon).',
             'Accessing various visual skills came in inconsistent forms and card designs, including the banner action, circle icons in the My visual skills carousel, and rectangle cards that were inconsistent in their forms and designs.'
           ], ordered:true},
-          {lv:2, hmw:'How might we position Snap to Know as the default visual skill, so users discover specialized skills as natural extensions of what they already use?', label:'How might we'},
-          {lv:2, p:'To tackle this major issue, I reimagined what a simpler home screen would look like:'},
-          {lv:2, bullets:[
+          {lv:1, hmw:'How might we position Snap to Know as the default visual skill, so users discover specialized skills as natural extensions of what they already use?', label:'How might we'},
+          {lv:1, p:'To tackle this major issue, I reimagined what a simpler home screen would look like:'},
+          {lv:1, bullets:[
             'Unifying all skills into an identical or similar card format that applies equally throughout the app.',
             'Removing the banner and bringing Snap to Know and Create Visual Skill in as the two key tap-to-action buttons, accessible directly from the home screen.'
           ], ordered:true},
-          'This way, users can identify two diverging flows as soon as they open the home screen: either to take a picture and go into the default analysis, or to create a visual skill they would like to use for specialized cases that are a natural extension of the default mode.',
+          {lv:1, p:'This way, users can identify two diverging flows as soon as they open the home screen: either to take a picture and go into the default analysis, or to create a visual skill they would like to use for specialized cases that are a natural extension of the default mode.'},
           {sub:'First iteration', minor:true},
           {wide:true, center:true, media:[{src:'images/chance/home-lofi.jpg', alt:'Home lo-fi wireframe: recent shot, recent skills, Snap to Know and Create visual skill buttons, and the top 4 skills used by college students'}, {src:'images/chance/home-hifi-v1.jpg', alt:'Home hi-fi: recent shot and recent skills, Snap to Know and Create visual skill, and the top 4 skills for college students'}], cols:3, caption:'Home · Lo-fi and Home · Hi-fi (Branched)'},
           {sub:'Second iteration', minor:true},
@@ -1886,8 +1886,8 @@
           {sub:'Third iteration: the skill card', minor:true},
           'The Nov 4 version of the screen switched to a clean two-column grid of skill cards, each with a stock-style product photo, a title, a one-line description and a Try it button. The grid was easy to scan, but nothing on it said who made a skill or whether anyone used it. It read like a catalog of tools, not a community.',
           {wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a back button and title, topic chips, and a two-column grid of skill cards with product photos, titles, descriptions and Try it buttons'}], cols:3, caption:'Visual skills · Nov 4, the starting point for the card'},
-          {lv:2, p:'So I kept the top of our Branched v2 screen (the Chance logo, search bar and topic chips), took the grid from the Nov 4 screen, and focused the next round on one thing: the skill card. I had three goals for it:'},
-          {lv:2, bullets:[
+          {lv:1, p:'So I kept the top of our Branched v2 screen (the Chance logo, search bar and topic chips), took the grid from the Nov 4 screen, and focused the next round on one thing: the skill card. I had three goals for it:'},
+          {lv:1, bullets:[
             '<strong>Understand the skill at a glance.</strong> The image comes first.',
             '<strong>Show the community.</strong> People should see who created a skill and how popular it is, through the creator\'s profile and a likes count.',
             '<strong>Keep Try it within reach.</strong> A larger button gives faster access to the skill.'
@@ -1935,7 +1935,7 @@
             '<strong>Readable over any photo.</strong> Light glass blends into light photos and loses its edge. White text on the fade stays readable.',
             '<strong>Easier to tap.</strong> Try it spans the card at 36px tall instead of a small pill in the corner, meeting the third goal: easier access.'
           ]},
-          'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.',
+          {lv:1, p:'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.'},
           {lv:2, sub:'Final screen', minor:true},
           {lv:1, wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a product-photo catalog with a back button'}, {src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}], cols:3, caption:'Visual skills · Nov 4 and the final version (Nov 8, v6)'}
         ]},
@@ -2670,12 +2670,12 @@
         // numbered chapters open with a full-width divider: a big number, the title and one line on what changes
         if(c.kicker) return '<div class="case-block chapter"><div class="chapter-open"><div class="co-num" aria-hidden="true">'+c.kicker.replace(/[^0-9]/g, '').padStart(2, '0')+'</div><div class="co-text"><div class="chapter-kicker">'+c.kicker.replace('Ch.', 'Chapter ')+'</div><h4 class="label">'+c.title+'</h4>'+(c.summary ? '<p class="co-sum">'+c.summary+'</p>' : '')+'</div></div>' + entriesHtml(c.entries) + '</div>';
         return '<div class="case-block chapter"><h4 class="label">'+c.title+'</h4>' + entriesHtml(c.entries) + '</div>';
-      }).join('') + (D >= 3 ? refsHtml : '') +
+      }).join('') + refsHtml +
       (p.planned || []).map(function(t){ return '<div class="case-block planned"><h4 class="label">'+t+'</h4><p class="body-text">Coming soon.</p></div>'; }).join('');
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
     caseView.querySelectorAll('.dp-opt').forEach(function(b){
-      b.addEventListener('click', function(){
+      b.addEventListener('click', function(ev){
         var d = +b.dataset.d; if(d === caseDepth) return;
         // keep the reader in the same section: remember the first one still on screen, then line it back up
         var anchor = null, top = 0;
@@ -2692,7 +2692,7 @@
         });
         if(match) window.scrollTo(0, window.scrollY + match.getBoundingClientRect().top - top);
         else if(y > 200) window.scrollTo(0, Math.min(y, document.body.scrollHeight - innerHeight));
-        var nb = caseView.querySelector('.dp-opt[data-d="'+d+'"]'); if(nb) nb.focus({preventScroll:true});
+        var nb = caseView.querySelector('.dp-opt[data-d="'+d+'"]'); if(nb && ev.detail === 0) nb.focus({preventScroll:true}); // keyboard users keep their place in the panel
       });
     });
     rotateQuotes(caseView);
