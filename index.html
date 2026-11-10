@@ -1055,6 +1055,27 @@
   .pc-col .path-step{ white-space:normal; text-align:center; }
   .pc-col .path-step.open{ font-size:22px; }
   .pc-arrow{ color:#7d9cf0; text-align:center; line-height:1; padding:6px 0; }
+  /* reading time: pick 1, 5 or 10 minutes and the case study folds to fit */
+  .depth-panel{ margin:18px 0 26px; }
+  .depth-panel .dp-label{ margin:0 0 10px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+  .depth-panel .dp-opts{ display:inline-flex; gap:4px; padding:4px; border-radius:999px; background:color-mix(in srgb, var(--text) 5%, transparent); }
+  .depth-panel .dp-opt{ border:0; background:none; cursor:pointer; padding:8px 16px; border-radius:999px; font:inherit; color:color-mix(in srgb, var(--text) 55%, transparent); display:flex; flex-direction:column; align-items:center; transition:background .2s ease, color .2s ease; }
+  .depth-panel .dp-opt b{ font-size:15px; font-weight:600; line-height:1.2; }
+  .depth-panel .dp-opt span{ font-size:11.5px; line-height:1.3; }
+  .depth-panel .dp-opt:hover{ color:var(--text); }
+  .depth-panel .dp-opt.on{ background:var(--bg); color:var(--nav-accent, var(--accent)); box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .depth-panel .dp-opt:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:2px; }
+  /* on wide screens it sits in the left column, under the site nav */
+  @media (min-width:1024px){
+    .depth-panel{ position:fixed; z-index:30; left:24px; top:300px; margin:0; width:calc((100vw - 224px) / 12 * 2 + 16px); }
+    .depth-panel .dp-opts{ display:flex; flex-direction:column; gap:12px; padding:0; background:none; border-radius:0; }
+    .depth-panel .dp-opt{ align-items:flex-start; padding:0 0 0 13px; border-radius:0; position:relative; text-align:left; }
+    .depth-panel .dp-opt::before{ content:''; position:absolute; left:0; top:6px; width:5px; height:5px; border-radius:50%; background:var(--nav-accent, var(--accent)); opacity:0; transition:opacity .2s ease; }
+    .depth-panel .dp-opt.on{ background:none; box-shadow:none; }
+    .depth-panel .dp-opt.on::before{ opacity:1; }
+    .depth-panel .dp-opt span{ opacity:0; transition:opacity .2s ease; }
+    .depth-panel .dp-opt.on span, .depth-panel .dp-opt:hover span{ opacity:1; }
+  }
   /* a decision, called out: accent rule, small label, large statement */
   .case-decision{ margin:28px 0; padding:4px 0 4px 20px; border-left:3px solid var(--nav-accent, var(--accent)); }
   .case-decision .cd-label{ margin:0 0 8px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--nav-accent, var(--accent)); font-weight:500; }
@@ -1669,7 +1690,7 @@
       ]
     },
     {
-      slug:'chance-ai', company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
+      slug:'chance-ai', depth:true, company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
       title:'Reimagining Visual Agent', word:'Chance AI',
       heroEmbed:{src:'chance-prototype/', title:'Chance AI clickable prototype'},
       cardPhone:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Screen recording of the redesigned Create Visual Skill flow in Chance AI', bare:true},
@@ -1723,12 +1744,12 @@
         {title:'Client goals & problems', entries:[
           {sub:'1. Results page + Visual Skill'},
           'Visual Search is tucked inside the UI; Chance wants it to be what draws people in. Results should be visual, not text, with many blocks in one style, plus a space where anyone can make a filter-like camera skill.',
-          '<strong>Focus.</strong> The priority is the Visual Skills Result page (after search and loading) and the Create Visual Skill page (currently ChatGPT-inspired). The All, Pinned and Created screens come second.'
+          {lv:2, p:'<strong>Focus.</strong> The priority is the Visual Skills Result page (after search and loading) and the Create Visual Skill page (currently ChatGPT-inspired). The All, Pinned and Created screens come second.'}
         ]},
         {title:'App audit', entries:[
-          '<strong>Creating a skill starts from zero, every time.</strong> Every time someone creates a visual skill, Chance AI gives them the same blank interface, and the result screen looks the same too. Each skill is built from scratch, with no context carried over from past visits. So people rarely revisit the skills they\'ve made, creating new ones stops feeling exciting, and no habit forms.',
+          {lv:2, p:'<strong>Creating a skill starts from zero, every time.</strong> Every time someone creates a visual skill, Chance AI gives them the same blank interface, and the result screen looks the same too. Each skill is built from scratch, with no context carried over from past visits. So people rarely revisit the skills they\'ve made, creating new ones stops feeling exciting, and no habit forms.'},
           '<strong>Create Visual Skill.</strong> I walked through the original flow screen by screen and marked six issues: what\'s wrong, how to fix it, and how much it matters.',
-          {audit:[
+          {lv:2, audit:[
             {src:['images/chance/before-entry.jpg'], alt:['Original Create Visual Skill entry screen, annotated: 1 no onboarding, 2 fixed example prompts, 3 an icon that looks like other lenses, 4 the prompt bar at the bottom'], label:'Entry screen', issues:[
               [1, 'No onboarding or context', 'Ask about interests or intent before the prompt', 'High'],
               [2, 'Example prompts are fixed', 'Refresh prompts each visit from history and interests', 'High'],
@@ -1748,16 +1769,16 @@
           ]}, caption:'Home screen audit'}
         ]},
         {kicker:'Ch.1', title:'Redefining the Chat Interface & Home Screen Renewal', summary:'Turning the open chat for creating skills into a guided flow, then reworking it after mentor and client feedback.', entries:[
-          'The client\'s first request was to redesign the Create Visual Skill page, which was a simple chat interface. My question was not why we must abandon the chat interface, but why we needed a new one and what it could do to boost user creativity.',
+          {lv:2, p:'The client\'s first request was to redesign the Create Visual Skill page, which was a simple chat interface. My question was not why we must abandon the chat interface, but why we needed a new one and what it could do to boost user creativity.'},
           '<strong>When it comes to deep research, a chat interface is helpful.</strong> But for circumstances that require multiple stages of creative decisions and zeroing in on an idea (in this case, creating a purpose-driven tool), you need assistance that allows you to explore within scope and context, rather than building something from the ground up [[1]].',
           '<strong>Fewer choices, clearer decisions.</strong> According to Hick\'s law, users find it more difficult to make a decision when they are given more choices [[2]] [[3]] [[4]]. Jakob Nielsen also distinguishes intent-based specification from chat-based specification in the AI paradigm, where the chat interface becomes a low-resolution, common-denominator interface, whereas structured UI, such as a file uploader or date picker, is more optimized for a specific activity [[5]]. Hence:',
-          {hmw:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?', label:'How might we · Create Visual Skill'},
+          {lv:2, hmw:'How might we turn the linear chat into a context-driven flow that adapts to each user\'s history and needs?', label:'How might we · Create Visual Skill'},
           {sub:'Step 1. Create Visual Skill'},
           {sub:'First iteration', minor:true},
           '<strong>Key decisions made:</strong> topic suggestion, skill suggestion, build summary, user-friendly loading copy.',
           {sub:'How people use Create Visual Skill', minor:true},
           'I tested making skills myself to understand the general workflow. The workflows I identified were roughly like this:',
-          {paths:[
+          {lv:2, paths:[
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If satisfied', 'Keeps'],
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps'],
             ['User has a clear purpose', 'Prompts', 'Checks the skill', 'If unsatisfied', 'Improves', 'Keeps', 'Publishes'],
@@ -1767,7 +1788,7 @@
             [{sub:'Chat interface as a blank canvas', minor:true}, '<strong>The problem was clear.</strong> The first three scenarios allow users to create something and test it until satisfied, and eventually keep or publish it (revisiting their created skills is a separate problem that we will revisit, no pun intended). But in the last scenario, where users don\'t have a clear picture of what they want or what they want to build, the chat interface becomes a literal blank canvas. Users could type some prompts to ask for help with brainstorming, just like with any LLM. Hence, such an interface could be a double-edged sword: it could be either liberating or daunting, depending on the user\'s state.', '<strong>It does not provide any soft cushion to fall back on.</strong> This process could be designed into a structured UI.'],
             [{sub:'The solution', minor:true}, '<strong>My solution was to break down the chat interface</strong> into a guided flow that adapts to users\' history and needs. It starts with topic suggestions, showing the top 4 topics users could be interested in. Once a topic is chosen, it shows you relevant skills. At the same time, free prompting is available if none of the skills are what you want. The build summary gives you keywords for what Chance would build based on your prompt, giving you a clear picture of what the final outcome would be. Making improvements works the same way.']
           ]},
-          {compare:{before:'images/chance/before-clean.jpg', after:'images/chance/v2-01-interest.jpg', beforeLabel:'Before · open chat', afterLabel:'After · guided flow', alt:'Before: the original Create Visual Skill screen with fixed example prompts and an empty chat bar. After: the redesign, starting from popular skills and your latest interests.'}, caption:'Drag to compare the original Create Visual Skill screen with the redesign'},
+          {lv:1, compare:{before:'images/chance/before-clean.jpg', after:'images/chance/v2-01-interest.jpg', beforeLabel:'Before · open chat', afterLabel:'After · guided flow', alt:'Before: the original Create Visual Skill screen with fixed example prompts and an empty chat bar. After: the redesign, starting from popular skills and your latest interests.'}, caption:'Drag to compare the original Create Visual Skill screen with the redesign'},
           {tabs:[
             {label:'Hi-fi', entry:{flow:{plain:true, full:'images/chance/flow-hifi.jpg', stages:[
             {label:'Hi-fi · main flow', nodes:[
@@ -1799,10 +1820,10 @@
             ]}
           ]}, caption:'Create Visual Skill · Lo-fi wireframes, user flow · tap any screen to enlarge'}}
           ], caption:'Create Visual Skill user flow · switch between hi-fi and lo-fi'},
-          {protoVideo:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Prototype: picking Fashion, choosing Outfit Rater, the skill building, then Confirm and Try it now'}, caption:'The main flow, prototyped'},
-          {sub:'Second iteration', minor:true},
-          '<strong>After mentor meeting 1.</strong> Mentors pointed out two key issues in the redesigned flow:',
-          {pull:'There are no ways to access an already created skill if what the user is trying to create already exists.'},
+          {lv:2, protoVideo:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Prototype: picking Fashion, choosing Outfit Rater, the skill building, then Confirm and Try it now'}, caption:'The main flow, prototyped'},
+          {lv:2, sub:'Second iteration', minor:true},
+          {lv:2, p:'<strong>After mentor meeting 1.</strong> Mentors pointed out two key issues in the redesigned flow:'},
+          {lv:2, pull:'There are no ways to access an already created skill if what the user is trying to create already exists.'},
           'This was also proven by the client\'s direction, as they wanted users to make their own skills but still have access to already existing skills if they match the user\'s intention.',
           'Hence, a popular skills section was added to the landing page of Create Visual Skill, where you can see the top 4 popular skills. Also, an “Already made for you” section that shows existing skills the user could be interested in was added to the skill suggestion screen. Last but not least, the free prompting screen shows you similar skills that already exist based on the user\'s input. Through these multi-stage suggestions, users can make sure that what they create doesn\'t already exist, and if it does, they can easily access it at different stages of the flow.',
           {sub:'Changes made', minor:true},
@@ -1810,7 +1831,7 @@
             'Top 4 popular skills accessible on the landing page of Create Visual Skill',
             '“Already made for you” and “Similar skills already exist” sections that match already existing skills with the user\'s intent'
           ]},
-          {flow:{plain:true, stages:[
+          {lv:2, flow:{plain:true, stages:[
             {label:'Hi-fi V2 · main flow', nodes:[
               {img:'images/chance/v2-01-interest.jpg', title:'Pick an interest', tag:'popular skills'},
               {img:'images/chance/v2-02-tool.jpg', title:'Choose a tool', tag:'already made for you', hub:true},
@@ -1830,14 +1851,14 @@
         ]},
         {kicker:'Ch.2', title:'Home Screen Inspection', summary:'Auditing the redesigned home screen with a mentor from Adobe, and simplifying it around two clear actions.', entries:[
           'Our team sat down with a mentor from Adobe to audit the redesigned home screen. The updated minimalistic aesthetic for skill thumbnails was easier on the eyes, and the general organization looked much better, but it still felt off in some sense. We soon realized it was the inconsistency across the same flows and the same functions that led to this scatteredness.',
-          'The problem was twofold:',
-          {bullets:[
+          {lv:2, p:'The problem was twofold:'},
+          {lv:2, bullets:[
             'The top banner showed a carousel of images that included skills such as Snap to Know, which was a default image analyzer that was also easily accessible through the main tab (a one-tap action from the camera icon).',
             'Accessing various visual skills came in inconsistent forms and card designs, including the banner action, circle icons in the My visual skills carousel, and rectangle cards that were inconsistent in their forms and designs.'
           ], ordered:true},
-          {hmw:'How might we position Snap to Know as the default visual skill, so users discover specialized skills as natural extensions of what they already use?', label:'How might we'},
-          'To tackle this major issue, I reimagined what a simpler home screen would look like:',
-          {bullets:[
+          {lv:2, hmw:'How might we position Snap to Know as the default visual skill, so users discover specialized skills as natural extensions of what they already use?', label:'How might we'},
+          {lv:2, p:'To tackle this major issue, I reimagined what a simpler home screen would look like:'},
+          {lv:2, bullets:[
             'Unifying all skills into an identical or similar card format that applies equally throughout the app.',
             'Removing the banner and bringing Snap to Know and Create Visual Skill in as the two key tap-to-action buttons, accessible directly from the home screen.'
           ], ordered:true},
@@ -1848,12 +1869,12 @@
           {bullets:[
             'Added a layer to group personal skills and snapshots together'
           ]},
-          {wide:true, center:true, media:[{src:'images/chance/home-hifi-v2.jpg', alt:'Home hi-fi v2: the recent shot and recent skills grouped on one layer, with Snap to Know and Create visual skill below'}], cols:3, caption:'Home · Hi-fi (Branched) v2'},
+          {lv:1, wide:true, center:true, media:[{src:'images/chance/home-hifi-v2.jpg', alt:'Home hi-fi v2: the recent shot and recent skills grouped on one layer, with Snap to Know and Create visual skill below'}], cols:3, caption:'Home · Hi-fi (Branched) v2'},
           'However, the question remained: “How do users get to freely explore visual skills that are created by others?”'
         ]},
         {kicker:'Ch.3', title:'Making Them Social: Community Tab (renamed “Visual Skills”)', summary:'Giving visual skills their own tab, then reworking the skill card until each one shows who made it, how popular it is and what it does at a glance.', entries:[
           'In the current app, all visual skills, whether created by the user or by other users, were placed on the home screen, accessible through endless scrolling. Although there was basic organization by generic topic categories, most of them were just there filling up the screen with no context. We imagined how this abundance of visual skills could be highlighted as a form of creativity and connect users at the same time.',
-          'That is why we designed a dedicated tab for the community (renamed “Visual skills” in a later iteration).',
+          {lv:2, p:'That is why we designed a dedicated tab for the community (renamed “Visual skills” in a later iteration).'},
           'This tab specifically highlights the work of all Chance AI users through a Pinterest-esque board that enables intuitive exploration based on users\' interests. Users land on the For You tab by default, which selects skills and outputs that are paired together within a grid system, organized by the algorithm. However, a variety of other skills can also be accessed through topics.',
           {sub:'First iteration', minor:true},
           {wide:true, center:true, media:[{src:'images/chance/community-lofi.jpg', alt:'Community lo-fi wireframe: a two-column grid of skill cards'}, {src:'images/chance/community-hifi-v1.jpg', alt:'Community hi-fi: search, topic chips and a Pinterest-like board of skills with their creators'}], cols:3, caption:'Community · Lo-fi and Community · Hi-fi (Branched)'},
@@ -1865,16 +1886,16 @@
           {sub:'Third iteration: the skill card', minor:true},
           'The Nov 4 version of the screen switched to a clean two-column grid of skill cards, each with a stock-style product photo, a title, a one-line description and a Try it button. The grid was easy to scan, but nothing on it said who made a skill or whether anyone used it. It read like a catalog of tools, not a community.',
           {wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a back button and title, topic chips, and a two-column grid of skill cards with product photos, titles, descriptions and Try it buttons'}], cols:3, caption:'Visual skills · Nov 4, the starting point for the card'},
-          'So I kept the top of our Branched v2 screen (the Chance logo, search bar and topic chips), took the grid from the Nov 4 screen, and focused the next round on one thing: the skill card. I had three goals for it:',
-          {bullets:[
+          {lv:2, p:'So I kept the top of our Branched v2 screen (the Chance logo, search bar and topic chips), took the grid from the Nov 4 screen, and focused the next round on one thing: the skill card. I had three goals for it:'},
+          {lv:2, bullets:[
             '<strong>Understand the skill at a glance.</strong> The image comes first.',
             '<strong>Show the community.</strong> People should see who created a skill and how popular it is, through the creator\'s profile and a likes count.',
             '<strong>Keep Try it within reach.</strong> A larger button gives faster access to the skill.'
           ], ordered:true},
           {hmw:'How might we make the Visual skills page feel like a living community gallery rather than a catalog of tools?', label:'How might we · Visual skills'},
           {hmw:'How might we help users quickly decide which visual skill to try by showing what real people have made with it?', label:'How might we · The skill card'},
-          {sub:'Skill card iterations', minor:true},
-          {screens:[
+          {lv:2, sub:'Skill card iterations', minor:true},
+          {lv:2, screens:[
             {src:'images/chance/card-it1.jpg', tag:'v1', title:'Real snap, creator chip', d:'Swapped the stock photo for a real user\'s snap and put the creator\'s handle on the card. Title and description sit on a translucent layer.', alt:'Skill card v1: a coat photo with a creator handle chip and a translucent text layer'},
             {src:'images/chance/card-it2.jpg', tag:'v2', title:'Title bubble, topic icon', d:'Title and description blurred together, so the title got its own glass bubble. Added likes and a topic icon.', alt:'Skill card v2: the title in its own glass bubble, likes count and a topic icon top right'},
             {src:'images/chance/card-it3.jpg', tag:'v3', title:'Full bleed, illustrations', d:'Removed the border and margin, merged the panels and kept only the creator\'s photo. Tried flat illustrations.', alt:'Skill card v3: a flat illustration of a coat filling the card, with one glass panel'},
@@ -1902,12 +1923,12 @@
             {src:'images/chance/card-idea-all-i.jpg', tag:'1b + 2 + 3', title:'All, image skill', d:'Output thumbnail, camera button and one-line text together.', alt:'Minion Buddy with an output thumbnail, camera button and one-line text'}
           ], cards:true, caption:'Result preview, quieter action and one-line text, tried and dropped'},
           'I dropped them for the same two reasons. Each one added more than people could read at a glance. And the extra text and images covered the snapshot, which is the main way people understand what a skill was used for.',
-          {sub:'The final card: glass or dark fade?', minor:true},
+          {lv:2, sub:'The final card: glass or dark fade?', minor:true},
           'That left two versions of the same card, both with placement B: one on the v4 glass panel and one on the v5 dark fade. They share the same content; only the way the text sits on the photo changes.',
-          {wide:true, center:true, media:[{src:'images/chance/card-b-glass.jpg', alt:'Skill card, B glass: a translucent white panel holds the topic chip, title, description and a small Try it button, with likes above it and the avatar alone at the top'}, {src:'images/chance/card-b-scrim.jpg', alt:'Skill card, B dark fade: the photo darkens toward the bottom, white text sits on it, the avatar and likes share one pill at the top, and Try it spans the card'}], cols:3, caption:'Skill card · Snap v6 · B glass (left) and B · dark fade (right)'},
-          {decision:'The snap comes first. Nothing on the card gets to cover the image more than it has to.', label:'My call · the dark fade'},
-          'I chose the dark fade because every choice on it gives more of the photo back:',
-          {bullets:[
+          {lv:2, wide:true, center:true, media:[{src:'images/chance/card-b-glass.jpg', alt:'Skill card, B glass: a translucent white panel holds the topic chip, title, description and a small Try it button, with likes above it and the avatar alone at the top'}, {src:'images/chance/card-b-scrim.jpg', alt:'Skill card, B dark fade: the photo darkens toward the bottom, white text sits on it, the avatar and likes share one pill at the top, and Try it spans the card'}], cols:3, caption:'Skill card · Snap v6 · B glass (left) and B · dark fade (right)'},
+          {lv:1, decision:'The snap comes first. Nothing on the card gets to cover the image more than it has to.', label:'My call · the dark fade'},
+          {lv:2, p:'I chose the dark fade because every choice on it gives more of the photo back:'},
+          {lv:2, bullets:[
             '<strong>Less on top of the photo.</strong> On glass, a solid panel and a separate likes bubble cover about half of the snap. On the fade, the text sits straight on the photo.',
             '<strong>One pill instead of two.</strong> The avatar and likes share a single pill at the top, so who made it and how popular it is read together, with one less shape over the image.',
             '<strong>Hierarchy without another bubble.</strong> A bold white title over a dimmer description, so the title stands out without its own panel.',
@@ -1915,17 +1936,17 @@
             '<strong>Easier to tap.</strong> Try it spans the card at 36px tall instead of a small pill in the corner, meeting the third goal: easier access.'
           ]},
           'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.',
-          {sub:'Final screen', minor:true},
-          {wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a product-photo catalog with a back button'}, {src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}], cols:3, caption:'Visual skills · Nov 4 and the final version (Nov 8, v6)'}
+          {lv:2, sub:'Final screen', minor:true},
+          {lv:1, wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a product-photo catalog with a back button'}, {src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}], cols:3, caption:'Visual skills · Nov 4 and the final version (Nov 8, v6)'}
         ]},
         {kicker:'Ch.4', title:'Onboarding', summary:'Designing how new users first meet Chance AI.', entries:[
-          {soon:'Work in progress.'}
+          {lv:1, soon:'Work in progress.'}
         ]},
         {title:'Reflection', entries:[
           'As someone who has been deeply passionate about designing UX for AI, working with a client that is leading the industry in visual language models was an exciting challenge. I realized that product strategy is as important as designing UX, as UX is derived from the primary goal of the product. At the same time, it was a big challenge for our design team to work with a more lenient client who wanted us to explore instead of coming up with an optimal solution. We took this as an opportunity to break free, test wild ideas while refining them to industry standards, and reimagine what the future of AI visual agents could look like.'
         ]},
         {title:'Moving forward…', entries:[
-          {bullets:[
+          {lv:2, bullets:[
             'Consolidate our Create Visual Skill flow with the in-house design team\'s work in progress, as the client suggested.',
             'Test the second iteration with users to see whether people find existing skills before building duplicates.',
             'Finish onboarding (Ch.4), so first-time users start with context instead of an empty screen.'
@@ -2320,7 +2341,13 @@
   var homeView = document.getElementById('home-view');
   var caseView = document.getElementById('case-view');
 
+  // reading time: 1 = 1 min, 2 = 5 min, 3 = 10 min (everything). Only cases with depth:true use it.
+  var caseDepth = (function(){ try{ var v = +localStorage.getItem('caseDepth'); return v >= 1 && v <= 3 ? v : 1; }catch(e){ return 1; } })();
   function renderCase(p){
+    var D = p.depth ? caseDepth : 3;
+    // an entry shows when its level fits the chosen time; untagged entries only show in the full read
+    function keep(e){ return D >= 3 || (!!e && typeof e === 'object' && (e.lv || 3) <= D); }
+    function unwrap(e){ return (e && typeof e === 'object' && typeof e.p === 'string' && Object.keys(e).every(function(k){ return k === 'p' || k === 'lv'; })) ? e.p : e; }
     var metaFields = (p.meta || [
       ['Role', p.role], ['Timeline', p.timeline], ['Team', p.team], ['Tools', p.tools],
       ['Skills', p.skills && p.skills.length ? p.skills.join(', ') : '']
@@ -2557,6 +2584,7 @@
     }
     function textLike(t){ return typeof t === 'string' || !!(t && (t.feature || t.sub || t.bullets || t.pull || t.decision || t.soon || t.defs || t.endings || t.fixes)); }
     function entriesHtml(list){
+      list = list.filter(keep).map(unwrap);
       var html = '';
       for(var i = 0; i < list.length; i++){
         if(typeof list[i] === 'string' && list[i+1] && list[i+1].clip){
@@ -2612,6 +2640,10 @@
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
+      (p.depth ? '<div class="depth-panel" role="radiogroup" aria-label="How much time do you have?"><p class="dp-label">How much time do you have?</p><div class="dp-opts">' +
+        [[1, '1 min', 'The gist'], [2, '5 min', 'Key decisions'], [3, '10 min', 'The full story']].map(function(o){
+          return '<button type="button" role="radio" class="dp-opt'+(o[0] === D ? ' on' : '')+'" aria-checked="'+(o[0] === D)+'" data-d="'+o[0]+'"><b>'+o[1]+'</b><span>'+o[2]+'</span></button>';
+        }).join('') + '</div></div>' : '')+
       (p.heroEmbed ? '<div class="case-hero embed-hero"><iframe src="'+p.heroEmbed.src+'" title="'+p.heroEmbed.title+'" loading="lazy" allow="clipboard-write"></iframe></div>' + (p.heroEmbed.note ? '<p class="embed-note">'+p.heroEmbed.note+'</p>' : '') :
       '<div class="case-hero'+(heroDevicesHtml(p) ? ' has-phone' : '')+(heroGlow(p) ? ' has-glow' : '')+'" style="background:'+heroBackground(p)+'">'+
         (heroDevicesHtml(p) ? heroDevicesHtml(p) + ((p.heroNote || (p.heroPhone && p.heroPhone.note)) ? '<div class="hero-note">'+(p.heroNote || p.heroPhone.note)+'</div>' : '') :
@@ -2623,8 +2655,8 @@
         '<div class="proto-screen"><iframe src="'+p.demo.src+'" title="'+p.demo.title+'" loading="lazy" tabindex="-1"></iframe></div>' +
         (p.demo.hint ? '<p class="try-hint">'+p.demo.hint+'</p>' : '') + '</div>' +
         (p.demo.caption ? '<figcaption>'+p.demo.caption+'</figcaption>' : '') + '</figure>' : '') +
-      timelineHtml(p.timeline, p.glanceTint) +
-      (p.overviewArt ? '<div class="case-block"><div class="case-split case-pair ov-pair"><div class="pair-text"><h4 class="label">'+(p.overviewTitle || 'Overview')+'</h4><p class="body-text">'+p.overview+'</p></div><div class="pair-side">'+p.overviewArt+'</div></div></div>' :
+      (D >= 2 ? timelineHtml(p.timeline, p.glanceTint) : '') +
+      (D < 2 ? '' : p.overviewArt ? '<div class="case-block"><div class="case-split case-pair ov-pair"><div class="pair-text"><h4 class="label">'+(p.overviewTitle || 'Overview')+'</h4><p class="body-text">'+p.overview+'</p></div><div class="pair-side">'+p.overviewArt+'</div></div></div>' :
       '<div class="case-block"><h4 class="label">'+(p.overviewTitle || 'Overview')+'</h4><p class="body-text">'+p.overview+'</p></div>')+
       (p.statements || []).map(function(s){
         // problem statement and How might we as bands, the same as Chance AI's, tinted with this project's colors
@@ -2634,14 +2666,35 @@
           (s.note ? '<p class="body-text">'+s.note+'</p>' : '') + (s.voices ? voicesHtml(s) : '') + '</div>';
       }).join('')+
       researchHtml + outcomesHtml + journeyHtml + winsHtml + lessonsHtml + futureHtml +
-      (p.chapters || []).map(function(c){
+      (p.chapters || []).filter(function(c){ return D >= 3 || !!c.kicker || c.entries.some(keep); }).map(function(c){
         // numbered chapters open with a full-width divider: a big number, the title and one line on what changes
         if(c.kicker) return '<div class="case-block chapter"><div class="chapter-open"><div class="co-num" aria-hidden="true">'+c.kicker.replace(/[^0-9]/g, '').padStart(2, '0')+'</div><div class="co-text"><div class="chapter-kicker">'+c.kicker.replace('Ch.', 'Chapter ')+'</div><h4 class="label">'+c.title+'</h4>'+(c.summary ? '<p class="co-sum">'+c.summary+'</p>' : '')+'</div></div>' + entriesHtml(c.entries) + '</div>';
         return '<div class="case-block chapter"><h4 class="label">'+c.title+'</h4>' + entriesHtml(c.entries) + '</div>';
-      }).join('') + refsHtml +
+      }).join('') + (D >= 3 ? refsHtml : '') +
       (p.planned || []).map(function(t){ return '<div class="case-block planned"><h4 class="label">'+t+'</h4><p class="body-text">Coming soon.</p></div>'; }).join('');
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
+    caseView.querySelectorAll('.dp-opt').forEach(function(b){
+      b.addEventListener('click', function(){
+        var d = +b.dataset.d; if(d === caseDepth) return;
+        // keep the reader in the same section: remember the first one still on screen, then line it back up
+        var anchor = null, top = 0;
+        caseView.querySelectorAll('.glance, .case-block').forEach(function(el){
+          if(anchor) return; var r = el.getBoundingClientRect();
+          if(r.bottom > 140){ anchor = (el.querySelector('h4.label, .glance-head') || {}).textContent; top = r.top; }
+        });
+        var y = window.scrollY;
+        caseDepth = d; try{ localStorage.setItem('caseDepth', d); }catch(e){}
+        renderCase(p);
+        var match = null;
+        if(anchor && y > 200) caseView.querySelectorAll('.glance, .case-block').forEach(function(el){
+          var h = el.querySelector('h4.label, .glance-head'); if(!match && h && h.textContent === anchor) match = el;
+        });
+        if(match) window.scrollTo(0, window.scrollY + match.getBoundingClientRect().top - top);
+        else if(y > 200) window.scrollTo(0, Math.min(y, document.body.scrollHeight - innerHeight));
+        var nb = caseView.querySelector('.dp-opt[data-d="'+d+'"]'); if(nb) nb.focus({preventScroll:true});
+      });
+    });
     rotateQuotes(caseView);
     fitHeroEmbed();
     watchEmbeds(caseView);
