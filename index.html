@@ -633,7 +633,7 @@
   .float-field{ position:absolute; inset:0; overflow:hidden; z-index:0; }
   /* the In progress pill was beige on blue; on this cover it becomes frosted white */
   .card[href="#work/chance-ai"] .progress-pill{ color:#fff; background:rgba(255,255,255,.2); border-color:transparent; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
-  .fcard{ position:absolute; left:50%; top:50%; width:30cqw; aspect-ratio:169/226; font-size:1.95cqw;
+  .fcard{ position:absolute; left:50%; top:50%; width:26cqw; aspect-ratio:169/226; font-size:1.7cqw;
     border-radius:1.6em; overflow:hidden; will-change:transform, filter, opacity;
     transform:translate(-50%,-50%) translate(var(--tx,0px), var(--ty,0px)) scale(var(--s,1)); filter:blur(var(--b,0px)); opacity:var(--o,1); z-index:var(--zi,1);
     box-shadow:0 1.8em 3.2em -1.2em rgba(4,10,40,.55), inset 0 .8em 1.4em -1em rgba(255,255,255,.9); }
@@ -3150,23 +3150,36 @@
     if(!fields.length) return;
     var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     var LAP = 28000, angle = 0, last = 0, running = false, visible = new Set();
+    // each card gets its own lane: a height, a width of swing, a size, a speed and a clarity, so they never line up
+    var LANES = [
+      { y:-.02, rx:.30, size:1.15, speed:1.00, sharp:1.00 },
+      { y:-.20, rx:.40, size:.82,  speed:.86,  sharp:.80 },
+      { y: .18, rx:.36, size:.95,  speed:1.12, sharp:.92 },
+      { y:-.18, rx:.24, size:.70,  speed:.92,  sharp:.65 },
+      { y: .22, rx:.42, size:1.05, speed:.80,  sharp:.95 },
+      { y: .04, rx:.44, size:.76,  speed:1.06, sharp:.72 }
+    ];
+    var clock = 0;
     function place(field){
       var cards = field.children, n = cards.length, W = field.clientWidth, H = field.clientHeight;
       for(var i = 0; i < n; i++){
-        var t = angle + i * Math.PI * 2 / n, d = (Math.cos(t) + 1) / 2;   // d: 1 = front, 0 = back
+        var L = LANES[i % LANES.length];
+        var t = angle * L.speed + i * Math.PI * 2 / n, d = (Math.cos(t) + 1) / 2;   // d: 1 = front, 0 = back
+        var bob = Math.sin(clock / 1400 + i * 1.7) * H * .025;                      // a slow float up and down
         var st = cards[i].style;
-        st.setProperty('--tx', (Math.sin(t) * W * .36).toFixed(1) + 'px');
-        st.setProperty('--ty', ((d - .5) * H * .1).toFixed(1) + 'px');
-        st.setProperty('--s', (.5 + .55 * d).toFixed(3));
-        st.setProperty('--b', ((1 - d) * 4).toFixed(2) + 'px');
-        st.setProperty('--o', (.4 + .6 * d).toFixed(3));
-        st.setProperty('--zi', Math.round(d * 100));
+        st.setProperty('--tx', (Math.sin(t) * W * L.rx).toFixed(1) + 'px');
+        st.setProperty('--ty', (L.y * H + (d - .5) * H * .08 + bob).toFixed(1) + 'px');
+        st.setProperty('--s', (L.size * (.55 + .5 * d)).toFixed(3));
+        st.setProperty('--b', ((1 - d * L.sharp) * 4.5).toFixed(2) + 'px');
+        st.setProperty('--o', (.35 + .65 * d * L.sharp).toFixed(3));
+        st.setProperty('--zi', Math.round((d * L.size) * 100));
       }
     }
     function frame(now){
       if(!running) return;
       var dt = last ? Math.min(64, now - last) : 16; last = now;
       angle -= dt / LAP * Math.PI * 2;
+      clock += dt;
       fields.forEach(function(f){ if(visible.has(f) && !f.closest('.card').matches(':hover')) place(f); });
       requestAnimationFrame(frame);
     }
