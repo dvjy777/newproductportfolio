@@ -3405,7 +3405,6 @@
       if(front && !lens.querySelector('.echo')){
         var v = front.querySelector('video[poster]'), im = front.querySelector('img');
         var src = v ? v.getAttribute('poster') : im ? im.getAttribute('src') : null;
-        if(!src && t.closest('a[href="#work/claude"]')) src = 'images/claude/final-select.jpg';   // the live mini-prototype has no still, so use a final screen
         if(src){ var e = document.createElement('img'); e.className = 'echo'; e.alt = ''; e.src = src; e.loading = 'lazy'; lens.insertBefore(e, lens.firstChild); }
       }
       var w = t.clientWidth, h = t.clientHeight; if(!w || !h) return;
