@@ -176,3 +176,27 @@ body{background:
 .guide.compact .g-in{min-height:176px}
 @media (max-width:900px){ .guide.compact{width:100%; min-height:0} .guide.compact .g-in{min-height:0} }
 .rthumbs .more{background:var(--g-fill) !important; box-shadow:var(--g-glow), 0 6px 14px -10px rgba(28,38,92,.3)}
+
+/* ---------- v12 (Nov 16) community liquid glass cards ---------- */
+/* stronger pastel field, as in v12 */
+.scr:not(.dark){
+  background:
+    radial-gradient(70% 45% at 100% 0%, rgba(255,214,102,.85), transparent 72%),
+    radial-gradient(70% 55% at 0% 55%, rgba(140,160,255,.7), transparent 74%),
+    radial-gradient(65% 45% at 100% 100%, rgba(255,168,206,.65), transparent 74%),
+    #f1f1f6;
+}
+/* the card: a thick frosted rim made from the same photo, with the photo set inside it */
+.gcard{padding:15px; border-radius:26px; background:#dedfe7 !important; isolation:isolate; overflow:hidden;
+  box-shadow:inset 0 14px 22px -14px rgba(255,255,255,.95), inset 0 -14px 22px -16px rgba(20,24,60,.28), 0 18px 34px -18px rgba(28,38,92,.45) !important}
+.gcard > .grim{position:absolute; inset:-12%; width:124%; height:124%; object-fit:cover; z-index:-3; filter:blur(16px) saturate(1.25) brightness(1.12)}
+.gcard::before{content:""; position:absolute; inset:0; z-index:-2; background:linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.2))}
+.gcard > .gimg{inset:7px; width:calc(100% - 14px); height:calc(100% - 14px); border-radius:20px; z-index:-1;
+  box-shadow:0 2px 8px rgba(20,24,60,.18)}
+.creator{background:linear-gradient(180deg, rgba(236,236,242,.78), rgba(220,221,230,.6)) !important; -webkit-backdrop-filter:blur(14px) saturate(1.3); backdrop-filter:blur(14px) saturate(1.3);
+  box-shadow:inset 0 6px 10px -8px rgba(255,255,255,.95), 0 4px 10px -6px rgba(20,24,60,.3) !important; padding:3px 10px 3px 3px}
+.used{border-radius:16px !important; padding:7px 10px 7px 7px !important; gap:10px !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(246,246,250,.7)) !important; -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:inset 0 8px 14px -10px rgba(255,255,255,1), 0 8px 16px -10px rgba(20,24,60,.35) !important}
+.used .orb{width:36px; height:36px; flex:none}
+.cchip:not(.on){background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(236,238,255,.5)) !important}

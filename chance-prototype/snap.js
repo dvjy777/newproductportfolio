@@ -91,9 +91,9 @@ SCREENS.home = {
 };
 
 const gCard = (c) => `<button class="gcard" style="height:${c.h}px" data-act="trySkill" data-sk="${c.sk}" aria-label="@${esc(c.user)} made this with ${esc(D.SHOWCASE[c.sk].name)}. Try the skill.">
-  <img class="gimg" src="${IMG(c.img)}" alt="">
+  <img class="grim" src="${IMG(c.img)}" alt=""><img class="gimg" src="${IMG(c.img)}" alt="">
   <span class="creator"><span class="ava" style="background:${c.color}">${esc(c.init)}</span>@${esc(c.user)}</span>
-  <span class="used"><img class="th" src="${IMG(c.thumb)}" alt=""><span class="used-tx"><span class="used-n">${esc(D.SHOWCASE[c.sk].name)}</span>${likesRow(String(c.likes), 11)}</span></span></button>`;
+  <span class="used">${orb(c.thumb)}<span class="used-tx"><span class="used-n">${esc(D.SHOWCASE[c.sk].name)}</span>${likesRow(String(c.likes), 11)}</span></span></button>`;
 function communityCols(f) {
   if (f === 'For you') return [0, 1].map((k) => D.COMMUNITY.filter((c) => c.col === k));
   let list = D.COMMUNITY.filter((c) => f === 'Trending' || c.tags.includes(f));
