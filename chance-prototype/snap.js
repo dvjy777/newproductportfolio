@@ -9,7 +9,7 @@ const tabbar = (on) => `<nav class="tabbar" aria-label="Tabs">
   <button class="tab" data-act="openCamera" data-mode="snap" aria-label="Camera">${TAB_IC('tab-camera')}</button>
   <button class="tab ${on === 'community' ? 'on' : ''}" data-act="tabCommunity" aria-label="Community"${on === 'community' ? ' aria-current="page"' : ''}>${TAB_IC(on === 'community' ? 'tab-community-on' : 'tab-community')}</button>
   <button class="tab" data-act="tabProfile" aria-label="Profile">${TAB_IC('tab-profile')}</button></nav>`;
-const logoHdr = () => `<div class="pad-top"></div><header class="hdr"><span class="logo-c" role="img" aria-label="Chance AI">C</span></header>`;
+const logoHdr = () => `<div class="pad-top"></div><header class="hdr"><img class="logo-word" src="img/logo-chance.svg" alt="Chance AI"></header>`;
 const likesRow = (n, sz = 12) => `<span class="likes"><span class="hz hz${sz}"><img src="img/icon-heart-${sz}.svg" alt=""></span>${esc(n)}<span class="vh"> likes</span></span>`;
 
 function homeRecents() {
@@ -91,7 +91,7 @@ SCREENS.home = {
 };
 
 const gCard = (c) => `<button class="gcard" style="height:${c.h}px" data-act="trySkill" data-sk="${c.sk}" aria-label="@${esc(c.user)} made this with ${esc(D.SHOWCASE[c.sk].name)}. Try the skill.">
-  <img class="grim" src="${IMG(c.img)}" alt=""><img class="gimg" src="${IMG(c.img)}" alt="">
+  <img class="gimg" src="${IMG(c.img)}" alt="">
   <span class="creator"><span class="ava" style="background:${c.color}">${esc(c.init)}</span>@${esc(c.user)}</span>
   <span class="used">${orb(c.thumb)}<span class="used-tx"><span class="used-n">${esc(D.SHOWCASE[c.sk].name)}</span>${likesRow(String(c.likes), 11)}</span></span></button>`;
 function communityCols(f) {
