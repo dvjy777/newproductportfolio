@@ -466,7 +466,7 @@
   .work-grid .thumb.has-lens{ border:0; isolation:isolate; }
   .thumb > .lens{ position:absolute; inset:0; z-index:0; container-type:size; }
   /* glass cues: the work's own screen as a blurred echo behind the phones, and light along the curve */
-  .thumb > .lens > .echo{ position:absolute; inset:-14%; width:128%; height:128%; object-fit:cover; filter:blur(30px) saturate(1.5) brightness(1.05); opacity:.6; pointer-events:none; }
+  .thumb > .lens > .echo{ position:absolute; inset:-14%; width:128%; height:128%; object-fit:cover; filter:blur(30px) saturate(1.6) brightness(1.15); opacity:.5; mix-blend-mode:screen; pointer-events:none; }
   .thumb .glass-light{ position:absolute; inset:0; width:100%; height:100%; z-index:2; pointer-events:none; overflow:visible; }
   .thumb .glass-light .gl-hi{ transition:opacity .6s ease; }
   .thumb .glass-light .gl-hi.b{ opacity:0; }
@@ -483,7 +483,7 @@
       radial-gradient(ellipse 40% 70% at 50% 50%, rgba(var(--g), var(--ga)) 0%, rgba(var(--g), calc(var(--ga) * .35)) 42%, rgba(var(--g), 0) 74%), #07080b; }
   /* light on the glass: brighter along the top, a little shade along the bottom, no outline */
   .thumb.has-lens::after{ content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
-    background:radial-gradient(70% 22% at 50% 0%, rgba(255,255,255,.28), rgba(255,255,255,0) 70%), radial-gradient(80% 22% at 50% 100%, rgba(0,0,0,.18), rgba(0,0,0,0) 70%); }
+    background:radial-gradient(70% 22% at 50% 0%, rgba(255,255,255,.28), rgba(255,255,255,0) 70%), radial-gradient(80% 22% at 50% 100%, rgba(0,0,0,.06), rgba(0,0,0,0) 70%); }
   .thumb .tag{
     font-family:'Geist', sans-serif; font-weight:600; font-size:clamp(20px,4vw,28px);
     color:#fff;
@@ -3402,7 +3402,8 @@
     // 2) light that follows the curve: a soft highlight along the top-left of the squircle, a little inner glow, a little shade at the bottom.
     function dress(t){
       var lens = t.querySelector('.lens'), front = t.querySelector('.thumb-stage.front');
-      if(front && !lens.querySelector('.echo')){
+      // only where it adds color (ANIMI's teal); on the darker cards it dulls their own glow
+      if(front && t.closest('a[href="#work/animi"]') && !lens.querySelector('.echo')){
         var v = front.querySelector('video[poster]'), im = front.querySelector('img');
         var src = v ? v.getAttribute('poster') : im ? im.getAttribute('src') : null;
         if(src){ var e = document.createElement('img'); e.className = 'echo'; e.alt = ''; e.src = src; e.loading = 'lazy'; lens.insertBefore(e, lens.firstChild); }
@@ -3416,11 +3417,11 @@
         '<defs>' +
           '<linearGradient id="' + uid + 'a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".28" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
           '<linearGradient id="' + uid + 'b" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".28" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
-          '<linearGradient id="' + uid + 'c" x1="0" y1="0" x2="0" y2="1"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>' +
+          '<linearGradient id="' + uid + 'c" x1="0" y1="0" x2="0" y2="1"><stop offset=".65" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".14"/></linearGradient>' +
           '<filter id="' + uid + 'f" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="5"/></filter>' +
           '<filter id="' + uid + 's" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation=".6"/></filter>' +
         '</defs>' +
-        '<path d="' + d + '" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="22" filter="url(#' + uid + 'f)"/>' +   // inner glow (outer half is clipped away)
+        '<path d="' + d + '" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="22" filter="url(#' + uid + 'f)"/>' +   // inner glow (outer half is clipped away)
         '<path d="' + d + '" fill="none" stroke="url(#' + uid + 'c)" stroke-width="26" filter="url(#' + uid + 'f)"/>' +      // weight at the bottom
         '<path class="gl-hi a" d="' + d + '" fill="none" stroke="url(#' + uid + 'a)" stroke-width="3" filter="url(#' + uid + 's)"/>' + // highlight, top-left
         '<path class="gl-hi b" d="' + d + '" fill="none" stroke="url(#' + uid + 'b)" stroke-width="3" filter="url(#' + uid + 's)"/>';   // highlight, top-right (on hover)
