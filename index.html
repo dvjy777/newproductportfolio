@@ -3349,7 +3349,7 @@
     if(!thumbs.length) return;
     // Card shape. Default: a rounded rectangle with Figma-style 100% corner smoothing (iOS continuous corners).
     // ?n=4..8 previews a true squircle (superellipse) instead, for comparison.
-    var QS = new URLSearchParams(location.search), SQN = +QS.get('n') || 0, RADIUS = 34, SMOOTH = 1;
+    var QS = new URLSearchParams(location.search), SQN = +QS.get('n') || 0, RADIUS = +QS.get('r') || 52, SMOOTH = 1;
     var NS = 'http://www.w3.org/2000/svg', N = SQN || 8, STRENGTH = .16, DISPERSE = [1, 1.18, 1.36];
     var defs = document.createElementNS(NS, 'svg');
     defs.setAttribute('width', 0); defs.setAttribute('height', 0); defs.setAttribute('aria-hidden', 'true');
