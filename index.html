@@ -462,6 +462,16 @@
     transition:transform .3s ease;
   }
   .card:hover .thumb{ transform:translateY(-4px); }
+  /* home cards as glass squircles: no border; the artwork bends at the curved edge (clip + filter set in JS) */
+  .work-grid .thumb.has-lens{ border:0; isolation:isolate; }
+  .thumb > .lens{ position:absolute; inset:0; z-index:0; container-type:size; }
+  /* keep the In progress tag clear of the curved corner */
+  .thumb.has-lens .progress-pill{ top:7%; right:9%; z-index:3; }
+  .thumb.has-glow > .lens{ background:
+      radial-gradient(ellipse 40% 70% at 50% 50%, rgba(var(--g), var(--ga)) 0%, rgba(var(--g), calc(var(--ga) * .35)) 42%, rgba(var(--g), 0) 74%), #07080b; }
+  /* light on the glass: brighter along the top, a little shade along the bottom, no outline */
+  .thumb.has-lens::after{ content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:radial-gradient(70% 22% at 50% 0%, rgba(255,255,255,.28), rgba(255,255,255,0) 70%), radial-gradient(80% 22% at 50% 100%, rgba(0,0,0,.18), rgba(0,0,0,0) 70%); }
   .thumb .tag{
     font-family:'Geist', sans-serif; font-weight:600; font-size:clamp(20px,4vw,28px);
     color:#fff;
@@ -629,6 +639,7 @@
 
   /* homepage cards: the same device setups, sized to the card */
   .thumb.has-devices{ container-type:size; }
+  .thumb.has-lens .float-field{ inset:0; }
   /* Chance AI cover: ranked skill cards circling on a loop; the one in front is big and sharp, the ones behind small and soft */
   .float-field{ position:absolute; inset:0; overflow:hidden; z-index:0; }
   /* the In progress pill was beige on blue; on this cover it becomes frosted white */
@@ -2418,11 +2429,14 @@
     if(p.accent) a.style.setProperty('--card-accent', p.accent);
     var devices = p.cardFloat ? floatCardsHtml(p.cardFloat) : p.cardPhone ? phoneMockHtml({phone:p.cardPhone.src, poster:p.cardPhone.poster, alt:p.cardPhone.alt, bare:p.cardPhone.bare}) :
       p.cardDemo ? '<div class="proto-screen card-demo"><iframe src="'+p.cardDemo+'" title="" aria-hidden="true" tabindex="-1" loading="lazy"></iframe></div>' : heroDevicesHtml(p);
+    var bg = devices ? heroBackground(p) : (p.coverBg || p.gradient);
     a.innerHTML =
-      '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+(p.coverLight ? ' light' : '')+'" style="background:'+(devices ? heroBackground(p) : (p.coverBg || p.gradient))+'">'+
+      '<div class="thumb has-lens'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+(p.coverLight ? ' light' : '')+'" style="background:'+bg+'">'+
+        '<div class="lens"'+(bg ? ' style="background:'+bg+'"' : '')+'>'+
         (devices ? '<div class="thumb-stage">'+devices+'</div>' : '')+
         (p.cover && !devices ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
         (p.logo && !devices ? '<div class="thumb-logo">'+p.logo+'</div>' : '')+
+        '</div>'+
         (p.inProgress ? '<span class="progress-pill">In progress</span>' : '')+
         (p.blurb ? '<div class="thumb-hover"><p>'+p.blurb+'</p><span>View case study →</span></div>' : '')+
         '<span class="tag">'+p.company+'</span></div>'+
@@ -3313,6 +3327,68 @@
   }
   window.addEventListener('hashchange', route);
   route();
+
+  // Home cards as glass squircles. The outline is a superellipse (|x/a|^4 + |y/b|^4 = 1), and the artwork is
+  // refracted near that edge like a thick glass dome: an SVG displacement map pulls pixels from further in, with
+  // the red, green and blue channels bent by slightly different amounts so a faint rainbow appears at the edge.
+  (function(){
+    var thumbs = Array.prototype.slice.call(document.querySelectorAll('.work-grid .thumb.has-lens'));
+    if(!thumbs.length) return;
+    var NS = 'http://www.w3.org/2000/svg', N = 4, BAND = .30, STRENGTH = .16, DISPERSE = [1, 1.07, 1.14];
+    var defs = document.createElementNS(NS, 'svg');
+    defs.setAttribute('width', 0); defs.setAttribute('height', 0); defs.setAttribute('aria-hidden', 'true');
+    defs.style.position = 'absolute';
+    document.body.appendChild(defs);
+    function squircle(w, h){
+      var d = '', a = w / 2, b = h / 2, steps = 240;
+      for(var i = 0; i < steps; i++){
+        var t = i / steps * Math.PI * 2, c = Math.cos(t), s = Math.sin(t);
+        d += (i ? 'L' : 'M') + (a + a * Math.sign(c) * Math.pow(Math.abs(c), 2 / N)).toFixed(1) + ' ' + (b + b * Math.sign(s) * Math.pow(Math.abs(s), 2 / N)).toFixed(1);
+      }
+      return d + 'Z';
+    }
+    // displacement map: neutral grey in the middle; near the edge, red/green push toward the centre
+    function lensMap(w, h){
+      var k = .5, W = Math.max(2, Math.round(w * k)), H = Math.max(2, Math.round(h * k));
+      var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      var cx = cv.getContext('2d'), im = cx.createImageData(W, H), px = im.data;
+      for(var y = 0; y < H; y++) for(var x = 0; x < W; x++){
+        var u = (x + .5) / W * 2 - 1, v = (y + .5) / H * 2 - 1;
+        var r = Math.pow(Math.pow(Math.abs(u), N) + Math.pow(Math.abs(v), N), 1 / N);
+        var m = Math.min(1, Math.max(0, (r - (1 - BAND)) / BAND)); m = m * m * (3 - 2 * m);
+        var gx = Math.sign(u) * Math.pow(Math.abs(u), N - 1), gy = Math.sign(v) * Math.pow(Math.abs(v), N - 1), gl = Math.hypot(gx, gy) || 1;
+        var i = (y * W + x) * 4;
+        px[i] = 128 - 127 * m * gx / gl; px[i + 1] = 128 - 127 * m * gy / gl; px[i + 2] = 128; px[i + 3] = 255;
+      }
+      cx.putImageData(im, 0, 0);
+      return cv.toDataURL();
+    }
+    function build(t){
+      var lens = t.querySelector('.lens'), w = t.clientWidth, h = t.clientHeight;
+      if(!w || !h || !lens) return;
+      t.style.clipPath = "path('" + squircle(w, h) + "')";
+      var id = 'lens-' + w + 'x' + h;
+      if(!document.getElementById(id)){
+        var sc = Math.round(Math.min(w, h) * STRENGTH), f = document.createElementNS(NS, 'filter');
+        f.setAttribute('id', id); f.setAttribute('x', 0); f.setAttribute('y', 0); f.setAttribute('width', w); f.setAttribute('height', h);
+        f.setAttribute('filterUnits', 'userSpaceOnUse'); f.setAttribute('color-interpolation-filters', 'sRGB');
+        var chans = ['1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0', '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0', '0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0'];
+        f.innerHTML = '<feImage href="' + lensMap(w, h) + '" x="0" y="0" width="' + w + '" height="' + h + '" preserveAspectRatio="none" result="map"/>' +
+          DISPERSE.map(function(k, i){
+            return '<feDisplacementMap in="SourceGraphic" in2="map" scale="' + (sc * k).toFixed(1) + '" xChannelSelector="R" yChannelSelector="G" result="d' + i + '"/>' +
+                   '<feColorMatrix in="d' + i + '" type="matrix" values="' + chans[i] + '" result="c' + i + '"/>';
+          }).join('') +
+          '<feBlend in="c0" in2="c1" mode="screen" result="rg"/><feBlend in="rg" in2="c2" mode="screen"/>';
+        defs.appendChild(f);
+      }
+      lens.style.filter = 'url(#' + id + ')';
+    }
+    thumbs.forEach(build);
+    if('ResizeObserver' in window){
+      var pending = null;
+      new ResizeObserver(function(){ clearTimeout(pending); pending = setTimeout(function(){ thumbs.forEach(build); }, 120); }).observe(document.querySelector('.work-grid'));
+    }
+  })();
 
   // Chance AI cover: the skill cards ride an elliptical loop. Depth comes from where each card is on it:
   // in front = full size, sharp, on top; behind = smaller, blurred, faded. Every skill takes its turn up front.
