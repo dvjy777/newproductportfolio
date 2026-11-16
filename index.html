@@ -629,28 +629,29 @@
 
   /* homepage cards: the same device setups, sized to the card */
   .thumb.has-devices{ container-type:size; }
-  /* Chance AI cover: liquid glass skill cards floating at different depths */
+  /* Chance AI cover: ranked skill cards circling on a loop; the one in front is big and sharp, the ones behind small and soft */
   .float-field{ position:absolute; inset:0; overflow:hidden; z-index:0; }
-  .fcard{ position:absolute; left:var(--x); top:var(--y); width:calc(24cqw * var(--s)); aspect-ratio:169/240; font-size:calc(1.55cqw * var(--s));
-    border-radius:1.6em; overflow:hidden; z-index:var(--zi); opacity:var(--o); filter:blur(var(--b));
-    box-shadow:0 1.6em 3em -1.2em rgba(28,38,92,.35), inset 0 .8em 1.4em -1em rgba(255,255,255,.9);
-    transform:translate(-50%,-50%) rotate(var(--r)); animation:fdrift var(--dur) ease-in-out var(--delay) infinite alternate; will-change:transform; }
+  /* the In progress pill was beige on blue; on this cover it becomes frosted white */
+  .card[href="#work/chance-ai"] .progress-pill{ color:#fff; background:rgba(255,255,255,.2); border-color:transparent; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  .fcard{ position:absolute; left:50%; top:50%; width:30cqw; aspect-ratio:169/226; font-size:1.95cqw;
+    border-radius:1.6em; overflow:hidden; will-change:transform, filter, opacity;
+    transform:translate(-50%,-50%) translate(var(--tx,0px), var(--ty,0px)) scale(var(--s,1)); filter:blur(var(--b,0px)); opacity:var(--o,1); z-index:var(--zi,1);
+    box-shadow:0 1.8em 3.2em -1.2em rgba(4,10,40,.55), inset 0 .8em 1.4em -1em rgba(255,255,255,.9); }
   .fcard > img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .fc-who{ position:absolute; left:.6em; top:.6em; display:flex; align-items:center; gap:.4em; padding:.3em .7em .3em .3em; border-radius:99px; font:600 1em/1 'Geist', -apple-system, sans-serif; color:#0b0b0d;
-    background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.42)); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  .fc-top{ position:absolute; left:.6em; right:.6em; top:.6em; display:flex; align-items:center; gap:.4em; }
+  .fc-rank{ padding:.3em .6em; border-radius:99px; background:#ffc700; color:#0b0b0d; font:700 .95em/1 'Geist', -apple-system, sans-serif; box-shadow:0 .3em .8em -.3em rgba(120,80,0,.6); }
+  .fc-who{ display:flex; align-items:center; gap:.4em; padding:.28em .7em .28em .28em; border-radius:99px; font:600 .95em/1 'Geist', -apple-system, sans-serif; color:#0b0b0d;
+    background:linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,.55)); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
   .fc-who i{ width:1.5em; height:1.5em; border-radius:50%; display:grid; place-items:center; color:#fff; font-style:normal; font-size:.8em; }
-  .fc-tray{ position:absolute; left:.5em; right:.5em; bottom:.5em; display:flex; align-items:center; gap:.55em; padding:.5em; border-radius:1.15em;
-    background:linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.46)); -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
+  .fc-tray{ position:absolute; left:.5em; right:.5em; bottom:.5em; display:flex; align-items:center; gap:.55em; padding:.6em .55em .6em .8em; border-radius:1.15em;
+    background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.62)); -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
     box-shadow:inset 0 .6em 1em -.8em rgba(255,255,255,.95); }
-  .fc-tray img{ width:2.6em; height:2.6em; border-radius:50%; object-fit:cover; flex:none; }
-  .fc-tray b{ display:block; font:600 1.1em/1.15 'Geist', -apple-system, sans-serif; color:#0b0b0d; }
-  .fc-tray small{ display:block; margin-top:.2em; font:500 .9em/1 'Geist', -apple-system, sans-serif; color:#45454d; }
-  @keyframes fdrift{
-    from{ transform:translate(-50%,-50%) translateY(-1.1em) rotate(var(--r)); }
-    to{ transform:translate(-50%,-50%) translateY(1.1em) rotate(calc(var(--r) * -1)); }
-  }
-  .card:hover .fcard{ animation-play-state:paused; }
-  @media (prefers-reduced-motion: reduce){ .fcard{ animation:none; } }
+  .fc-tray > img{ width:2.6em; height:2.6em; border-radius:50%; object-fit:cover; flex:none; }
+  .fc-tx{ min-width:0; flex:1; }
+  .fc-tray b{ display:block; font:600 1.08em/1.15 'Geist', -apple-system, sans-serif; color:#0b0b0d; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .fc-meta{ display:flex; align-items:center; gap:.45em; margin-top:.3em; font:500 .85em/1 'Geist', -apple-system, sans-serif; color:#45454d; }
+  .fc-meta em{ font-style:normal; padding:.2em .5em; border-radius:99px; background:rgba(29,95,255,.12); color:#1d5fff; font-weight:600; }
+  .fc-try{ flex:none; padding:.45em .7em; border-radius:99px; background:linear-gradient(180deg,#34343a,#0b0b0d 70%); color:#fff; font:600 .85em/1 'Geist', -apple-system, sans-serif; }
   .thumb .thumb-stage{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
   .thumb .thumb-stage > .phone-mock{ width:37cqh; padding:1.1cqh; border-radius:6cqh; }
   .thumb .thumb-stage .phone-mock .screen{ border-radius:5cqh; }
@@ -1717,16 +1718,15 @@
       slug:'chance-ai', depth:true, company:'Chance AI x AStudio', tagline:'AI agent · Visual Language Model · 2026 · IN PROGRESS',
       title:'Reimagining Visual Agent', word:'Chance AI',
       heroEmbed:{src:'chance-prototype/', title:'Chance AI clickable prototype'},
-      // home card: community skill cards drifting at different depths (near = big and sharp, far = small and soft)
+      // home card: ranked community skills circling past, each one taking its turn up front
       cardFloat:[
-        {img:'chance-prototype/img/coat.jpg', name:'OOTD Fitchecker', who:'mina.k', av:'#1631f3', likes:248, x:30, y:50, z:1},
-        {img:'chance-prototype/img/chair.jpg', name:'Design Has Reasons', who:'lena.home', av:'#d93a3a', likes:310, x:62, y:44, z:.72},
-        {img:'chance-prototype/img/taste.jpg', name:'Taste Notes', who:'jun.eats', av:'#18181b', likes:193, x:86, y:62, z:.45},
-        {img:'chance-prototype/img/tarot.jpg', name:'Daily Tarot', who:'rio.walks', av:'#1631f3', likes:88, x:9, y:22, z:.3},
-        {img:'chance-prototype/img/art.jpg', name:'Dot Your Photo', who:'sora.draws', av:'#b8860b', likes:121, x:78, y:14, z:.2},
-        {img:'chance-prototype/img/sneakers.jpg', name:'Minion Buddy', who:'dani.fits', av:'#6b6a66', likes:176, x:12, y:84, z:.15}
+        {img:'chance-prototype/img/chair.jpg', name:'Design Has Reasons', who:'lena.home', av:'#d93a3a', likes:310, rank:1, topic:'Design'},
+        {img:'chance-prototype/img/coat.jpg', name:'OOTD Fitchecker', who:'mina.k', av:'#1631f3', likes:248, rank:2, topic:'Style'},
+        {img:'chance-prototype/img/taste.jpg', name:'Taste Notes', who:'jun.eats', av:'#18181b', likes:193, rank:3, topic:'Food'},
+        {img:'chance-prototype/img/sneakers.jpg', name:'Minion Buddy', who:'dani.fits', av:'#6b6a66', likes:176, rank:4, topic:'Just for fun'},
+        {img:'chance-prototype/img/art.jpg', name:'Dot Your Photo', who:'sora.draws', av:'#b8860b', likes:121, rank:5, topic:'Art'},
+        {img:'chance-prototype/img/tarot.jpg', name:'Daily Tarot', who:'rio.walks', av:'#1631f3', likes:88, rank:6, topic:'Mystic'}
       ],
-      coverBg:'radial-gradient(60% 55% at 100% 0%, rgba(255,214,102,.75), transparent 70%), radial-gradient(55% 60% at 0% 60%, rgba(136,160,255,.6), transparent 72%), radial-gradient(55% 50% at 100% 100%, rgba(255,170,205,.6), transparent 72%), #f3f3f7',
       inProgress:true,
       accent:'#1d5fff',
       gradient:'linear-gradient(135deg,#0a1730,#1d5fff 55%,#9db8ff)',
@@ -2322,13 +2322,10 @@
 
   // glass skill cards for the Chance AI cover; depth sets size, blur, fade and drift speed
   function floatCardsHtml(list){
-    return '<div class="float-field" aria-hidden="true">' + list.map(function(c, i){
-      var z = c.z;
-      var st = '--x:'+c.x+'%; --y:'+c.y+'%; --s:'+(0.45 + 0.75 * z).toFixed(2)+'; --b:'+((1 - z) * 5).toFixed(1)+'px; --o:'+(0.45 + 0.55 * z).toFixed(2)+
-        '; --zi:'+Math.round(z * 10)+'; --dur:'+(9 - 4 * z).toFixed(1)+'s; --delay:-'+(i * 1.7).toFixed(1)+'s; --r:'+(i % 2 ? -2.5 : 2.5) * (1.2 - z)+'deg';
-      return '<div class="fcard" style="'+st+'"><img src="'+c.img+'" alt="" loading="lazy">' +
-        '<span class="fc-who"><i style="background:'+c.av+'">'+c.who.charAt(0).toUpperCase()+'</i>@'+c.who+'</span>' +
-        '<span class="fc-tray"><img src="'+c.img+'" alt=""><span><b>'+c.name+'</b><small>&#9825; '+c.likes+'</small></span></span></div>';
+    return '<div class="float-field" aria-hidden="true">' + list.map(function(c){
+      return '<div class="fcard"><img src="'+c.img+'" alt="" loading="lazy">' +
+        '<span class="fc-top"><span class="fc-rank">#'+c.rank+'</span><span class="fc-who"><i style="background:'+c.av+'">'+c.who.charAt(0).toUpperCase()+'</i>@'+c.who+'</span></span>' +
+        '<span class="fc-tray"><span class="fc-tx"><b>'+c.name+'</b><span class="fc-meta"><em>'+c.topic+'</em>&#9825; '+c.likes+'</span></span><span class="fc-try">Try it</span></span></div>';
     }).join('') + '</div>';
   }
 
@@ -3145,6 +3142,48 @@
   }
   window.addEventListener('hashchange', route);
   route();
+
+  // Chance AI cover: the skill cards ride an elliptical loop. Depth comes from where each card is on it:
+  // in front = full size, sharp, on top; behind = smaller, blurred, faded. Every skill takes its turn up front.
+  (function(){
+    var fields = Array.prototype.slice.call(document.querySelectorAll('.float-field'));
+    if(!fields.length) return;
+    var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var LAP = 28000, angle = 0, last = 0, running = false, visible = new Set();
+    function place(field){
+      var cards = field.children, n = cards.length, W = field.clientWidth, H = field.clientHeight;
+      for(var i = 0; i < n; i++){
+        var t = angle + i * Math.PI * 2 / n, d = (Math.cos(t) + 1) / 2;   // d: 1 = front, 0 = back
+        var st = cards[i].style;
+        st.setProperty('--tx', (Math.sin(t) * W * .36).toFixed(1) + 'px');
+        st.setProperty('--ty', ((d - .5) * H * .1).toFixed(1) + 'px');
+        st.setProperty('--s', (.5 + .55 * d).toFixed(3));
+        st.setProperty('--b', ((1 - d) * 4).toFixed(2) + 'px');
+        st.setProperty('--o', (.4 + .6 * d).toFixed(3));
+        st.setProperty('--zi', Math.round(d * 100));
+      }
+    }
+    function frame(now){
+      if(!running) return;
+      var dt = last ? Math.min(64, now - last) : 16; last = now;
+      angle -= dt / LAP * Math.PI * 2;
+      fields.forEach(function(f){ if(visible.has(f) && !f.closest('.card').matches(':hover')) place(f); });
+      requestAnimationFrame(frame);
+    }
+    function sync(){
+      var go = !still && !document.hidden && visible.size > 0;
+      if(go && !running){ running = true; last = 0; requestAnimationFrame(frame); }
+      if(!go) running = false;
+    }
+    fields.forEach(place);
+    if(still) return;
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting) visible.add(e.target); else visible.delete(e.target); }); sync(); });
+      fields.forEach(function(f){ io.observe(f); });
+    } else { fields.forEach(function(f){ visible.add(f); }); sync(); }
+    document.addEventListener('visibilitychange', sync);
+    window.addEventListener('resize', function(){ fields.forEach(place); });
+  })();
 
   // side nav: light up the section you're reading (a case study counts as Work)
   (function(){
