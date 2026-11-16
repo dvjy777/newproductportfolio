@@ -63,10 +63,15 @@ function renderGuide(key) {
   if (!guideEl || key === guideKey) return;
   guideKey = key;
   const inner = guideEl.querySelector('.g-in');
-  inner.innerHTML = `<p class="g-k">${esc(g.k)}</p><h2 class="g-t">${esc(g.t)}</h2>` +
-    `<div class="g-more"><div><p class="g-d">${esc(g.d)}</p>` +
-    `<div class="g-acts">${g.a.map(([l, j]) => `<button class="g-btn" data-jump="${j}">${esc(l)}<span aria-hidden="true">→</span></button>`).join('')}</div></div></div>` +
+  inner.innerHTML = `<h2 class="g-t">${esc(g.t)}</h2>` +
+    `<div class="g-more"><div><p class="g-d">${esc(g.d)}</p></div></div>` +
     `<p class="g-hint" aria-hidden="true">Tap for details</p>`;
+  // the next steps are their own glass cards, stacked under the guide card
+  const acts = document.getElementById('guideActs');
+  if (acts) acts.innerHTML = g.a.map(([l, j]) => `<button class="g-btn" data-jump="${j}">${esc(l)}<span aria-hidden="true">→</span></button>`).join('');
   guideOpen(); guideRest();
-  if (!RMG) inner.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: 'ease-out' });
+  if (!RMG) {
+    inner.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: 'ease-out' });
+    if (acts) [...acts.children].forEach((b, i) => b.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: 120 + i * 70, easing: 'ease-out', fill: 'backwards' }));
+  }
 }
