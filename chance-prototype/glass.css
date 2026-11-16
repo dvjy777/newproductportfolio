@@ -1,0 +1,124 @@
+/* Liquid glass (Figma, Nov 14–16): cards, secondary buttons, chips and light icon buttons are glass;
+   primary (blue → violet) and dark buttons stay solid; no white borders; photos stay unobscured. */
+:root{
+  --g-fill:linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.34));
+  --g-blur:blur(24px) saturate(1.5);
+  --g-glow:inset 0 10px 18px -12px rgba(255,255,255,.95), inset 0 -8px 16px -14px rgba(255,255,255,.6);
+  --g-drop:0 12px 30px -14px rgba(28,38,92,.28), 0 2px 6px -2px rgba(28,38,92,.08);
+  --g-primary:linear-gradient(120deg, #2440ff 0%, #4a3cff 55%, #7b3dff 100%);
+  --g-dark:linear-gradient(180deg, #34343a 0%, #0b0b0d 70%);
+}
+
+/* the pastel field behind every light screen */
+.scr:not(.dark){
+  background:
+    radial-gradient(60% 38% at 100% 4%, rgba(255,214,102,.55), transparent 70%),
+    radial-gradient(55% 42% at 0% 52%, rgba(136,160,255,.42), transparent 72%),
+    radial-gradient(55% 36% at 100% 96%, rgba(255,170,205,.42), transparent 72%),
+    #f5f5f8;
+}
+.foot{background:linear-gradient(180deg, rgba(245,245,248,0), rgba(245,245,248,.72) 38%); }
+.sbar.solid{background:rgba(245,245,248,.55); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur)}
+.gsheet, .ask-sheet, .res-sheet{background:rgba(250,250,252,.82); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); box-shadow:var(--g-glow), 0 -10px 30px -16px rgba(28,38,92,.25)}
+
+/* glass surfaces */
+.scard, .srow, .composer, .rskill, .rcard, .idcard, .bars, .steps, .resp, .req, .tr-meta span, .pal-tip,
+.chip:not(.on):not(.blue), .cchip:not(.on), .pill:not(.soft), .sug, .search, .att,
+.btn-secondary, .pill-line, .ib, .r36:not(.dark):not(.rec), .glass-c, .lab, .sicon, .mini, .bld-pill, .minus, .tab.on{
+  background:var(--g-fill) !important;
+  -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+  border:0 !important;
+  box-shadow:var(--g-glow), var(--g-drop);
+}
+.chip:not(.on):not(.blue), .cchip:not(.on), .pill:not(.soft), .sug, .lab, .mini, .sicon, .bld-pill, .tab.on{ box-shadow:var(--g-glow), 0 6px 16px -10px rgba(28,38,92,.3) }
+.composer:focus-within{box-shadow:var(--g-glow), 0 16px 36px -14px rgba(28,38,92,.34)}
+.btn-secondary:hover, .sug:hover{background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.5)) !important}
+
+/* selection keeps its dark ring */
+.scard.on{box-shadow:inset 0 0 0 2px var(--ink), var(--g-glow), var(--g-drop)}
+
+/* solid: primary and dark buttons */
+.btn-primary, .abtn.blue, .shutter span, .an-ic, .ab-send, .askbar .cb, .success, .newtag{
+  background:var(--g-primary) !important; box-shadow:0 12px 26px -10px rgba(74,60,255,.6), inset 0 1px 0 rgba(255,255,255,.22)}
+.btn-primary:hover{filter:brightness(1.06)}
+.r36.dark, .pill-dark, .chip.on, .cchip.on{background:var(--g-dark) !important; box-shadow:0 8px 18px -10px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.18)}
+.ai-pill, .chip.blue, .pill.soft, .vtag{background:rgba(36,64,255,.1)}
+
+/* photos stay clean: soft depth, no frames */
+.tile, .scard .ph, .srow-ph{box-shadow:0 10px 24px -14px rgba(28,38,92,.35)}
+
+/* home actions, as in Home v9: Snap to Know warm yellow, Create visual skill blue → violet, both solid */
+.abtn.dark{background:linear-gradient(135deg, #ffe066 0%, #ffc233 55%, #ff9a1f 100%) !important; color:var(--ink); box-shadow:0 14px 28px -12px rgba(255,150,30,.55), inset 0 1px 0 rgba(255,255,255,.5)}
+.abtn.dark .abtn-ic{background:var(--ink); color:#fff}
+.abtn.blue .abtn-ic{background:rgba(255,255,255,.22)}
+
+/* ---------- Home v9 (Nov 13) ---------- */
+.home9{padding-bottom:0}
+.pick{position:relative; height:354px; flex:none}
+.pick-track{position:absolute; inset:0; overflow:hidden; background:#e9e9ee}
+.pick-img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transform:scale(1.04); transition:opacity .7s ease, transform 4.2s linear}
+.pick-img.on{opacity:1; transform:scale(1)}
+.pick-card{position:absolute; left:20px; right:20px; top:186px; padding:24px 16px 16px; border-radius:24px;
+  background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.7)); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); box-shadow:var(--g-glow), var(--g-drop)}
+.pick-try{position:absolute; left:50%; top:-19px; transform:translateX(-50%); height:38px; padding:0 16px 0 14px; display:inline-flex; align-items:center; gap:6px; border-radius:19px;
+  background:var(--g-dark); color:#fff; font-weight:600; font-size:16px; box-shadow:0 8px 18px -8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.18)}
+.pick-try .i{width:16px; height:16px}
+.pick-n{font-weight:700; font-size:22px; line-height:28px; letter-spacing:-.4px; color:var(--ink)}
+.pick-d{margin-top:6px; font-size:15px; line-height:20px; color:var(--ink2); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.pick-d b{font-weight:600; color:var(--ink)}
+.pick-dots{position:absolute; left:0; right:0; top:306px; display:flex; justify-content:center; gap:3px}
+.pdot{width:12px; height:12px; display:grid; place-items:center}
+.pdot::before{content:""; width:4px; height:4px; border-radius:2px; background:rgba(11,11,13,.25); transition:width .3s var(--ease), background .3s}
+.pdot.on::before{width:14px; background:rgba(11,11,13,.7)}
+.sheet{position:relative; margin-top:-32px; border-radius:28px 28px 0 0; padding:24px 20px 128px; display:flex; flex-direction:column; gap:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.3) 240px, rgba(255,255,255,0) 520px); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); box-shadow:inset 0 12px 20px -14px rgba(255,255,255,.95)}
+.sheet .actions{gap:12px}
+.sheet .abtn{height:96px; border-radius:22px}
+.hsearch{display:flex; align-items:center; gap:10px; height:52px; padding:0 6px 0 16px; border-radius:26px; color:var(--ink2);
+  background:var(--g-fill); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); box-shadow:var(--g-glow), var(--g-drop)}
+.hsearch input{flex:1; min-width:0; border:0; outline:0; background:none; font-size:16px; color:var(--ink)}
+.hsearch input::placeholder{color:#7d7d86}
+.hs-cam{width:40px; height:40px; border-radius:20px; display:grid; place-items:center; color:#fff; background:var(--g-dark); cursor:pointer; box-shadow:0 6px 14px -8px rgba(0,0,0,.6)}
+.hs-cam .i{width:18px; height:18px}
+.hsec{display:flex; flex-direction:column; gap:12px; margin-top:4px}
+.hsec-h{margin:0; font-weight:600; font-size:20px; line-height:26px; letter-spacing:-.3px; color:var(--ink)}
+
+/* glass spheres: the photo sits inside a lens with a top highlight and a soft rim */
+.orb{position:relative; display:block; border-radius:50%; overflow:hidden; background:#e7e7ee;
+  box-shadow:0 12px 20px -10px rgba(28,38,92,.45), 0 2px 4px rgba(28,38,92,.08)}
+.orb img{width:100%; height:100%; object-fit:cover; display:block}
+.orb::after{content:""; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+  background:radial-gradient(55% 40% at 36% 20%, rgba(255,255,255,.85), rgba(255,255,255,0) 70%),
+             radial-gradient(70% 45% at 50% 108%, rgba(255,255,255,.5), rgba(255,255,255,0) 70%);
+  box-shadow:inset 0 -10px 16px -8px rgba(255,255,255,.55), inset 0 10px 16px -10px rgba(10,14,40,.28), inset 0 0 22px rgba(10,14,40,.12)}
+.myskills{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px}
+.msk{display:flex; flex-direction:column; align-items:center; gap:8px; transition:transform .15s}
+.msk:active{transform:scale(.95)}
+.msk .orb{width:66px; height:66px}
+.msk.fresh .orb{box-shadow:0 0 0 3px rgba(36,64,255,.35), 0 12px 20px -10px rgba(28,38,92,.45)}
+.msk-l{font-weight:500; font-size:12px; line-height:16px; text-align:center; color:var(--ink)}
+.recent9{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.rc9{display:flex; flex-direction:column; align-items:center; gap:4px; padding:22px 12px 18px; border-radius:24px; text-align:center; transition:transform .15s;
+  background:var(--g-fill); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); box-shadow:var(--g-glow), var(--g-drop)}
+.rc9:active{transform:scale(.97)}
+.rc9 .orb{width:96px; height:96px; margin-bottom:12px}
+.rc9-n{font-weight:600; font-size:15px; line-height:20px; color:var(--ink)}
+.rc9-s{font-size:12px; line-height:16px; color:var(--ink3)}
+
+/* glass tab bar with a white active pill */
+.tabbar{background:linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.45)); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur);
+  box-shadow:var(--g-glow), 0 14px 30px -14px rgba(28,38,92,.35); filter:none; left:48px; right:48px; height:56px; padding:0 8px}
+.tab{width:56px; height:40px; border-radius:20px}
+.tab.on{background:#fff !important; box-shadow:0 4px 12px -6px rgba(28,38,92,.35) !important}
+.tab img{filter:brightness(0)}
+
+/* Visual skills (community, v12): search under the title */
+.comm-main .hsearch{margin-top:-4px}
+.cchip.on{color:#fff}
+/* v12: the skill used sits in a small glass sphere on the tray */
+.used .th{border-radius:50%; box-shadow:inset 0 0 0 0 transparent, 0 6px 12px -6px rgba(28,38,92,.4)}
+/* the same glass spheres wherever my skills appear (Added screen) */
+.sk-av{position:relative; box-shadow:0 12px 20px -10px rgba(28,38,92,.45)}
+.sk-av::after{content:""; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+  background:radial-gradient(55% 40% at 36% 20%, rgba(255,255,255,.85), rgba(255,255,255,0) 70%), radial-gradient(70% 45% at 50% 108%, rgba(255,255,255,.5), rgba(255,255,255,0) 70%);
+  box-shadow:inset 0 -10px 16px -8px rgba(255,255,255,.55), inset 0 10px 16px -10px rgba(10,14,40,.28), inset 0 0 22px rgba(10,14,40,.12)}

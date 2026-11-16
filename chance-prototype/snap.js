@@ -22,31 +22,71 @@ const rankCard = (t, i) => `<button class="rcard" data-act="trySkill" data-sk="$
   <span class="rcard-img"><img src="${IMG(t.img)}" alt=""><span class="rank">#${i + 1}</span></span>
   <span class="rcard-meta"><img class="av" src="${t.av}" width="30" height="30" alt=""><span class="rcard-tx"><span class="rcard-n">${esc(D.SHOWCASE[t.sk].name)}</span>${likesRow(t.likes)}</span></span></button>`;
 
+/* Figma "Home · with new skill · Nov 13 clean v9": a Chance pick carousel with a floating glass card,
+   two solid actions, search, glass-sphere avatars for my skills, and glass cards for recent skills. */
+const orb = (img, pos = '50% 50%') => `<span class="orb"><img src="${IMG(img)}" style="object-position:${pos}" alt=""></span>`;
+const hsearch = () => `<label class="hsearch">${ic('search')}<input placeholder="Search skills, creators, styles" aria-label="Search skills, creators, styles"><span class="hs-cam" data-act="openCamera" data-mode="snap" role="button" tabindex="0" aria-label="Search by photo">${ic('camera')}</span></label>`;
+function homeMySkills() {
+  const made = S.skills.map((s) => ({ name: s.name, img: s.img, act: `data-act="openCamera" data-mode="${s.id}"`, fresh: s.fresh }));
+  const seen = new Set();
+  return [...made, ...D.HOME_MY].filter((r) => !seen.has(r.name) && seen.add(r.name)).slice(0, 4);
+}
 SCREENS.home = {
   title: 'Home',
   render() {
-    const shot = D.HOME_RECENT_SHOT;
-    return `${SB('solid')}<div class="body">${logoHdr()}
-      <div class="home-main">
-        <div class="recents">
-          <button class="rshot" data-act="trySkill" data-sk="${shot.sk}" data-auto="1" aria-label="Recent shot: open its ${esc(D.SHOWCASE[shot.sk].name)} result"><img src="${IMG(shot.img)}" alt=""><span class="tagpill">Recent shot</span></button>
-          <div class="rskills">${homeRecents().map((r) => `<button class="rskill ${r.fresh ? 'fresh' : ''}" ${r.act}>
-            <span class="rskill-top"><img src="${r.thumb}" alt=""><span class="rskill-k">Recent skill</span></span>
-            <span class="rskill-tx"><span class="rskill-n">${esc(r.name)}</span><span class="rskill-s">${esc(r.when)}</span></span></button>`).join('')}</div>
+    const picks = D.HOME_PICKS;
+    return `${SB()}<div class="body home9">
+      <section class="pick" aria-label="Chance picks">
+        <div class="pick-track">${picks.map((k, i) => `<img class="pick-img ${i ? '' : 'on'}" src="${IMG(k.img)}" style="object-position:${k.pos || '50% 50%'}" alt="">`).join('')}</div>
+        <div class="pick-card">
+          <button class="pick-try" ${picks[0].act}>${ic('camera')}Try it</button>
+          <p class="pick-n">${esc(picks[0].name)}</p>
+          <p class="pick-d"><b>Chance pick</b> · ${esc(picks[0].desc)}</p>
         </div>
+        <div class="pick-dots" role="group" aria-label="Choose a pick">${picks.map((k, i) => `<button class="pdot ${i ? '' : 'on'}" data-pick="${i}" aria-label="Show ${esc(k.name)}"></button>`).join('')}</div>
+      </section>
+      <div class="sheet">
         <div class="actions">
           <button class="abtn dark" data-act="openCamera" data-mode="snap"><span class="abtn-ic"><span class="ic20"><img src="img/icon-camera-white.svg" alt=""></span></span>Snap to Know</button>
           <button class="abtn blue" data-act="startCreate"><span class="abtn-ic"><span class="ic20"><img src="img/icon-plus-white.svg" alt=""></span></span>Create visual skill</button>
         </div>
-        <section class="top4">
-          <h2 class="top4-h">Top 4 skills for college students</h2>
-          <div class="rank-grid">${D.TOP_SKILLS.map(rankCard).join('')}</div>
+        ${hsearch()}
+        <section class="hsec">
+          <div class="sec-h"><h2 class="hsec-h">My visual skills</h2><button class="link" data-go="skills">View all${ic('chevR')}</button></div>
+          <div class="myskills">${homeMySkills().map((m) => `<button class="msk ${m.fresh ? 'fresh' : ''}" ${m.act}>${orb(m.img, m.pos)}<span class="msk-l">${esc(m.name)}</span></button>`).join('')}</div>
+        </section>
+        <section class="hsec">
+          <div class="sec-h"><h2 class="hsec-h">Recent visual skills</h2><button class="link" data-go="skills">View all${ic('chevR')}</button></div>
+          <div class="recent9">${D.HOME_RECENT9.map((r) => `<button class="rc9" ${r.act}>${orb(r.img, r.pos)}<span class="rc9-n">${esc(r.name)}</span><span class="rc9-s">${esc(r.when)}</span></button>`).join('')}</div>
         </section>
       </div>
     </div>${tabbar('home')}`;
   },
-  mount() {
+  mount(el) {
     S.skills.forEach((s) => { s.fresh = false; });
+    const picks = D.HOME_PICKS, imgs = [...el.querySelectorAll('.pick-img')], dots = [...el.querySelectorAll('.pdot')];
+    const n = el.querySelector('.pick-n'), d = el.querySelector('.pick-d'), t = el.querySelector('.pick-try');
+    let i = 0;
+    const setAct = (act) => {
+      ['data-act', 'data-mode', 'data-sk'].forEach((a) => t.removeAttribute(a));
+      act.replace(/(data-[\w-]+)="([^"]*)"/g, (m, k, v) => { t.setAttribute(k, v); return m; });
+    };
+    const show = (k) => {
+      i = (k + picks.length) % picks.length;
+      imgs.forEach((x, j) => x.classList.toggle('on', j === i));
+      dots.forEach((x, j) => x.classList.toggle('on', j === i));
+      n.textContent = picks[i].name;
+      d.innerHTML = `<b>Chance pick</b> · ${esc(picks[i].desc)}`;
+      setAct(picks[i].act);
+    };
+    dots.forEach((x) => x.addEventListener('click', (e) => { e.stopPropagation(); show(+x.dataset.pick); }));
+    clearInterval(window.__pickTimer);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.__pickTimer = setInterval(() => {
+        if (!el.isConnected) { clearInterval(window.__pickTimer); return; }
+        if (!el.hidden) show(i + 1);
+      }, 4200);
+    }
   },
 };
 
@@ -70,7 +110,8 @@ SCREENS.community = {
     const cols = communityCols(f);
     return `${SB('solid')}<div class="body">${logoHdr()}
       <div class="comm-main">
-        <div class="comm-title"><h1>Community</h1><p>A gallery of what people are making with visual skills.</p></div>
+        <div class="comm-title"><h1>Visual skills</h1></div>
+        ${hsearch()}
         <div class="cchips" role="group" aria-label="Filter">${D.COMMUNITY_FILTERS.map((x) => `<button class="cchip ${x === f ? 'on' : ''}" data-act="commFilter" data-v="${x}" aria-pressed="${x === f}">${x}</button>`).join('')}</div>
         ${cols[0].length + cols[1].length ? `<div class="masonry">${cols.map((col) => `<div class="mcol">${col.map(gCard).join('')}</div>`).join('')}</div>` : '<p class="empty-note">Nothing here yet.</p>'}
       </div>

@@ -210,6 +210,25 @@ window.CHANCE_DATA = (() => {
     { sk: 'sc-cafe', img: 'coffee', av: 'img/fig-av-3.png', likes: '1.6k' },
     { sk: 'sc-gallery', img: 'art', av: 'img/fig-av-4.png', likes: '1.2k' },
   ];
+  /* Home v9 (Nov 13): Chance picks carousel, my skills (glass spheres), recent skills (glass cards) */
+  const HOME_PICKS = [
+    { name: 'Design Has Reasons', desc: 'Uncover the story and thinking behind what you’re looking at', img: 'hero-chair', pos: '50% 60%', act: 'data-act="openCamera" data-mode="design"' },
+    { name: 'Wardrobe Analyzer', desc: 'Rate your current wardrobe selections and get advice for improvements.', img: 'coat', pos: '50% 35%', act: 'data-act="trySkill" data-sk="sc-wardrobe"' },
+    { name: 'Cafe Menu Decoder', desc: 'Snap a café order to learn what’s in it and how it’s made.', img: 'coffee', act: 'data-act="trySkill" data-sk="sc-cafe"' },
+    { name: 'Gallery Notes', desc: 'Snap an artwork to learn how it was made and why it works.', img: 'art', act: 'data-act="trySkill" data-sk="sc-gallery"' },
+  ];
+  const HOME_MY = [
+    { name: 'Wardrobe Analyzer', img: 'coat', pos: '50% 38%', act: 'data-act="trySkill" data-sk="sc-wardrobe"' },
+    { name: 'Daily Tarot', img: 'tarot', pos: '50% 46%', act: 'data-act="openCamera" data-mode="tarot"' },
+    { name: 'OOTD Fitchecker', img: 'sneakers', act: 'data-act="openCamera" data-mode="ootd"' },
+    { name: 'Minion Buddy', img: 'gadgets', pos: '30% 52%', act: 'data-act="openCamera" data-mode="minion"' },
+  ];
+  const HOME_RECENT9 = [
+    { name: 'Design Has Reasons', when: 'Used 2h ago', img: 'chair', act: 'data-act="openCamera" data-mode="design"' },
+    { name: 'OOTD Fitchecker', when: 'Used yesterday', img: 'sneakers', act: 'data-act="openCamera" data-mode="ootd"' },
+    { name: 'Daily Tarot', when: 'Used this week', img: 'tarot', pos: '50% 46%', act: 'data-act="openCamera" data-mode="tarot"' },
+    { name: 'Minion Buddy', when: 'Used this week', img: 'gadgets', pos: '30% 52%', act: 'data-act="openCamera" data-mode="minion"' },
+  ];
   const COMMUNITY_FILTERS = ['For you', 'Trending', 'Fashion', 'Food', 'Interiors'];
   // col and h are the masonry layout from Figma (For you); other filters re-flow by height.
   const COMMUNITY = [
@@ -221,5 +240,5 @@ window.CHANCE_DATA = (() => {
     { user: 'rio.walks', init: 'R', color: '#1631f3', img: 'hero-chair', thumb: 'coffee', sk: 'sc-plant', likes: 88, h: 220, col: 1, tags: ['Interiors'] },
   ];
 
-  return { SCENES, GALLERY, LEARN, RATING, CATS, LABELS, CAT_IMG, INTERESTS, MORE_INTERESTS, TOPICS, ALL_TOPICS, TOPIC_WORDS, HOME_SKILLS, CATALOG, MORE_SKILLS, MODES, OWN_PHOTOS, CHANGES, SHOWCASE, HOME_RECENT_SHOT, HOME_RECENTS, TOP_SKILLS, COMMUNITY_FILTERS, COMMUNITY };
+  return { SCENES, GALLERY, LEARN, RATING, CATS, LABELS, CAT_IMG, INTERESTS, MORE_INTERESTS, TOPICS, ALL_TOPICS, TOPIC_WORDS, HOME_SKILLS, CATALOG, MORE_SKILLS, MODES, OWN_PHOTOS, CHANGES, SHOWCASE, HOME_RECENT_SHOT, HOME_RECENTS, TOP_SKILLS, COMMUNITY_FILTERS, COMMUNITY, HOME_PICKS, HOME_MY, HOME_RECENT9 };
 })();
