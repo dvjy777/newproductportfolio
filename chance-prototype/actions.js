@@ -328,7 +328,7 @@ const KEY_OF = { camera: 'camera', learn: 'learn', ask: 'ask', interest: 'intere
 window.onRoute = (t) => {
   let k = KEY_OF[t.id];
   if (t.id === 'camera' && t.el.classList.contains('captured')) k = 'analyzing';
-  $$('.fl').forEach((b) => { const on = b.dataset.jump === k; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+  renderGuide(k);
 };
 window.onAI = () => {
   const n = $('#aiNote');
@@ -340,9 +340,6 @@ window.onAI = () => {
 $('#panel').addEventListener('click', (e) => {
   const j = e.target.closest('[data-jump]');
   if (j) { if (!busy) JUMP[j.dataset.jump]?.(); return; }
-  if (e.target.closest('#restart')) JUMP.home(true);
-  const h = e.target.closest('#hotspots');
-  if (h) { const on = h.getAttribute('aria-pressed') !== 'true'; h.setAttribute('aria-pressed', on); app.classList.toggle('hints-on', on); }
 });
 
 /* fit the phone to the window */

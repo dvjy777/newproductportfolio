@@ -8,47 +8,8 @@
 <link rel="stylesheet" href="glass.css">
 
 <div class="stage">
-  <aside class="panel" id="panel" aria-label="Prototype guide">
-    <div class="brand"><span class="mark"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><div><b>Chance AI</b><span>Clickable prototype</span></div></div>
-    <p class="p-intro">Tap through the phone like the real app, or jump to any step below. Taps on things that aren’t wired flash the tappable areas.</p>
-    <nav class="flow" aria-label="Snap to know">
-      <h4>Snap to know</h4>
-      <ol>
-        <li><button class="fl" data-jump="home"><span class="n">1</span>Home</button></li>
-        <li><button class="fl" data-jump="camera"><span class="n">2</span>Camera<span class="tag">New</span></button></li>
-        <li><button class="fl" data-jump="analyzing"><span class="n">3</span>Analyzing<span class="tag">New</span></button></li>
-        <li><button class="fl" data-jump="learn"><span class="n">4</span>Results · Learn</button></li>
-        <li><button class="fl" data-jump="ask"><span class="n">5</span>Ask</button></li>
-      </ol>
-    </nav>
-    <nav class="flow" aria-label="Create a skill">
-      <h4>Create a skill</h4>
-      <ol>
-        <li><button class="fl" data-jump="interest"><span class="n">1</span>Pick an interest</button></li>
-        <li><button class="fl" data-jump="tool"><span class="n">2</span>Choose a tool</button></li>
-        <li><button class="fl" data-jump="building"><span class="n">3</span>Building</button></li>
-        <li><button class="fl" data-jump="ready"><span class="n">4</span>Your skill is ready</button></li>
-        <li><button class="fl" data-jump="added"><span class="n">5</span>Added to my skills</button></li>
-        <li><button class="fl" data-jump="tryit"><span class="n">6</span>Try the new skill<span class="tag">New</span></button></li>
-      </ol>
-    </nav>
-    <nav class="flow" aria-label="Other paths">
-      <h4>Other paths</h4>
-      <ol>
-        <li><button class="fl" data-jump="community"><span class="n">·</span>Community<span class="tag">New</span></button></li>
-        <li><button class="fl" data-jump="other"><span class="n">·</span>Other topics</button></li>
-        <li><button class="fl" data-jump="describe"><span class="n">·</span>Describe your topic</button></li>
-        <li><button class="fl" data-jump="own"><span class="n">·</span>Make my own skill</button></li>
-        <li><button class="fl" data-jump="review"><span class="n">·</span>Check your request</button></li>
-        <li><button class="fl" data-jump="edit"><span class="n">·</span>Edit your request</button></li>
-        <li><button class="fl" data-jump="improve"><span class="n">·</span>Improve a skill</button></li>
-        <li><button class="fl" data-jump="changes"><span class="n">·</span>Check your changes</button></li>
-        <li><button class="fl" data-jump="skills"><span class="n">·</span>All visual skills</button></li>
-      </ol>
-    </nav>
-    <div class="p-ctrl"><button class="pbtn" id="restart">Restart demo</button><button class="pbtn" id="hotspots" aria-pressed="false">Show tap targets</button></div>
-    <p class="p-ai" id="aiNote">Checking for live AI…</p>
-    <p class="p-note"><kbd>Esc</kbd> goes back · <kbd>R</kbd> restarts. In the camera, swipe or tap the skill names to switch skills.</p>
+  <aside class="panel" id="panel" aria-label="What this screen does">
+    <div class="guide" id="guide" aria-live="polite"><div class="g-in"></div></div>
   </aside>
   <div class="device-wrap" id="wrap">
     <div class="device" id="device">
@@ -96,6 +57,7 @@
 <script src="snap.js"></script>
 <script src="results.js"></script>
 <script src="create.js"></script>
+<script src="guide.js"></script>
 <script src="actions.js"></script>
 
 </body></html>
