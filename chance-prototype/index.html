@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="base.css">
 <link rel="stylesheet" href="screens.css">
 <link rel="stylesheet" href="glass.css">
-<script>try{var f=new URLSearchParams(location.search).get('frame');if(f)document.documentElement.dataset.frame=f;}catch(e){}</script>
 
 <div class="stage">
   <aside class="panel" id="panel" aria-label="What this screen does">
@@ -24,14 +23,7 @@
   </div>
 </div>
 
-<nav class="frame-pick" aria-label="Compare phone frames"><a href="?frame=glass">Current</a><a href="?frame=float">1 · Float</a><a href="?frame=blobs">2 · Glass + color</a><a href="?frame=refract">3 · Refracting rim</a></nav>
-<script>(function(){var f=document.documentElement.dataset.frame;document.querySelectorAll('.frame-pick a').forEach(function(a){if(a.getAttribute('href')==='?frame='+f)a.classList.add('on');});})();</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="n"/>
-    <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
-    <feDisplacementMap in="SourceGraphic" in2="nb" scale="38" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
   <symbol id="i-target" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5" stroke-width="1.67"/><circle cx="10" cy="10" r="2.67" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-search" viewBox="0 0 18 18"><circle cx="8.25" cy="8.25" r="6" stroke-width="1.5"/><path d="M15.75 15.75 12.53 12.53" stroke-width="1.5"/></symbol>
   <symbol id="i-chevR" viewBox="0 0 16 16"><path d="M6 12l4-4-4-4" stroke-width="1.4"/></symbol>
