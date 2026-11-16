@@ -254,3 +254,42 @@ body{background:
 .device::before{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
   background:linear-gradient(125deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(255,255,255,.3) 100%)}
 @media (max-width:500px){ .device::before{display:none} }
+
+
+/* ================= phone frame options (compare with ?frame=) ================= */
+/* shared: color behind the phone, so glass has something to bend */
+html[data-frame="blobs"] .device-wrap::before, html[data-frame="refract"] .device-wrap::before{
+  content:""; position:absolute; inset:-14% -38%; z-index:-1; pointer-events:none; filter:blur(36px);
+  background:
+    radial-gradient(34% 26% at 78% 16%, rgba(255,205,70,.95), transparent 70%),
+    radial-gradient(36% 30% at 18% 46%, rgba(110,135,255,.9), transparent 72%),
+    radial-gradient(34% 28% at 74% 82%, rgba(255,140,190,.85), transparent 72%),
+    radial-gradient(22% 18% at 40% 96%, rgba(120,220,210,.6), transparent 70%)}
+
+/* 1. float: no frame, the screen floats with a soft shadow and a band of light on its top edge */
+html[data-frame="float"] .device{background:none !important; -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:none !important}
+html[data-frame="float"] .device::before{display:none}
+html[data-frame="float"] .app{inset:8px; border-radius:52px;
+  box-shadow:0 46px 90px -34px rgba(28,38,92,.5), 0 14px 32px -16px rgba(28,38,92,.28), 0 0 0 .5px rgba(28,38,92,.08)}
+html[data-frame="float"] .device::after{content:""; position:absolute; inset:8px; border-radius:52px; pointer-events:none; z-index:90;
+  box-shadow:inset 0 12px 16px -12px rgba(255,255,255,.95), inset 0 -10px 16px -14px rgba(28,38,92,.18)}
+
+/* 2. blobs: the translucent glass slab, now with color behind it to pick up */
+html[data-frame="blobs"] .device{background:linear-gradient(150deg, rgba(255,255,255,.3), rgba(255,255,255,.06) 40%, rgba(255,255,255,.04) 60%, rgba(255,255,255,.2)) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(1.9); backdrop-filter:blur(22px) saturate(1.9)}
+
+/* 3. refract: a thicker rim that bends what's behind it (Chrome/Edge); others get frosted glass */
+html[data-frame="refract"] .app{inset:18px; border-radius:44px}
+html[data-frame="refract"] .device{background:linear-gradient(150deg, rgba(255,255,255,.22), rgba(255,255,255,.04) 45%, rgba(255,255,255,.14)) !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.9);
+  backdrop-filter:url(#lg-refract) blur(3px) saturate(1.9) brightness(1.05);
+  box-shadow:inset 0 22px 30px -20px rgba(255,255,255,1), inset 18px 0 26px -20px rgba(255,255,255,.8), inset -18px 0 26px -20px rgba(255,255,255,.65),
+    inset 0 -24px 30px -22px rgba(255,255,255,.7), 0 44px 84px -36px rgba(28,38,92,.4) !important}
+
+/* comparison switcher (only with ?frame=) */
+.frame-pick{position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:100; display:none; gap:4px; padding:5px; border-radius:999px;
+  background:rgba(255,255,255,.7); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); box-shadow:0 10px 30px -14px rgba(28,38,92,.4); font:600 13px/1 Inter, sans-serif}
+html[data-frame] .frame-pick{display:flex}
+.frame-pick a{padding:9px 14px; border-radius:999px; color:#0b0b0d; text-decoration:none}
+.frame-pick a.on{background:#0b0b0d; color:#fff}
+@media (max-width:500px){ .frame-pick{display:none !important} html[data-frame] .device-wrap::before{display:none} }
