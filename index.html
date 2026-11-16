@@ -468,6 +468,9 @@
   /* keep the In progress tag clear of the curved corner */
   .thumb.has-lens .progress-pill{ top:7%; right:9%; z-index:3; }
   .thumb.has-lens > .thumb-stage.front{ z-index:1; }
+  /* the squircle curves in at the corners, so hover text keeps clear of them: more inset, and it sits a bit above the bottom */
+  .thumb.has-lens .thumb-hover{ padding:9% 12% 11%; justify-content:flex-end; }
+  .thumb.has-lens .thumb-hover p{ max-width:30ch; font-size:clamp(16px,2vw,21px); }
   .thumb.has-glow > .lens{ background:
       radial-gradient(ellipse 40% 70% at 50% 50%, rgba(var(--g), var(--ga)) 0%, rgba(var(--g), calc(var(--ga) * .35)) 42%, rgba(var(--g), 0) 74%), #07080b; }
   /* light on the glass: brighter along the top, a little shade along the bottom, no outline */
