@@ -1138,15 +1138,15 @@
   @media (prefers-reduced-motion: reduce){ .carousel .cr-slide{ transition:none; } }
 
   /* How might we as a full-width band: soft Chance blue, a large faint question mark, words revealed on scroll */
-  .case-hmw.band{ position:relative; overflow:hidden; margin:40px calc(50% - 50vw); padding:clamp(48px,7vw,88px) 28px;
+  .case-hmw.band{ position:relative; overflow:hidden; margin:40px 0; padding:clamp(32px,4.5vw,56px) clamp(22px,3.5vw,44px); border-radius:24px;
     background:var(--hmw-bg, linear-gradient(120deg, color-mix(in srgb, var(--nav-accent, var(--accent)) 8%, #fff) 0%, color-mix(in srgb, var(--nav-accent, var(--accent)) 4%, #fff) 60%, color-mix(in srgb, var(--nav-accent, var(--accent)) 10%, #fff) 100%)); }
   .case-hmw.band .hmw-inner{ position:relative; z-index:1; max-width:980px; }
   .case-hmw.band .label{ color:var(--hmw-ink, var(--nav-accent, var(--accent))); margin-bottom:14px; }
   .case-hmw.band .qm{ color:var(--hmw-ink, var(--nav-accent, var(--accent))); }
   .statement .case-hmw.band{ margin-top:0; }
-  .case-hmw.band .statement-quote{ font-size:clamp(26px,3.6vw,44px); line-height:1.22; letter-spacing:-.02em; max-width:none; margin:0; }
+  .case-hmw.band .statement-quote{ font-size:clamp(22px,2.8vw,34px); line-height:1.22; letter-spacing:-.02em; max-width:none; margin:0; }
   .hmw-mark{ position:absolute; right:28px; top:50%; transform:translateY(-50%); font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size:clamp(220px,30vw,420px); font-weight:700; line-height:1; color:var(--hmw-ink, var(--nav-accent, var(--accent))); opacity:.07; pointer-events:none; user-select:none; }
+    font-size:clamp(160px,20vw,280px); font-weight:700; line-height:1; color:var(--hmw-ink, var(--nav-accent, var(--accent))); opacity:.07; pointer-events:none; user-select:none; }
   .case-hmw .rw{ display:inline-block; text-indent:0; opacity:0; transform:translateY(.35em); filter:blur(4px);
     transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1), filter .6s ease; transition-delay:calc(var(--i) * 55ms); }
   .case-hmw.in .rw{ opacity:1; transform:none; filter:none; }
@@ -1380,6 +1380,28 @@
   .flowmap.plain .flow-node img{ border:0; background:#fff; box-shadow:0 8px 22px rgba(20,33,61,.12), 0 0 0 1px rgba(20,33,61,.06); }
   .flowmap.plain .flow-node.hub img{ box-shadow:0 0 0 2px var(--nav-accent, var(--accent)), 0 10px 26px color-mix(in srgb, var(--nav-accent, var(--accent)) 18%, transparent); }
   .flowmap.plain .flow-full{ border:0; padding:0; color:var(--nav-accent, var(--accent)); text-decoration:underline; text-underline-offset:4px; }
+  /* light flows never scroll sideways: screens shrink to fit the row, and on phones the steps stack */
+  .flowmap.plain .flow-panel > .flow-stage{ container-type:inline-size; }
+  .flowmap.plain .flow-row{ --aw:14px; --g:clamp(3px, 1.2cqw, 14px); --w:min(156px, calc((100cqw - (var(--n) - 1) * (var(--aw) + 2 * var(--g))) / var(--n)));
+    overflow:visible; gap:var(--g); justify-content:center; padding-bottom:0; }
+  .flowmap.plain .flow-node{ flex:0 0 var(--w); width:var(--w); min-width:0; }
+  .flowmap.plain .flow-node img{ width:100%; border-radius:clamp(8px, calc(var(--w) * .1), 16px); }
+  .flowmap.plain .flow-title{ font-size:clamp(11px, calc(var(--w) * .09), 14px); }
+  .flowmap.plain .flow-tag{ font-size:clamp(9.5px, calc(var(--w) * .07), 11px); }
+  .flowmap.plain .flow-arrow{ flex:0 0 var(--aw); width:var(--aw); text-align:center; align-self:flex-start; margin-top:calc(var(--w) * 844 / 390 / 2 - 10px); }
+  @media(max-width:640px){
+    .flowmap.plain .flow-stage-label{ text-align:left; }
+    .flowmap.plain .flow-row{ flex-direction:column; align-items:stretch; gap:0; }
+    .flowmap.plain .flow-node{ flex:none; width:auto; display:grid; grid-template-columns:60px 1fr; column-gap:14px; align-items:center; text-align:left; }
+    .flowmap.plain .flow-node img{ width:60px; grid-row:span 2; border-radius:9px; margin:0; }
+    .flowmap.plain .flow-title{ margin:0; font-size:14px; align-self:end; }
+    .flowmap.plain .flow-node:not(:has(.flow-tag)) .flow-title{ grid-row:span 2; align-self:center; }
+    .flowmap.plain .flow-tag{ margin:2px 0 0; font-size:11px; align-self:start; justify-self:start; }
+    .flowmap.plain .flow-arrow{ flex:none; width:60px; margin:2px 0; transform:none; font-size:0; height:18px; position:relative; }
+    .flowmap.plain .flow-arrow::before{ content:''; position:absolute; left:50%; top:0; bottom:0; border-left:1.5px dashed #c3c9d3; }
+    .flowmap.plain .flow-loops{ justify-content:flex-start; }
+    .flowmap.plain .flow-stage.scrolls .flow-stage-label::after{ content:none; }
+  }
   /* a row of sketch screens, two per row on phones */
   .demo-row{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px 14px; padding:clamp(20px,4vw,36px) clamp(14px,3vw,30px); border:1px solid var(--border); background:#F7F4EE; }
   @media(min-width:760px){ .demo-row{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
@@ -2607,7 +2629,7 @@
       var f = t.flow;
       var html = '', i = 0;
       function stageHtml(st){
-          return '<div class="flow-stage'+(st.nodes.length > 3 ? ' scrolls' : '')+'"><div class="flow-stage-label">'+st.label+'</div><div class="flow-row">' +
+          return '<div class="flow-stage'+(st.nodes.length > 3 ? ' scrolls' : '')+'"><div class="flow-stage-label">'+st.label+'</div><div class="flow-row" style="--n:'+st.nodes.length+'">' +
             st.nodes.map(function(n, i){
               return (i ? '<span class="flow-arrow" aria-hidden="true">→</span>' : '') +
                 '<div class="flow-node'+(n.hub ? ' hub' : '')+'"><img src="'+n.img+'" alt="'+n.title+' screen" loading="lazy">' +
