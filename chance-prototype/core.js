@@ -235,6 +235,7 @@ function animOut(el, to, anim, origin) {
 function dropEntry(e) { SCREENS[e.id].leave?.(e.el); e.el.remove(); }
 
 async function go(id, opt = {}) {
+  window.__fxReset?.();
   if (busy) return;
   busy = true;
   try {
@@ -255,6 +256,7 @@ async function go(id, opt = {}) {
   } finally { busy = false; afterRoute(); }
 }
 async function back() {
+  window.__fxReset?.();
   if (busy || stack.length < 2) return;
   busy = true;
   try {
@@ -267,6 +269,7 @@ async function back() {
   } finally { busy = false; afterRoute(); }
 }
 async function backTo(id) {
+  window.__fxReset?.();
   const i = lastIndex(id);
   if (i < 0) { reset([[id]]); return; }
   if (i === stack.length - 1 || busy) return;
@@ -284,6 +287,7 @@ async function backTo(id) {
   } finally { busy = false; afterRoute(); }
 }
 function reset(chain) {
+  window.__fxReset?.();
   stack.splice(0).forEach(dropEntry);
   chain.forEach(([id, data = {}], i) => {
     const last = i === chain.length - 1;

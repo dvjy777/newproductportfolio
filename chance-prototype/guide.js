@@ -40,7 +40,7 @@ const GUIDE = {
     a: [['Back to ready', 'ready']] },
   skills: { k: 'Visual skills', t: 'Every skill in one place', d: 'Browse visual skills by topic and try any of them in the camera.',
     a: [['See the community', 'community'], ['Back to Home', 'home']] },
-  community: { k: 'Visual skills · Community', t: 'What people are making', d: 'A gallery of real snaps, who made them and how many people liked them. Tap a card to try that skill.',
+  community: { k: 'Visual skills · Community', t: 'What people are making', d: 'A gallery of real snaps, who made them and how many people liked them. Tap a card to flip it and see what the skill does, swipe for the next one.',
     a: [['Create a skill', 'interest'], ['Back to Home', 'home']] },
 };
 const guideEl = document.getElementById('guide');
