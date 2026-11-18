@@ -1972,8 +1972,49 @@
           {lv:2, sub:'Final screen', minor:true},
           {lv:1, wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a product-photo catalog with a back button'}, {src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}], cols:3, caption:'Visual skills · Nov 4 and the final version (Nov 8, v6)'}
         ]},
-        {kicker:'Ch.4', title:'Onboarding', summary:'Designing how new users first meet Chance AI.', entries:[
-          {lv:1, soon:'Work in progress.'}
+        {kicker:'Ch.4', title:'Elevating the Look and Feel: 3D Liquid Glass', summary:'Giving Chance a tactile, spatial feel, from glossy 3D buttons to a liquid glass system, then using it for a card flip and a full skill detail view.', entries:[
+          {lv:1, p:'With the flows working, the screens still felt flat next to the photos they frame. I wanted Chance to feel tactile and spatial, closer to the glass surfaces of current iOS, without losing the clean, image-first look we had built. That took several rounds, mostly about how much depth is too much.'},
+          {lv:2, sub:'Home: from 3D gloss to liquid glass', minor:true},
+          {lv:1, screens:[
+            {src:'images/chance/lg-home-3d.jpg', tag:'Round 1', title:'3D gloss', d:'Glossy buttons, white rims and strong shadows. It felt dimensional, but busy: every element competed for attention.', alt:'Home with glossy 3D buttons, white-rimmed glass and heavy shadows over a colorful gradient'},
+            {src:'images/chance/lg-home-clean.jpg', tag:'Round 2', title:'Unslopped', d:'Removed every white border, softened the shadows and calmed the gradient. The skill pick became a floating card with Try it beside the title.', alt:'Home with a plain light background, a floating Design Has Reasons card and softer shadows'},
+            {src:'images/chance/lg-home-sheet.jpg', tag:'Round 3', title:'Rounded sheet', d:'The card moved onto the carousel image, and the content below became a sheet with rounded corners, so the page no longer splits in a hard line.', alt:'Home with the explanation card on the carousel image and a rounded sheet below it'},
+            {src:'images/chance/lg-home-final.jpg', tag:'Final', title:'Liquid glass', d:'Equal, taller action buttons with the icon above the label, a Sunrise yellow for Snap to Know, and frosted glass cards.', alt:'Final Home: yellow Snap to Know and blue-violet Create visual skill buttons, glass search bar and glass skill cards', pick:true}
+          ], cards:true, caption:'Home · four rounds, from heavy 3D to restrained glass · tap any screen to enlarge'},
+          {lv:2, sub:'Visual skills: how much glass on the card?', minor:true},
+          {lv:2, p:'Glass made the chrome feel spatial, but on the skill cards it kept fighting the photo. Each round gave more of the image back:'},
+          {lv:2, screens:[
+            {src:'images/chance/lg-skills-panel.jpg', tag:'Round 1', title:'Glass panel on the photo', d:'Text on a frosted panel inside the photo. Spatial, but the panel covered most of the snap.', alt:'Visual skills with frosted panels covering the lower half of each photo'},
+            {src:'images/chance/lg-skills-tray.jpg', tag:'Round 2', title:'Glass tray', d:'The card itself became glass, with the photo inset and the text below it. Nothing covers the image, but the cards got long.', alt:'Visual skills with glass tray cards: the photo inset at the top, text and Try it below'},
+            {src:'images/chance/lg-skills-compact.jpg', tag:'Round 3', title:'Compact tray', d:'A shorter 4:3 photo and one-line text cut the card from 278 to 206 px.', alt:'Visual skills with compact glass tray cards and one-line descriptions'},
+            {src:'images/chance/lg-skills-final.jpg', tag:'Final', title:'Community glass card', d:'A staggered gallery of full photos with only the creator and a small glass label. The details moved to the back of the card.', alt:'Final Visual skills: a staggered gallery of full-photo cards with creator handles and frosted skill labels', pick:true}
+          ], cards:true, caption:'Visual skills · four rounds, each giving more of the photo back'},
+          {lv:2, sub:'What liquid glass actually means', minor:true},
+          {lv:2, p:'Liquid glass is not just transparency. A see-through layer lets the photo behind it fight with the text. Glass blurs what\'s behind it, adds a light tint and a soft inner light, and lifts off the page with a shadow. I compared it with the other materials used across the industry to decide how far to go:'},
+          {lv:2, wide:true, media:[{src:'images/chance/lg-materials.jpg', alt:'Board comparing eight materials over a photo and a gradient: just transparent, frosted, our glass, Figma Glass, glassmorphism, acrylic, mica and Figma Glass with more frost'}], caption:'Transparent vs frosted vs liquid glass, and other materials across the industry'},
+          {lv:2, p:'That led to one rule for the whole app. Cards, secondary buttons, chips and icon buttons are glass. Primary buttons and dark icon buttons stay solid, because as glass they looked washed out and lost their pull. And no white borders anywhere: the edge comes from light, not a line.'},
+          {lv:1, decision:'Glass for everything that holds content. Solid for the one thing you should tap.', label:'My call · glass vs solid'},
+          {lv:2, wide:true, media:[{src:'images/chance/lg-buttons.jpg', alt:'Board comparing solid and glass versions of the primary, secondary, chip, icon and dark icon buttons, on a gradient and over a photo'}], caption:'Buttons · solid vs liquid glass. Glass kept for secondary, chip and icon buttons; primary and dark buttons stay solid'},
+          {lv:1, sub:'Card flip: details without leaving the gallery', minor:true},
+          {lv:1, p:'The cleaner gallery left no room to explain what a skill does. Instead of opening a new page, tapping a card lifts it to the center while the grid blurs behind it, then flips it over. The back shows what the skill does, its ranking, the creator with a Follow button, more skills they made, and Like, Try it and Share. Its colors are pulled from the card\'s own photo, so each card feels like a different object. Swiping moves to the next card.'},
+          {lv:1, screens:[
+            {src:'images/chance/lg-flip-1.jpg', tag:'1', title:'Tap a card', d:'The card dips slightly so it feels pressed.', alt:'Visual skills gallery with a tap indicator on the OOTD Fitchecker card'},
+            {src:'images/chance/lg-flip-2.jpg', tag:'2', title:'Lift', d:'It scales up to the center as the grid blurs and dims.', alt:'The OOTD Fitchecker card enlarged in the center over a blurred gallery'},
+            {src:'images/chance/lg-flip-3.jpg', tag:'3', title:'Flip', d:'It turns on its vertical axis; the back swaps in halfway.', alt:'The card seen edge-on mid-flip, showing its warm gradient back'},
+            {src:'images/chance/lg-flip-back.jpg', tag:'4', title:'Back of the card', d:'Creator, what it does, ranking, more from the creator, and actions.', alt:'Back of the OOTD Fitchecker card: creator with Follow, what it does, rank and tries, more skills from the creator, and Like, Try it and Share', pick:true},
+            {src:'images/chance/lg-flip-next.jpg', tag:'5', title:'Swipe to the next', d:'Each back takes its colors from its own photo.', alt:'Back of the Design Has Reasons card in cooler greige tones, with the neighbouring cards peeking in'}
+          ], cards:true, caption:'Flip a skill card · tap, lift, flip, read, swipe'},
+          {lv:2, sub:'Fully expanded skill details', minor:true},
+          {lv:2, p:'Pulling the card down opens the full view: the same back, plus who else tried the skill, a link to the full ranking, and similar skills from other creators. A grabber and a collapse button take you back to the card.'},
+          {lv:2, wide:true, center:true, media:[{src:'images/chance/lg-flip-back.jpg', alt:'Back of the OOTD Fitchecker card'}, {src:'images/chance/lg-expanded.jpg', alt:'Fully expanded OOTD Fitchecker details: creator, what it does, rank with See ranking, people who tried it, more from @mina.k, similar skills, and Like, Try it and Share'}], cols:3, caption:'Back of the card and the fully expanded skill details'},
+          {lv:2, sub:'Create Visual Skill in the new style', minor:true},
+          {lv:2, p:'The same system carried into the Create Visual Skill flow from Ch.1: glass cards, chips and secondary buttons, with solid blue-violet primary buttons.'},
+          {lv:2, screens:[
+            {src:'images/chance/lg-create-01.jpg', tag:'01', title:'Pick an interest', d:'Popular skills, recent snaps and interest chips.', alt:'Create a visual skill: popular skills, latest interests and interest chips on glass'},
+            {src:'images/chance/lg-create-02.jpg', tag:'02', title:'Choose a tool', d:'Glass tool cards; the selected one keeps a dark outline.', alt:'What fashion tool do you want to create today: glass tool cards, ready-made skills and idea chips'},
+            {src:'images/chance/lg-create-sent.jpg', tag:'Own skill', title:'Check your request', d:'The response and similar existing skills on glass cards.', alt:'Make my own fashion skill: the user\'s response and similar skills that already exist'},
+            {src:'images/chance/lg-create-05.jpg', tag:'05', title:'Added to my skills', d:'The new skill on a glass card, with Try it now.', alt:'Added to My visual skills: the new Wardrobe Analyzer skill on a glass card with Try it now and Share'}
+          ], cards:true, caption:'Create Visual Skill · restyled in liquid glass'}
         ]},
         {title:'Reflection', entries:[
           'As someone who has been deeply passionate about designing UX for AI, working with a client that is leading the industry in visual language models was an exciting challenge. I realized that product strategy is as important as designing UX, as UX is derived from the primary goal of the product. At the same time, it was a big challenge for our design team to work with a more lenient client who wanted us to explore instead of coming up with an optimal solution. We took this as an opportunity to break free, test wild ideas while refining them to industry standards, and reimagine what the future of AI visual agents could look like.'
@@ -1982,7 +2023,8 @@
           {lv:2, bullets:[
             'Consolidate our Create Visual Skill flow with the in-house design team\'s work in progress, as the client suggested.',
             'Test the second iteration with users to see whether people find existing skills before building duplicates.',
-            'Finish onboarding (Ch.4), so first-time users start with context instead of an empty screen.'
+            'Test the liquid glass screens for contrast and legibility over real user photos, and build the card flip as a working prototype.',
+            'Design onboarding, so first-time users start with context instead of an empty screen.'
           ]}
         ]}
       ],
