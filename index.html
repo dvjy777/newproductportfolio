@@ -1349,6 +1349,15 @@
   .case-list .cl-row + .cl-row .cl-label{ display:none; }
   @media(max-width:699px){ .case-list .cl-row + .cl-row .cl-label{ display:block; } .case-list .cl-head .cl-label{ display:none; } }
   /* a row of single cards, one column each, with the note under its own card */
+  .quad-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
+  .quad{ background:rgba(20,33,61,.035); border-radius:20px; padding:18px 18px 20px; display:flex; flex-direction:column; }
+  .quad.pick{ background:rgba(22,49,243,.06); }
+  .quad-shots{ display:flex; justify-content:center; gap:10px; margin-bottom:14px; }
+  .quad-shots img{ width:calc(50% - 5px); max-width:180px; height:auto; border-radius:14px; box-shadow:0 6px 18px rgba(20,33,61,.12); }
+  .quad i{ font-style:normal; font-size:11.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--nav-accent, var(--accent)); }
+  .quad b{ display:block; margin-top:2px; font-size:14.5px; line-height:1.3; }
+  .quad span{ display:block; margin-top:3px; font-size:13px; line-height:1.45; color:var(--text-muted); }
+  @media(max-width:560px){ .quad-grid{ grid-template-columns:1fr; } }
   .screens4.cards .s4-grid{ gap:24px 16px; }
   @media(min-width:860px){ .screens4.cards .s4-grid{ grid-template-columns:repeat(var(--s4-cols, 4), minmax(0,1fr)); } }
   .screens4.cards img{ aspect-ratio:auto; object-fit:contain; border-radius:0; box-shadow:none; }
@@ -1564,9 +1573,9 @@
 
   var projects = [
     {
-      slug:'claude', company:'Claude', tagline:'Large Language Model Interface · IN PROGRESS',
+      slug:'claude', company:'Claude', tagline:'Large Language Model Interface',
       title:'Side Quests: wander off, never lose the main story', word:'Claude',
-      inProgress:true, coverLight:true,
+      coverLight:true,
       logo:sparkSvg('#D97757'),
       accent:'#C15F3C',
       coverBg:'radial-gradient(ellipse 55% 75% at 50% 50%, rgba(217,119,87,.20), rgba(217,119,87,0) 70%), #F4F1EA',
@@ -1853,7 +1862,7 @@
             ]}
           ]}, caption:'Create Visual Skill · Lo-fi wireframes, user flow · tap any screen to enlarge'}}
           ], caption:'Create Visual Skill user flow · switch between hi-fi and lo-fi'},
-          {lv:2, protoVideo:{src:'images/chance/chance-demo.mp4', poster:'images/chance/chance-demo-poster.jpg', alt:'Prototype: picking Fashion, choosing Outfit Rater, the skill building, then Confirm and Try it now'}, caption:'The main flow, prototyped'},
+          {lv:2, protoVideo:{src:'images/chance/chance-demo-glass.mp4', poster:'images/chance/chance-demo-glass-poster.jpg', alt:'Prototype: picking Fashion, choosing Outfit Rater, the skill building, then Confirm and Try it now'}, caption:'The main flow, prototyped'},
           {lv:2, sub:'Second iteration', minor:true},
           {lv:2, p:'<strong>After mentor meeting 1.</strong> Mentors pointed out two key issues in the redesigned flow:'},
           {lv:2, pull:'There are no ways to access an already created skill if what the user is trying to create already exists.'},
@@ -1865,20 +1874,20 @@
             '“Already made for you” and “Similar skills already exist” sections that match already existing skills with the user\'s intent'
           ]},
           {lv:1, flow:{plain:true, stages:[
-            {label:'Hi-fi V2 · main flow', nodes:[
-              {img:'images/chance/v2-01-interest.jpg', title:'Pick an interest', tag:'popular skills'},
-              {img:'images/chance/v2-02-tool.jpg', title:'Choose a tool', tag:'already made for you', hub:true},
-              {img:'images/chance/new-03-building.jpg', title:'Building'},
-              {img:'images/chance/new-04-ready.jpg', title:'Your skill is ready'},
-              {img:'images/chance/new-05-added.jpg', title:'Added to my skills'}
+            {label:'Hi-fi · main flow', nodes:[
+              {img:'images/chance/lg-create-01.jpg', title:'Pick an interest', tag:'popular skills'},
+              {img:'images/chance/lg-create-02.jpg', title:'Choose a tool', tag:'already made for you', hub:true},
+              {img:'images/chance/lg-create-03.jpg', title:'Building'},
+              {img:'images/chance/lg-create-04.jpg', title:'Your skill is ready'},
+              {img:'images/chance/lg-create-05.jpg', title:'Added to my skills'}
             ]},
-            {label:'Hi-fi V2 · make my own', nodes:[
-              {img:'images/chance/v2-make-own.jpg', title:'Make my own'},
-              {img:'images/chance/v2-sent.jpg', title:'Check your request', tag:'similar skills already exist', hub:true},
-              {img:'images/chance/v2-used-by-others.jpg', title:'Already used by others'},
-              {img:'images/chance/v2-private.jpg', title:'Your own private skill'}
+            {label:'Hi-fi · make my own', nodes:[
+              {img:'images/chance/lg-create-own.jpg', title:'Make my own'},
+              {img:'images/chance/lg-create-sent.jpg', title:'Check your request', tag:'similar skills already exist', hub:true},
+              {img:'images/chance/lg-create-used.jpg', title:'Already used by others'},
+              {img:'images/chance/lg-create-private.jpg', title:'Your own private skill'}
             ]}
-          ]}, caption:'Hi-fi · Create Visual Skill, user flow · V2 (after client meeting, Oct 22) · tap any screen to enlarge'},
+          ]}, caption:'Hi-fi · Create Visual Skill, user flow · latest version, in the 3D liquid glass style from Ch.4 · tap any screen to enlarge'},
           {sub:'Client meeting feedback', minor:true},
           'The client was very impressed with our first high-fidelity prototype, and was especially satisfied with the breakdown flow of the redesigned Create Visual Skill. During the meeting, the client showed our team the work-in-progress design that the in-house design team was working on, suggesting ways to consolidate the two designs.'
         ]},
@@ -1909,16 +1918,14 @@
           'In the current app, all visual skills, whether created by the user or by other users, were placed on the home screen, accessible through endless scrolling. Although there was basic organization by generic topic categories, most of them were just there filling up the screen with no context. We imagined how this abundance of visual skills could be highlighted as a form of creativity and connect users at the same time.',
           {lv:2, p:'That is why we designed a dedicated tab for the community (renamed “Visual skills” in a later iteration).'},
           'This tab specifically highlights the work of all Chance AI users through a Pinterest-esque board that enables intuitive exploration based on users\' interests. Users land on the For You tab by default, which selects skills and outputs that are paired together within a grid system, organized by the algorithm. However, a variety of other skills can also be accessed through topics.',
-          {sub:'First iteration', minor:true},
-          {wide:true, center:true, media:[{src:'images/chance/community-lofi.jpg', alt:'Community lo-fi wireframe: a two-column grid of skill cards'}, {src:'images/chance/community-hifi-v1.jpg', alt:'Community hi-fi: search, topic chips and a Pinterest-like board of skills with their creators'}], cols:3, caption:'Community · Lo-fi and Community · Hi-fi (Branched)'},
-          {sub:'Second iteration', minor:true},
-          {bullets:[
-            'Added a search bar to the Community tab'
-          ]},
-          {wide:true, center:true, media:[{src:'images/chance/skills-hifi-v2.jpg', alt:'Visual skills hi-fi v2: the community board renamed Visual skills'}], cols:3, caption:'Visual skills · Hi-fi (Branched) v2'},
-          {sub:'Third iteration: the skill card', minor:true},
+          {lv:1, quad:[
+            {tag:'First iteration', title:'A board of its own', d:'Lo-fi and hi-fi: a Pinterest-like board of skills, each shown with its creator.', media:[{src:'images/chance/community-lofi.jpg', alt:'Community lo-fi wireframe: a two-column grid of skill cards'}, {src:'images/chance/community-hifi-v1.jpg', alt:'Community hi-fi: search, topic chips and a Pinterest-like board of skills with their creators'}]},
+            {tag:'Second iteration', title:'Search, and a new name', d:'Added a search bar, and the tab was renamed Visual skills.', media:[{src:'images/chance/skills-hifi-v2.jpg', alt:'Visual skills hi-fi v2: the community board renamed Visual skills'}]},
+            {tag:'Third iteration', title:'A clean grid (Nov 4)', d:'Product photos, titles and Try it. Easy to scan, but it read like a catalog of tools, not a community.', media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a back button and title, topic chips, and a two-column grid of skill cards with product photos, titles, descriptions and Try it buttons'}]},
+            {tag:'Final', title:'Community cards (Nov 8, v6)', d:'Real snaps, creators, likes and labeled topics on a dark fade, with a full-width Try it.', pick:true, media:[{src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}]}
+          ], caption:'Visual skills · four iterations at a glance · tap any screen to enlarge'},
+          {sub:'Reworking the skill card', minor:true},
           'The Nov 4 version of the screen switched to a clean two-column grid of skill cards, each with a stock-style product photo, a title, a one-line description and a Try it button. The grid was easy to scan, but nothing on it said who made a skill or whether anyone used it. It read like a catalog of tools, not a community.',
-          {wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a back button and title, topic chips, and a two-column grid of skill cards with product photos, titles, descriptions and Try it buttons'}], cols:3, caption:'Visual skills · Nov 4, the starting point for the card'},
           {lv:1, p:'So I kept the top of our Branched v2 screen (the Chance logo, search bar and topic chips), took the grid from the Nov 4 screen, and focused the next round on one thing: the skill card. I had three goals for it:'},
           {lv:1, bullets:[
             '<strong>Understand the skill at a glance.</strong> The image comes first.',
@@ -1968,9 +1975,7 @@
             '<strong>Readable over any photo.</strong> Light glass blends into light photos and loses its edge. White text on the fade stays readable.',
             '<strong>Easier to tap.</strong> Try it spans the card at 36px tall instead of a small pill in the corner, meeting the third goal: easier access.'
           ]},
-          {lv:1, p:'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.'},
-          {lv:2, sub:'Final screen', minor:true},
-          {lv:1, wide:true, center:true, media:[{src:'images/chance/skills-nov4.jpg', alt:'Visual skills, Nov 4: a product-photo catalog with a back button'}, {src:'images/chance/skills-v6.jpg', alt:'Visual skills, final: the Chance logo, search bar and topic chips, and a grid of skill cards with real snaps, creator avatars, likes, labeled topic chips and full-width Try it buttons on a dark fade'}], cols:3, caption:'Visual skills · Nov 4 and the final version (Nov 8, v6)'}
+          {lv:1, p:'The trade-off is that the fade makes the photos a little moodier. I accepted that, since the snap stays the main thing on the card.'}
         ]},
         {kicker:'Ch.4', title:'Elevating the Look and Feel: 3D Liquid Glass', summary:'Giving Chance a tactile, spatial feel, from glossy 3D buttons to a liquid glass system, then using it for a card flip and a full skill detail view.', entries:[
           {lv:1, p:'With the flows working, the screens still felt flat next to the photos they frame. I wanted Chance to feel tactile and spatial, closer to the glass surfaces of current iOS, without losing the clean, image-first look we had built. That took several rounds, mostly about how much depth is too much.'},
@@ -2561,6 +2566,11 @@
           '</div>') + '<p class="pm-desc" aria-live="polite">'+o0.d+'</p>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       }
       // a prototype recording on a bare phone screen (the screens carry their own status bar)
+      // a 2x2 grid: one iteration per quadrant, its screens on top and a short note below
+      if(t.quad) return '<figure class="case-fig quad-fig"><div class="quad-grid">' + t.quad.map(function(q){
+          return '<div class="quad'+(q.pick ? ' pick' : '')+'"><div class="quad-shots">' + q.media.map(mediaHtml).join('') + '</div>' +
+            '<i>'+q.tag+'</i><b>'+q.title+'</b><span>'+q.d+'</span></div>';
+        }).join('') + '</div>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       if(t.protoVideo) return '<figure class="case-fig proto-demo"><div class="proto-stage"><div class="proto-screen"><video src="'+t.protoVideo.src+'" poster="'+(t.protoVideo.poster||'')+'" autoplay muted loop playsinline aria-label="'+(t.protoVideo.alt||'')+'"></video></div></div>' +
         (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
       // a row of low-fi sketch screens
