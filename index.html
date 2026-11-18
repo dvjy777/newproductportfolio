@@ -952,6 +952,23 @@
   @media (prefers-reduced-motion: reduce){
     .case-nav, .case-nav-list a, .cn-dot, .cn-chev{ transition:none; }
   }
+  /* wide screens: the glass card sits in the left margin under the site nav, always open */
+  @media (min-width:1024px){
+    .case-nav, .case-nav.shown, .case-nav.open, .case-nav.ended, .case-nav.has-depth, .case-nav.has-depth.open{
+      left:24px; top:268px; bottom:auto; width:calc((100vw - 224px) / 12 * 2 + 16px); max-height:calc(100vh - 292px);
+      flex-direction:column; border-radius:22px; transform:none; opacity:1 !important; pointer-events:auto !important; }
+    .case-nav .case-nav-toggle{ display:none; }
+    .case-nav .cn-bar{ order:1; padding:14px 14px 0; }
+    .case-nav .cn-bar:empty, .case-nav:not(.has-depth) .cn-bar{ display:none; }
+    .case-nav .cn-depth{ margin:0; width:100%; grid-template-columns:repeat(3, 1fr) auto; }
+    .case-nav .cn-depth::before{ left:calc(3px + var(--i, 0) * (100% - 6px - var(--min-w, 34px)) / 3); width:calc((100% - 6px - var(--min-w, 34px)) / 3); }
+    .case-nav .cn-min{ width:var(--min-w, 34px); box-sizing:border-box; }
+    .case-nav .case-nav-head{ order:2; display:flex; justify-content:space-between; align-items:baseline; padding:14px 16px 4px;
+      font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+    .case-nav .case-nav-head b{ color:var(--nav-accent, var(--accent)); font-weight:600; font-variant-numeric:tabular-nums; }
+    .case-nav .case-nav-list{ order:3; display:block; padding:2px 16px 14px; }
+    .case-nav .case-nav-list a{ font-size:13px; line-height:1.35; padding:5px 0; }
+  }
 
   .case-block:last-of-type{ border-bottom:none; }
   .case-block h4.label{ margin-bottom:14px; }
@@ -1442,6 +1459,8 @@
   .pm-opt:hover{ background:color-mix(in srgb, var(--nav-accent, var(--accent)) 18%, #ffffff); }
   .pm-opt[aria-pressed="true"]{ background:var(--nav-accent, var(--accent)); color:#fff; }
   .pm-opt:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:2px; }
+  .pm-opt.now{ box-shadow:0 0 0 2px var(--nav-accent, var(--accent)); }
+  .phone-module.live .proto-screen iframe{ pointer-events:auto; }
   .pm-desc{ margin:12px auto 0; max-width:34em; font-size:14.5px; line-height:1.5; color:var(--text-muted); min-height:1.5em; }
   /* cards beside a phone that pick what it plays: the four endings, the v1 to v2 fixes */
   .endings{ margin-top:20px; }
@@ -2045,13 +2064,15 @@
           {lv:2, wide:true, media:[{src:'images/chance/lg-buttons.jpg', alt:'Board comparing solid and glass versions of the primary, secondary, chip, icon and dark icon buttons, on a gradient and over a photo'}], caption:'Buttons · solid vs liquid glass. Glass kept for secondary, chip and icon buttons; primary and dark buttons stay solid'},
           {lv:1, sub:'Card flip: details without leaving the gallery', minor:true},
           {lv:1, p:'The cleaner gallery left no room to explain what a skill does. Instead of opening a new page, tapping a card lifts it to the center while the grid blurs behind it, then flips it over. The back shows what the skill does, its ranking, the creator with a Follow button, more skills they made, and Like, Try it and Share. Its colors are pulled from the card\'s own photo, so each card feels like a different object. Swiping moves to the next card.'},
-          {lv:1, screens:[
-            {src:'images/chance/lg-flip-1.jpg', tag:'1', title:'Tap a card', d:'The card dips slightly so it feels pressed.', alt:'Visual skills gallery with a tap indicator on the OOTD Fitchecker card'},
-            {src:'images/chance/lg-flip-2.jpg', tag:'2', title:'Lift', d:'It scales up to the center as the grid blurs and dims.', alt:'The OOTD Fitchecker card enlarged in the center over a blurred gallery'},
-            {src:'images/chance/lg-flip-3.jpg', tag:'3', title:'Flip', d:'It turns on its vertical axis; the back swaps in halfway.', alt:'The card seen edge-on mid-flip, showing its warm gradient back'},
-            {src:'images/chance/lg-flip-back.jpg', tag:'4', title:'Back of the card', d:'Creator, what it does, ranking, more from the creator, and actions.', alt:'Back of the OOTD Fitchecker card: creator with Follow, what it does, rank and tries, more skills from the creator, and Like, Try it and Share', pick:true},
-            {src:'images/chance/lg-flip-next.jpg', tag:'5', title:'Swipe to the next', d:'Each back takes its colors from its own photo.', alt:'Back of the Design Has Reasons card in cooler greige tones, with the neighbouring cards peeking in'}
-          ], cards:true, caption:'Flip a skill card · tap, lift, flip, read, swipe'},
+          {lv:1, phone:{src:'chance-flip/?embed=1', live:true, options:[
+            {label:'1 · Tap', demo:1, d:'Tap a card: it dips slightly so it feels pressed.'},
+            {label:'2 · Lift', demo:2, d:'It scales up to the center as the gallery blurs and dims behind it.'},
+            {label:'3 · Flip', demo:3, d:'It turns on its vertical axis and the back swaps in halfway.'},
+            {label:'4 · Read', demo:4, d:'The back: creator, what it does, ranking, more from the creator, and Like, Try it and Share.'},
+            {label:'5 · Swipe', demo:5, d:'Swipe sideways for the next skill. Each back takes its colors from its own photo.'},
+            {label:'6 · Pull down', demo:6, d:'Pull the card down to open the full skill details.'},
+            {label:'Try it yourself', demo:0, d:'Your turn: tap a card, swipe between backs, pull down for details, tap ↻ or outside the card to flip back.'}
+          ]}, caption:'Flip a skill card · pick a phase to watch it, or try it yourself on the screen'},
           {lv:2, sub:'Fully expanded skill details', minor:true},
           {lv:2, p:'Pulling the card down opens the full view: the same back, plus who else tried the skill, a link to the full ranking, and similar skills from other creators. A grabber and a collapse button take you back to the card.'},
           {lv:2, wide:true, center:true, media:[{src:'images/chance/lg-flip-back.jpg', alt:'Back of the OOTD Fitchecker card'}, {src:'images/chance/lg-expanded.jpg', alt:'Fully expanded OOTD Fitchecker details: creator, what it does, rank with See ranking, people who tried it, more from @mina.k, similar skills, and Like, Try it and Share'}], cols:3, caption:'Back of the card and the fully expanded skill details'},
@@ -2478,7 +2499,7 @@
   // (pad = track padding, seg = option width or null for equal thirds). A plain tap still clicks the option.
   function dragThumb(track, pad, seg){
     var btns = track.querySelectorAll('button'), n = btns.length, start = null, moved = false;
-    function segW(){ return seg || (track.getBoundingClientRect().width - 2 * pad) / n; }
+    function segW(){ return seg === 'btn' ? btns[0].getBoundingClientRect().width : seg || (track.getBoundingClientRect().width - 2 * pad) / n; }
     function idx(x){ var r = track.getBoundingClientRect(); return Math.max(0, Math.min(n - 1, (x - r.left - pad) / segW() - .5)); }
     track.addEventListener('pointerdown', function(e){
       if(e.button) return; start = e.clientX; moved = false;
@@ -2631,8 +2652,8 @@
       // one phone that loops an action, with buttons underneath to switch actions
       if(t.phone){
         var o0 = t.phone.options[0];
-        return '<figure class="case-fig phone-module" data-module><div class="pm-stage"><div class="proto-screen">' +
-          '<iframe src="claude-prototype/?embed=1&slow=1.6&demo='+o0.demo+'" title="Prototype: '+o0.label+'" loading="lazy" tabindex="-1"></iframe></div></div>' +
+        return '<figure class="case-fig phone-module'+(t.phone.live ? ' live' : '')+'" data-module><div class="pm-stage"><div class="proto-screen">' +
+          '<iframe src="'+(t.phone.src || 'claude-prototype/?embed=1&slow=1.6')+'&demo='+o0.demo+'" title="Prototype: '+o0.label+'" loading="lazy"'+(t.phone.live ? '' : ' tabindex="-1"')+'></iframe></div></div>' +
           (t.phone.bare ? '' : '<div class="pm-options" role="group" aria-label="Choose an action to watch">' +
           t.phone.options.map(function(o, i){ return '<button type="button" class="pm-opt" data-demo="'+o.demo+'" data-d="'+o.d.replace(/"/g, '&quot;')+'" aria-pressed="'+(i ? 'false' : 'true')+'">'+o.label+'</button>'; }).join('') +
           '</div>') + '<p class="pm-desc" aria-live="polite">'+o0.d+'</p>' + (t.caption ? '<figcaption>'+t.caption+'</figcaption>' : '') + '</figure>';
@@ -2919,6 +2940,11 @@
           if(frame.contentWindow) frame.contentWindow.postMessage({demo:+b.dataset.demo}, location.origin);
         });
       });
+      // a live prototype reports which phase the reader is in, so its button lights up
+      if(m.classList.contains('live')) window.addEventListener('message', function(e){
+        if(e.source !== frame.contentWindow || !e.data || typeof e.data.flipPhase !== 'number') return;
+        btns.forEach(function(x){ x.classList.toggle('now', +x.dataset.demo === e.data.flipPhase && x.getAttribute('aria-pressed') !== 'true'); });
+      });
     });
     // sketch and final: drag the divider, or pick another screen
     caseView.querySelectorAll('[data-evolve]').forEach(function(fig){
@@ -3181,7 +3207,7 @@
 
     var toggle = nav.querySelector('.case-nav-toggle');
     // the pill's switch drives the same picker as the one under the title, so the page refolds in place
-    var cnTrack = nav.querySelector('.cn-depth'); if(cnTrack) dragThumb(cnTrack, 3, 28);
+    var cnTrack = nav.querySelector('.cn-depth'); if(cnTrack) dragThumb(cnTrack, 3, 'btn');
     nav.querySelectorAll('.cn-depth button').forEach(function(b){
       b.addEventListener('click', function(e){
         e.stopPropagation();

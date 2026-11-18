@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chance AI · Card flip prototype</title>
+<style>
+  html, body{ margin:0; height:100%; background:#e9e9ef; overflow:hidden; font-family:-apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color:transparent; }
+  /* the phone screen is drawn at 390 x 844 and scaled to fit the frame */
+  .stage{ position:absolute; left:50%; top:50%; width:390px; height:844px; transform-origin:0 0; overflow:hidden; background:#f3f3f6; user-select:none; -webkit-user-select:none; touch-action:none; }
+  .grid{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  /* everything behind a lifted card blurs and dims */
+  .veil{ position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s ease;
+    -webkit-backdrop-filter:blur(14px) saturate(1.1); backdrop-filter:blur(14px) saturate(1.1); background:rgb(236 236 244 / .32); }
+  .on-card .veil{ opacity:1; pointer-events:auto; }
+
+  .card{ position:absolute; z-index:3; perspective:1400px; transition:left .5s cubic-bezier(.32,.72,.24,1), top .5s cubic-bezier(.32,.72,.24,1), width .5s cubic-bezier(.32,.72,.24,1), height .5s cubic-bezier(.32,.72,.24,1), transform .5s cubic-bezier(.32,.72,.24,1), opacity .3s ease; }
+  .card.quick{ transition-duration:.14s; }
+  .card.still{ transition:none; }
+  .flip{ position:absolute; inset:0; transform-style:preserve-3d; transition:transform .75s cubic-bezier(.45,.05,.25,1); }
+  .card.flipped .flip{ transform:rotateY(180deg); }
+  .face{ position:absolute; inset:0; border-radius:24px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; background:#ddd; }
+  .face img{ width:100%; height:100%; display:block; object-fit:cover; pointer-events:none; }
+  .back{ transform:rotateY(180deg); }
+  .card.lifted .face{ box-shadow:0 30px 60px -18px rgb(26 31 89 / .35), 0 8px 18px rgb(26 31 89 / .12); }
+  .card.idle{ opacity:0; pointer-events:none; }
+
+  /* dots and the hint under the card back */
+  .hint{ position:absolute; z-index:4; left:0; right:0; top:684px; text-align:center; color:#fff; font-size:12.5px; line-height:1.55; opacity:0; transform:translateY(6px);
+    transition:opacity .35s ease, transform .35s ease; text-shadow:0 1px 6px rgb(0 0 0 / .25); pointer-events:none; }
+  .show-hint .hint{ opacity:1; transform:none; }
+  .dots{ display:flex; justify-content:center; gap:6px; margin-bottom:12px; }
+  .dots i{ width:6px; height:6px; border-radius:3px; background:rgb(255 255 255 / .55); transition:width .3s ease, background .3s ease; }
+  .dots i.on{ width:16px; background:#fff; }
+
+  /* the full skill details grow out of the card */
+  .sheet{ position:absolute; z-index:6; overflow:hidden; border-radius:24px; opacity:0; pointer-events:none; box-shadow:0 30px 60px -18px rgb(26 31 89 / .35);
+    transition:left .5s cubic-bezier(.32,.72,.24,1), top .5s cubic-bezier(.32,.72,.24,1), width .5s cubic-bezier(.32,.72,.24,1), height .5s cubic-bezier(.32,.72,.24,1), border-radius .5s ease, opacity .25s ease; }
+  .sheet img{ position:absolute; left:0; top:0; width:390px; height:844px; transition:transform .5s cubic-bezier(.32,.72,.24,1); }
+  .sheet.open{ opacity:1; pointer-events:auto; }
+
+  /* a tap: a soft ring where the finger lands */
+  .tap{ position:absolute; z-index:8; width:64px; height:64px; margin:-32px 0 0 -32px; border-radius:50%; background:rgb(255 255 255 / .55); box-shadow:0 0 0 2px rgb(255 255 255 / .8), 0 6px 20px rgb(26 31 89 / .25);
+    pointer-events:none; opacity:0; transform:scale(.4); }
+  .tap.go{ animation:tap .6s ease-out forwards; }
+  @keyframes tap{ 0%{ opacity:0; transform:scale(.4); } 25%{ opacity:1; transform:scale(.85); } 100%{ opacity:0; transform:scale(1.4); } }
+  /* a finger dragging, for the swipe and pull-down demos */
+  .finger{ position:absolute; z-index:8; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; background:rgb(255 255 255 / .6); box-shadow:0 0 0 2px rgb(255 255 255 / .85), 0 6px 20px rgb(26 31 89 / .25);
+    pointer-events:none; opacity:0; transition:opacity .2s ease; }
+  .finger.on{ opacity:1; }
+
+  /* free play: a gentle pulse on the first card says "tap me" */
+  .nudge{ position:absolute; z-index:4; left:103px; top:400px; width:54px; height:54px; margin:-27px 0 0 -27px; border-radius:50%; pointer-events:none; opacity:0;
+    box-shadow:0 0 0 2px rgb(255 255 255 / .9); transition:opacity .3s ease; }
+  .free .nudge{ opacity:1; animation:nudge 1.8s ease-out infinite; }
+  .on-card .nudge{ opacity:0 !important; animation:none; }
+  @keyframes nudge{ 0%{ transform:scale(.6); opacity:.95; } 100%{ transform:scale(1.5); opacity:0; } }
+  @media (prefers-reduced-motion: reduce){ .card, .flip, .sheet, .sheet img, .veil, .hint{ transition-duration:.01s !important; } .free .nudge{ animation:none; } }
+</style>
+</head>
+<body>
+<div class="stage" id="stage" aria-label="Card flip prototype">
+  <img class="grid" src="img/grid.jpg" alt="Visual skills gallery">
+  <div class="veil" id="veil"></div>
+  <div class="nudge" aria-hidden="true"></div>
+  <div class="card idle" id="card"><div class="flip"><div class="face front"><img id="front" alt=""></div><div class="face back"><img id="back" alt=""></div></div></div>
+  <div class="hint" aria-hidden="true"><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>Swipe for the next card · tap ↻ to flip back<br>Swipe down to see full details</div>
+  <div class="sheet" id="sheet"><img src="img/expanded.jpg" alt="Full skill details"></div>
+  <div class="tap" id="tap"></div>
+  <div class="finger" id="finger"></div>
+</div>
+<script>
+(function(){
+  var W = 390, H = 844;
+  var stage = document.getElementById('stage'), card = document.getElementById('card'), front = document.getElementById('front'), back = document.getElementById('back'),
+      sheet = document.getElementById('sheet'), tapEl = document.getElementById('tap'), finger = document.getElementById('finger'), dots = document.querySelectorAll('#dots i');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // the two skills on the first row of the gallery
+  var SKILLS = [
+    { name:'OOTD Fitchecker', grid:[19, 293, 168, 241], front:'img/front-ootd.jpg', back:'img/back-ootd.jpg' },
+    { name:'Design Has Reasons', grid:[200, 293, 168, 194], front:'img/front-dhr.jpg', back:'img/back-dhr.jpg' }
+  ];
+  var BACK = [22, 101, 340, 562], FULL = [0, 0, W, H];
+  var state = 'grid', cur = 0, run = 0;
+
+  function fit(){
+    var s = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = 'scale(' + s + ') translate(-50%, -50%)';
+    stage.style.transformOrigin = '0 0';
+    stage.style.left = (innerWidth - W * s) / 2 + 'px'; stage.style.top = (innerHeight - H * s) / 2 + 'px';
+    stage.style.transform = 'scale(' + s + ')';
+    stage._s = s;
+  }
+  addEventListener('resize', fit); fit();
+
+  function place(el, r){ el.style.left = r[0] + 'px'; el.style.top = r[1] + 'px'; el.style.width = r[2] + 'px'; el.style.height = r[3] + 'px'; }
+  function liftRect(i){ var g = SKILLS[i].grid, w = 300, h = Math.round(w * g[3] / g[2]); return [45, Math.round(400 - h / 2), w, h]; }
+  function wait(ms, token){ return new Promise(function(res, rej){ setTimeout(function(){ token === run ? res() : rej('stop'); }, reduce ? Math.min(ms, 60) : ms); }); }
+  function phase(n){ try{ parent.postMessage({ flipPhase:n }, '*'); }catch(e){} }
+  function setDots(i){ dots.forEach(function(d, k){ d.classList.toggle('on', k === i); }); }
+  function load(i){ cur = i; front.src = SKILLS[i].front; back.src = SKILLS[i].back; front.alt = SKILLS[i].name + ', front'; back.alt = SKILLS[i].name + ', back'; setDots(i); }
+  [0, 1].forEach(function(i){ var a = new Image(); a.src = SKILLS[i].back; var b = new Image(); b.src = SKILLS[i].front; });
+  new Image().src = 'img/expanded.jpg';
+
+  function reset(){
+    run++; state = 'grid';
+    stage.classList.remove('on-card', 'show-hint');
+    card.className = 'card idle still'; card.style.transform = ''; load(0); place(card, SKILLS[0].grid);
+    sheet.classList.remove('open'); place(sheet, BACK);
+    finger.classList.remove('on');
+    void card.offsetWidth; card.classList.remove('still');
+  }
+
+  function ripple(x, y){ tapEl.style.left = x + 'px'; tapEl.style.top = y + 'px'; tapEl.classList.remove('go'); void tapEl.offsetWidth; tapEl.classList.add('go'); }
+
+  // ---- the six phases ----
+  async function doTap(i, t, at){
+    var g = SKILLS[i].grid; load(i);
+    card.className = 'card still'; place(card, g); void card.offsetWidth; card.classList.remove('still');
+    ripple(at ? at[0] : g[0] + g[2] / 2, at ? at[1] : g[1] + g[3] / 2); phase(1);
+    card.classList.add('quick'); card.style.transform = 'scale(.95)'; await wait(150, t);
+    card.style.transform = ''; await wait(160, t); card.classList.remove('quick');
+    state = 'tapped';
+  }
+  async function doLift(t){
+    phase(2); stage.classList.add('on-card'); card.classList.add('lifted'); place(card, liftRect(cur));
+    await wait(520, t); state = 'lifted';
+  }
+  async function doFlip(t){
+    phase(3); card.classList.add('flipped'); place(card, BACK);
+    await wait(780, t); state = 'back';
+  }
+  async function doRead(t){ phase(4); stage.classList.add('show-hint'); await wait(300, t); }
+  async function doSwipe(dir, t){
+    phase(5);
+    var next = (cur + (dir < 0 ? 1 : SKILLS.length - 1)) % SKILLS.length;
+    card.style.transform = 'translateX(' + (dir * 430) + 'px) rotate(' + (dir * 6) + 'deg)'; await wait(330, t);
+    card.classList.add('still'); load(next); card.style.transform = 'translateX(' + (-dir * 430) + 'px) rotate(' + (-dir * 6) + 'deg)';
+    void card.offsetWidth; card.classList.remove('still'); card.style.transform = ''; await wait(420, t);
+  }
+  async function doExpand(t){
+    phase(6); stage.classList.remove('show-hint');
+    sheet.classList.add('still'); place(sheet, BACK); sheet.style.borderRadius = '24px'; sheet.firstElementChild.style.transform = 'translate(' + (-BACK[0]) + 'px,' + (-BACK[1]) + 'px)';
+    void sheet.offsetWidth; sheet.classList.remove('still'); sheet.classList.add('open');
+    place(sheet, FULL); sheet.style.borderRadius = '0px'; sheet.firstElementChild.style.transform = 'none';
+    await wait(520, t); state = 'expanded';
+  }
+  async function doCollapse(t){
+    phase(4); place(sheet, BACK); sheet.style.borderRadius = '24px'; sheet.firstElementChild.style.transform = 'translate(' + (-BACK[0]) + 'px,' + (-BACK[1]) + 'px)';
+    await wait(380, t); sheet.classList.remove('open'); stage.classList.add('show-hint'); await wait(250, t); state = 'back';
+  }
+  async function doClose(t){
+    phase(0); stage.classList.remove('show-hint');
+    card.classList.remove('flipped'); place(card, liftRect(cur)); await wait(700, t);
+    stage.classList.remove('on-card'); card.classList.remove('lifted'); place(card, SKILLS[cur].grid); await wait(520, t);
+    card.classList.add('idle'); state = 'grid';
+  }
+
+  // a finger that drags across the screen, for the demos
+  async function drag(from, to, ms, t){
+    finger.style.transition = 'none'; finger.style.left = from[0] + 'px'; finger.style.top = from[1] + 'px'; finger.classList.add('on'); await wait(260, t);
+    finger.style.transition = 'left ' + ms + 'ms ease-in-out, top ' + ms + 'ms ease-in-out, opacity .2s ease';
+    finger.style.left = to[0] + 'px'; finger.style.top = to[1] + 'px'; await wait(ms * .6, t);
+  }
+
+  // ---- demo: play from the gallery up to the chosen phase, then hold ----
+  async function demo(n){
+    reset(); var t = run;
+    stage.classList.toggle('free', n === 0);
+    if(n === 0){ phase(0); return; }
+    try{
+      await wait(500, t);
+      await doTap(0, t); if(n === 1){ await wait(700, t); card.classList.add('idle'); state = 'grid'; return; }
+      await wait(120, t); await doLift(t); if(n === 2) return;
+      await wait(260, t); await doFlip(t); await doRead(t); if(n <= 4) return;
+      await wait(900, t);
+      if(n === 5){ await drag([320, 420], [70, 420], 520, t); await doSwipe(-1, t); finger.classList.remove('on'); return; }
+      if(n === 6){ await drag([195, 300], [195, 470], 520, t); finger.classList.remove('on'); await doExpand(t); return; }
+    }catch(e){}
+  }
+
+  // ---- free play: the reader drives it ----
+  function pt(e){ var r = stage.getBoundingClientRect(), s = stage._s || 1; return [(e.clientX - r.left) / s, (e.clientY - r.top) / s]; }
+  function inside(p, r){ return p[0] >= r[0] && p[0] <= r[0] + r[2] && p[1] >= r[1] && p[1] <= r[1] + r[3]; }
+  var down = null, busy = false;
+  async function act(fn){ if(busy) return; busy = true; stage.classList.remove('free'); var t = ++run; try{ await fn(t); }catch(e){} busy = false; }
+  stage.addEventListener('pointerdown', function(e){ down = pt(e); });
+  stage.addEventListener('pointerup', function(e){
+    if(!down) return; var p = pt(e), dx = p[0] - down[0], dy = p[1] - down[1], start = down; down = null;
+    var swipe = Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy), pull = dy > 50 && Math.abs(dy) > Math.abs(dx);
+    if(state === 'grid'){
+      var hit = -1; SKILLS.forEach(function(s, i){ if(inside(start, s.grid)) hit = i; });
+      if(hit > -1 && !swipe && !pull) act(async function(t){ await doTap(hit, t, start); await doLift(t); await wait(200, t); await doFlip(t); await doRead(t); });
+    } else if(state === 'back'){
+      if(swipe) act(function(t){ return doSwipe(dx < 0 ? -1 : 1, t).then(function(){ phase(4); }); });
+      else if(pull) act(doExpand);
+      else if(inside(start, [BACK[0] + BACK[2] - 64, BACK[1], 64, 64]) || !inside(start, BACK)) act(doClose); // the ↻ button, or a tap outside the card
+    } else if(state === 'expanded'){
+      if(pull || inside(start, [330, 80, 60, 56])) act(doCollapse);
+    }
+  });
+
+  addEventListener('message', function(e){ if(e.data && typeof e.data.demo === 'number') demo(e.data.demo); });
+  var q = /[?&]demo=(\d)/.exec(location.search);
+  reset(); demo(q ? +q[1] : 0);
+})();
+</script>
+</body>
+</html>
