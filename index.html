@@ -873,21 +873,28 @@
     --nav-edge:color-mix(in srgb, var(--nav-accent, var(--accent)) 24%, transparent);
   }
 
-  /* the section menu is a notch at the top centre, like a phone's Dynamic Island: a dark pill
+  /* the section menu is a liquid glass pill at the bottom centre
      with the current section that opens into the full list. It shows while you scroll. */
   .case-nav{
-    left:50%; top:calc(var(--head-bottom, 84px) + 10px);
+    left:50%; bottom:calc(18px + env(safe-area-inset-bottom, 0px));
     width:min(300px, calc(100vw - 32px)); max-height:calc(100vh - var(--head-bottom, 84px) - 30px);
-    display:flex; flex-direction:column; overflow:hidden;
-    background:var(--nav-tint); color:var(--text);
-    -webkit-backdrop-filter:blur(18px) saturate(1.4); backdrop-filter:blur(18px) saturate(1.4);
-    border-radius:24px; box-shadow:0 10px 30px color-mix(in srgb, var(--nav-accent, var(--accent)) 18%, transparent);
-    opacity:0; pointer-events:none; transform:translateX(-50%) translateY(-10px) scale(.96);
+    /* it sits at the bottom of the screen, so the list opens upward above the current section */
+    display:flex; flex-direction:column-reverse; overflow:hidden;
+    /* liquid glass: a light top-to-bottom tint, a sheen near the top, a soft inner glow and a soft drop shadow, no edge line */
+    background:
+      radial-gradient(120% 90% at 22% 0%, rgb(255 255 255 / .55), rgb(255 255 255 / 0) 62%),
+      linear-gradient(180deg, color-mix(in srgb, var(--nav-accent, var(--accent)) 4%, rgb(255 255 255 / .62)), color-mix(in srgb, var(--nav-accent, var(--accent)) 6%, rgb(255 255 255 / .34)));
+    color:var(--text);
+    -webkit-backdrop-filter:blur(24px) saturate(1.8); backdrop-filter:blur(24px) saturate(1.8);
+    border-radius:24px;
+    box-shadow:inset 0 6px 16px rgb(255 255 255 / .5), inset 0 -8px 18px color-mix(in srgb, var(--nav-accent, var(--accent)) 5%, transparent),
+      0 14px 28px -8px rgb(26 31 89 / .16), 0 2px 6px rgb(26 31 89 / .05);
+    opacity:0; pointer-events:none; transform:translateX(-50%) translateY(10px) scale(.96);
     transition:opacity .35s ease, transform .4s cubic-bezier(.32,.72,.24,1), width .4s cubic-bezier(.32,.72,.24,1), border-radius .4s ease;
   }
 
   /* at the end of a case study the notch splits, like a droplet, into back · top · next */
-  .case-end{ position:fixed; z-index:40; left:50%; top:calc(var(--head-bottom, 84px) + 10px); transform:translateX(-50%); height:40px;
+  .case-end{ position:fixed; z-index:40; left:50%; bottom:calc(18px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); height:40px;
     opacity:0; pointer-events:none; transition:opacity .2s ease .38s; }
   .case-end.on{ opacity:1; pointer-events:auto; transition-delay:0s; }
   .ce-goo{ position:absolute; inset:-20px -30px; filter:url(#ce-goo); pointer-events:none; }
@@ -914,10 +921,28 @@
     font-family:'Geist', -apple-system, "Segoe UI", sans-serif; font-size:14px; font-weight:500;
   }
   .cn-count{ color:var(--nav-accent, var(--accent)); font-weight:600; font-variant-numeric:tabular-nums; }
+  .cn-bar{ display:flex; align-items:center; }
+  .cn-bar .case-nav-toggle{ flex:1; min-width:0; }
+  .case-nav.has-depth{ width:min(390px, calc(100vw - 24px)); }
+  .case-nav.has-depth.open{ width:min(460px, calc(100vw - 24px)); }
+  .case-nav.has-depth .case-nav-toggle{ padding-right:8px; }
+  .cn-depth{ position:relative; flex:0 0 auto; display:grid; grid-template-columns:repeat(3, 28px) auto; align-items:center; margin-right:6px; padding:3px;
+    border-radius:999px; background:color-mix(in srgb, var(--nav-accent, var(--accent)) 7%, rgb(255 255 255 / .35)); box-shadow:inset 0 1px 3px rgb(26 31 89 / .06); }
+  .cn-depth::before{ content:''; position:absolute; top:3px; bottom:3px; left:calc(3px + var(--i, 0) * 28px); width:28px; border-radius:999px; background:#fff;
+    box-shadow:0 2px 6px rgb(26 31 89 / .14); transition:left .32s cubic-bezier(.32,.72,.24,1); }
+  .cn-depth button{ position:relative; z-index:1; height:26px; border:0; background:none; padding:0; cursor:pointer; font:600 12px/1 'Geist', -apple-system, "Segoe UI", sans-serif;
+    color:var(--text-muted); font-variant-numeric:tabular-nums; border-radius:999px; }
+  .cn-depth button.on{ color:var(--nav-accent, var(--accent)); }
+  .cn-depth button:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:1px; }
+  .cn-min{ padding:0 7px 0 4px; font-size:11px; color:var(--text-muted); }
+  .cn-depth, .depth-panel .dp-opts{ touch-action:pan-y; user-select:none; -webkit-user-select:none; }
+  .cn-depth.dragging::before, .depth-panel .dp-opts.dragging::before{ transition:none; box-shadow:0 6px 16px rgb(26 31 89 / .2); }
+  .cn-depth.dragging, .depth-panel .dp-opts.dragging{ cursor:grabbing; }
+  @media (prefers-reduced-motion: reduce){ .cn-depth::before, .depth-panel .dp-opts::before{ transition:none; } }
   .cn-current{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .cn-chev{ color:var(--text-muted); transition:transform .25s ease; }
-  .case-nav.open .cn-chev{ transform:rotate(180deg); }
-  .case-nav-list{ display:none; padding:2px 18px 14px; overflow:auto; }
+  .cn-chev{ color:var(--text-muted); transition:transform .25s ease; transform:rotate(180deg); }
+  .case-nav.open .cn-chev{ transform:none; }
+  .case-nav-list{ display:none; padding:14px 18px 2px; overflow:auto; }
   .case-nav.open .case-nav-list{ display:block; }
   .case-nav-list a{ font-size:14px; letter-spacing:0; text-transform:none; padding:7px 0; color:var(--text-muted); }
   .case-nav-list a:hover, .case-nav-list a.active{ color:var(--text); }
@@ -1081,24 +1106,20 @@
   /* reading time: pick 1, 5 or 10 minutes and the case study folds to fit */
   .depth-panel{ margin:18px 0 26px; }
   .depth-panel .dp-label{ margin:0 0 10px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
-  .depth-panel .dp-opts{ display:inline-flex; gap:4px; padding:4px; border-radius:999px; background:color-mix(in srgb, var(--text) 5%, transparent); }
+  /* liquid glass track; the selected time is a solid white thumb that slides between options */
+  .depth-panel .dp-opts{ position:relative; display:inline-grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0; padding:5px; border-radius:999px;
+    background:radial-gradient(120% 90% at 22% 0%, rgb(255 255 255 / .55), rgb(255 255 255 / 0) 62%), linear-gradient(180deg, color-mix(in srgb, var(--nav-accent, var(--accent)) 4%, rgb(255 255 255 / .62)), color-mix(in srgb, var(--nav-accent, var(--accent)) 7%, rgb(255 255 255 / .34)));
+    -webkit-backdrop-filter:blur(24px) saturate(1.8); backdrop-filter:blur(24px) saturate(1.8);
+    box-shadow:inset 0 6px 16px rgb(255 255 255 / .5), inset 0 -8px 18px color-mix(in srgb, var(--nav-accent, var(--accent)) 6%, transparent), 0 14px 28px -8px rgb(26 31 89 / .16), 0 2px 6px rgb(26 31 89 / .05); }
+  .depth-panel .dp-opts::before{ content:''; position:absolute; top:5px; bottom:5px; left:calc(5px + var(--i, 0) * (100% - 10px) / 3); width:calc((100% - 10px) / 3);
+    border-radius:999px; background:#fff; box-shadow:0 4px 12px rgb(26 31 89 / .12), 0 1px 2px rgb(26 31 89 / .06); transition:left .32s cubic-bezier(.32,.72,.24,1); }
+  .depth-panel .dp-opt{ position:relative; z-index:1; }
   .depth-panel .dp-opt{ border:0; background:none; cursor:pointer; padding:8px 16px; border-radius:999px; font:inherit; color:color-mix(in srgb, var(--text) 55%, transparent); display:flex; flex-direction:column; align-items:center; transition:background .2s ease, color .2s ease; }
   .depth-panel .dp-opt b{ font-size:15px; font-weight:600; line-height:1.2; }
   .depth-panel .dp-opt span{ font-size:11.5px; line-height:1.3; }
   .depth-panel .dp-opt:hover{ color:var(--text); }
-  .depth-panel .dp-opt.on{ background:var(--bg); color:var(--nav-accent, var(--accent)); box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .depth-panel .dp-opt.on{ color:var(--nav-accent, var(--accent)); }
   .depth-panel .dp-opt:focus-visible{ outline:2px solid var(--nav-accent, var(--accent)); outline-offset:2px; }
-  /* on wide screens it sits in the left column, under the site nav */
-  @media (min-width:1024px){
-    .depth-panel{ position:fixed; z-index:30; left:24px; top:300px; margin:0; width:calc((100vw - 224px) / 12 * 2 + 16px); }
-    .depth-panel .dp-opts{ display:flex; flex-direction:column; gap:12px; padding:0; background:none; border-radius:0; }
-    .depth-panel .dp-opt{ align-items:flex-start; padding:0 0 0 13px; border-radius:0; position:relative; text-align:left; }
-    .depth-panel .dp-opt::before{ content:''; position:absolute; left:0; top:6px; width:5px; height:5px; border-radius:50%; background:var(--nav-accent, var(--accent)); opacity:0; transition:opacity .2s ease; }
-    .depth-panel .dp-opt.on{ background:none; box-shadow:none; }
-    .depth-panel .dp-opt.on::before{ opacity:1; }
-    .depth-panel .dp-opt span{ opacity:0; transition:opacity .2s ease; }
-    .depth-panel .dp-opt.on span, .depth-panel .dp-opt:hover span{ opacity:1; }
-  }
   /* a decision, called out: accent rule, small label, large statement */
   .case-decision{ margin:28px 0; padding:4px 0 4px 20px; border-left:3px solid var(--nav-accent, var(--accent)); }
   .case-decision .cd-label{ margin:0 0 8px; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--nav-accent, var(--accent)); font-weight:500; }
@@ -1852,7 +1873,7 @@
             [{sub:'Chat interface as a blank canvas', minor:true}, '<strong>The problem was clear.</strong> The first three scenarios allow users to create something and test it until satisfied, and eventually keep or publish it (revisiting their created skills is a separate problem that we will revisit, no pun intended). But in the last scenario, where users don\'t have a clear picture of what they want or what they want to build, the chat interface becomes a literal blank canvas. Users could type some prompts to ask for help with brainstorming, just like with any LLM. Hence, such an interface could be a double-edged sword: it could be either liberating or daunting, depending on the user\'s state.', '<strong>It does not provide any soft cushion to fall back on.</strong> This process could be designed into a structured UI.'],
             [{sub:'The solution', minor:true}, '<strong>My solution was to break down the chat interface</strong> into a guided flow that adapts to users\' history and needs. It starts with topic suggestions, showing the top 4 topics users could be interested in. Once a topic is chosen, it shows you relevant skills. At the same time, free prompting is available if none of the skills are what you want. The build summary gives you keywords for what Chance would build based on your prompt, giving you a clear picture of what the final outcome would be. Making improvements works the same way.']
           ]},
-          {lv:1, compare:{before:'images/chance/before-clean.jpg', after:'images/chance/v2-01-interest.jpg', beforeLabel:'Before · open chat', afterLabel:'After · guided flow', alt:'Before: the original Create Visual Skill screen with fixed example prompts and an empty chat bar. After: the redesign, starting from popular skills and your latest interests.'}, caption:'Drag to compare the original Create Visual Skill screen with the redesign'},
+          {lv:1, compare:{before:'images/chance/before-clean.jpg', after:'images/chance/lg-create-01.jpg', beforeLabel:'Before · open chat', afterLabel:'After · guided flow', alt:'Before: the original Create Visual Skill screen with fixed example prompts and an empty chat bar. After: the redesign, starting from popular skills and your latest interests.'}, caption:'Drag to compare the original Create Visual Skill screen with the redesign'},
           {tabs:[
             {label:'Hi-fi', entry:{flow:{plain:true, full:'images/chance/flow-hifi.jpg', stages:[
             {label:'Hi-fi · main flow', nodes:[
@@ -2453,6 +2474,35 @@
   var caseView = document.getElementById('case-view');
 
   // reading time: 1 = 1 min, 2 = 5 min, 3 = 10 min (everything). Only cases with depth:true use it.
+  // a segmented switch whose thumb can be dragged: it follows the pointer, then snaps to the nearest option
+  // (pad = track padding, seg = option width or null for equal thirds). A plain tap still clicks the option.
+  function dragThumb(track, pad, seg){
+    var btns = track.querySelectorAll('button'), n = btns.length, start = null, moved = false;
+    function segW(){ return seg || (track.getBoundingClientRect().width - 2 * pad) / n; }
+    function idx(x){ var r = track.getBoundingClientRect(); return Math.max(0, Math.min(n - 1, (x - r.left - pad) / segW() - .5)); }
+    track.addEventListener('pointerdown', function(e){
+      if(e.button) return; start = e.clientX; moved = false;
+    });
+    track.addEventListener('pointermove', function(e){
+      if(start === null) return;
+      if(!moved && Math.abs(e.clientX - start) < 4) return;
+      // capture only once it is a drag, so a plain tap still lands on its button
+      if(!moved){ try{ track.setPointerCapture(e.pointerId); }catch(err){} }
+      moved = true; track.classList.add('dragging'); track.style.setProperty('--i', idx(e.clientX).toFixed(3));
+    });
+    function end(e){
+      if(start === null) return; start = null;
+      track.classList.remove('dragging');
+      if(!moved) return;
+      var i = Math.round(idx(e.clientX)); track.style.setProperty('--i', i);
+      track.dataset.dragged = '1'; setTimeout(function(){ delete track.dataset.dragged; }, 0);
+      if(!btns[i].classList.contains('on')) btns[i].click(); else track.style.setProperty('--i', i);
+    }
+    track.addEventListener('pointerup', end);
+    track.addEventListener('pointercancel', function(){ start = null; track.classList.remove('dragging'); });
+    // the click that follows a drag is not a tap on whatever button the pointer ended over
+    track.addEventListener('click', function(e){ if(track.dataset.dragged && e.isTrusted){ e.stopPropagation(); e.preventDefault(); } }, true);
+  }
   var caseDepth = (function(){ try{ var v = +localStorage.getItem('caseDepth'); return v >= 1 && v <= 3 ? v : 1; }catch(e){ return 1; } })();
   function renderCase(p){
     var D = p.depth ? caseDepth : 3;
@@ -2756,7 +2806,7 @@
       '<button class="back-link" id="backBtn">&#8592; Back</button>'+
       '<div class="label">'+p.company.toUpperCase()+' · '+p.tagline+'</div>'+
       '<h1 class="case-title">'+p.title+'</h1>'+
-      (p.depth ? '<div class="depth-panel" role="radiogroup" aria-label="How much time do you have?"><p class="dp-label">How much time do you have?</p><div class="dp-opts">' +
+      (p.depth ? '<div class="depth-panel" role="radiogroup" aria-label="How much time do you have?"><p class="dp-label">How much time do you have?</p><div class="dp-opts" style="--i:'+(D - 1)+'">' +
         [[1, '1 min', 'The gist'], [2, '5 min', 'Key decisions'], [3, '10 min', 'The full story']].map(function(o){
           return '<button type="button" role="radio" class="dp-opt'+(o[0] === D ? ' on' : '')+'" aria-checked="'+(o[0] === D)+'" data-d="'+o[0]+'"><b>'+o[1]+'</b><span>'+o[2]+'</span></button>';
         }).join('') + '</div></div>' : '')+
@@ -2790,9 +2840,16 @@
       (p.planned || []).map(function(t){ return '<div class="case-block planned"><h4 class="label">'+t+'</h4><p class="body-text">Coming soon.</p></div>'; }).join('');
 
     document.getElementById('backBtn').addEventListener('click', function(){ location.hash = ''; });
+    var dpTrack = caseView.querySelector('.depth-panel .dp-opts'); if(dpTrack) dragThumb(dpTrack, 5, null);
     caseView.querySelectorAll('.dp-opt').forEach(function(b){
       b.addEventListener('click', function(ev){
         var d = +b.dataset.d; if(d === caseDepth) return;
+        var kb = ev.detail === 0, opts = b.parentNode;
+        opts.style.setProperty('--i', d - 1);
+        opts.querySelectorAll('.dp-opt').forEach(function(x){ x.classList.toggle('on', x === b); });
+        setTimeout(function(){ refold(d, kb); }, 230);
+      });
+      function refold(d, kb){
         // keep the reader in the same section: remember the first one still on screen, then line it back up
         var anchor = null, top = 0;
         caseView.querySelectorAll('.glance, .case-block').forEach(function(el){
@@ -2808,8 +2865,8 @@
         });
         if(match) window.scrollTo(0, window.scrollY + match.getBoundingClientRect().top - top);
         else if(y > 200) window.scrollTo(0, Math.min(y, document.body.scrollHeight - innerHeight));
-        var nb = caseView.querySelector('.dp-opt[data-d="'+d+'"]'); if(nb && ev.detail === 0) nb.focus({preventScroll:true}); // keyboard users keep their place in the panel
-      });
+        var nb = caseView.querySelector('.dp-opt[data-d="'+d+'"]'); if(nb && kb) nb.focus({preventScroll:true}); // keyboard users keep their place in the panel
+      }
     });
     rotateQuotes(caseView);
     fitHeroEmbed();
@@ -3080,10 +3137,13 @@
     var nav = document.createElement('nav');
     nav.className = 'case-nav';
     nav.setAttribute('aria-label', 'Case study sections');
+    if(p.depth) nav.classList.add('has-depth');
     nav.innerHTML =
-      '<button type="button" class="case-nav-toggle" aria-expanded="false">' +
+      '<div class="cn-bar"><button type="button" class="case-nav-toggle" aria-expanded="false">' +
         '<span class="cn-count"></span><span class="cn-current"></span><span class="cn-chev" aria-hidden="true">▾</span>' +
-      '</button>' +
+      '</button>' + (p.depth ? '<div class="cn-depth" role="radiogroup" aria-label="Reading time" style="--i:'+(caseDepth - 1)+'">' +
+        [1, 5, 10].map(function(m, i){ return '<button type="button" role="radio" aria-checked="'+(caseDepth === i + 1)+'" aria-label="'+m+' minute read" class="'+(caseDepth === i + 1 ? 'on' : '')+'" data-d="'+(i + 1)+'">'+m+'</button>'; }).join('') +
+        '<span class="cn-min" aria-hidden="true">min</span></div>' : '') + '</div>' +
       '<div class="case-nav-head"><span>Sections</span><b class="cn-count-wide"></b></div>' +
       '<ol class="case-nav-list">' + items.map(function(it, i){
         return '<li><a href="#sec-' + i + '" data-i="' + i + '"><span class="cn-dot" aria-hidden="true"></span>' + it.label + '</a></li>';
@@ -3110,7 +3170,7 @@
     // each blob sits under its button when split, and all three gather into the notch when not
     function placeBlobs(){
       var btns = end.querySelectorAll('.ce-btns > *'), blobs = end.querySelectorAll('.ce-blob');
-      var total = end.querySelector('.ce-btns').offsetWidth, notch = Math.min(300, total);
+      var total = end.querySelector('.ce-btns').offsetWidth, notch = Math.min(nav.offsetWidth || 300, total);
       btns.forEach(function(b, i){
         blobs[i].style.setProperty('--x', b.offsetLeft + 'px'); blobs[i].style.setProperty('--w', b.offsetWidth + 'px');
         blobs[i].style.setProperty('--cx', ((total - notch) / 2) + 'px'); blobs[i].style.setProperty('--cw', notch + 'px');
@@ -3120,6 +3180,17 @@
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(placeBlobs);
 
     var toggle = nav.querySelector('.case-nav-toggle');
+    // the pill's switch drives the same picker as the one under the title, so the page refolds in place
+    var cnTrack = nav.querySelector('.cn-depth'); if(cnTrack) dragThumb(cnTrack, 3, 28);
+    nav.querySelectorAll('.cn-depth button').forEach(function(b){
+      b.addEventListener('click', function(e){
+        e.stopPropagation();
+        var src = caseView.querySelector('.dp-opt[data-d="'+b.dataset.d+'"]'); if(!src) return;
+        b.parentNode.style.setProperty('--i', b.dataset.d - 1);
+        b.parentNode.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x === b); });
+        src.click();
+      });
+    });
     function setOpen(open){ nav.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); if(!open) revealNav(); }
     toggle.addEventListener('click', function(){ setOpen(!nav.classList.contains('open')); });
     nav.querySelectorAll('a').forEach(function(a){
