@@ -503,6 +503,24 @@
 
   /* a project shown by its logo (the Claude redesign), with an in-progress pill */
   .thumb-logo{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  /* Netflix: Watch Together cover — Netflix black, Netflix red, heavy condensed title, profile squares on a red progress bar */
+  .nf-cover{ display:flex; flex-direction:column; align-items:flex-start; gap:clamp(8px,1.4vw,14px); width:62%; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; color:#fff; }
+  .nf-kicker{ font-size:clamp(9px,1vw,11px); font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#E50914; }
+  .nf-title{ font-size:clamp(30px,4.4vw,56px); line-height:.9; font-weight:900; letter-spacing:-.02em; text-transform:uppercase; font-stretch:condensed; text-shadow:0 6px 30px rgba(0,0,0,.6); }
+  .nf-bar{ position:relative; width:100%; height:4px; margin-top:clamp(6px,1vw,10px); border-radius:2px; background:rgba(255,255,255,.22); }
+  .nf-fill{ position:absolute; left:0; top:0; bottom:0; width:58%; border-radius:2px; background:#E50914; }
+  .nf-p{ position:absolute; top:50%; width:clamp(16px,1.9vw,22px); height:clamp(16px,1.9vw,22px); border-radius:4px; transform:translate(-50%,-50%); box-shadow:0 0 0 2px #141414, 0 4px 10px rgba(0,0,0,.5); }
+  .nf-p.a{ left:58%; background:linear-gradient(160deg,#4b8bf5,#1f57c9); }
+  .nf-p.b{ left:58%; margin-left:clamp(14px,1.6vw,18px); background:linear-gradient(160deg,#f5c84b,#e09b16); }
+  /* the case hero styles every span as a big italic word; the Netflix cover keeps its own type */
+  .case-hero .nf-cover span{ font-style:normal; color:#fff; }
+  .case-hero .nf-cover .nf-kicker{ font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:clamp(11px,1.1vw,14px); font-weight:700; color:#E50914; }
+  .case-hero .nf-cover .nf-title{ font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:900; }
+  .case-hero .nf-cover .nf-bar{ display:block; }
+  .card[href="#work/netflix"] .progress-pill{ color:#fff; background:rgba(255,255,255,.14); border-color:transparent; }
+  .case-hero .hero-logo .nf-cover{ width:auto; }
+  .case-hero .hero-logo .nf-title{ font-size:clamp(40px,7vw,88px); }
+  .case-hero .hero-logo .nf-bar{ width:clamp(220px,34vw,420px); }
   .thumb-logo svg{ width:30%; max-width:150px; height:auto; transition:transform .6s cubic-bezier(.2,.7,.2,1); }
   .card:hover .thumb-logo svg{ transform:rotate(30deg) scale(1.05); }
   .thumb.light .tag{ color:#3D3929; }
@@ -2129,6 +2147,22 @@
       ]
     },
     {
+      slug:'netflix', company:'Netflix', tagline:'Product design · 2026 · IN PROGRESS',
+      title:'Watch Together', word:'Netflix',
+      inProgress:true,
+      accent:'#E50914',
+      // Netflix's own palette: #141414 background, #E50914 red, a red glow rising from the bottom like the title screens
+      coverBg:'radial-gradient(ellipse 75% 65% at 50% 118%, rgba(229,9,20,.55), rgba(229,9,20,0) 70%), radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,255,255,.05), rgba(255,255,255,0) 70%), #141414',
+      logo:'<div class="nf-cover" aria-hidden="true">' +
+          '<span class="nf-kicker">A Netflix concept</span>' +
+          '<span class="nf-title">Watch<br>Together</span>' +
+          '<span class="nf-bar"><i class="nf-fill"></i><b class="nf-p a"></b><b class="nf-p b"></b></span>' +
+        '</div>',
+      blurb:'Work in progress. The case study is coming soon.',
+      heroNote:'Personal concept · not affiliated with Netflix',
+      overview:'Work in progress. The full case study is coming soon.'
+    },
+    {
       slug:'inyun', company:'INYUN', tagline:'PRODUCT DESIGN · 2026',
       title:'A matching experience built on real-time collaboration', word:'INYUN',
       heroPhones:[
@@ -2481,7 +2515,7 @@
   // image heights so the columns interlock; phones get one column in the original order
   (function(){
     var cards = [].slice.call(grid.children);
-    var ratios = ['16/10', '4/3', '4/3', '16/10', '16/10', '4/3'];
+    var ratios = ['16/10', '4/3', '4/3', '16/10', '16/10', '4/3'];   // with six cards: Claude, Chance, Netflix, INYUN, Ekpyrosis, ANIMI
     var mq = window.matchMedia('(min-width:700px)');
     function arrange(){
       grid.innerHTML = '';
