@@ -153,9 +153,8 @@
   body.listening:not(:has(#case-view.active)){ --bg:#0b0c10; --surface:#14161c; --text:#e6e9ee; --text-muted:#8b95a3; --border:#252a33; --accent:#7fa4ff; --accent-soft:#1a2340; }
   body.listening .label, body.listening .side-nav a, body.listening hr{ transition:color .9s ease, border-color .9s ease; }
   /* while playing, the bar's light spills out past its edges and across the page, full width */
-  html{ overflow-x:clip; }
   .lb-wrap{ position:relative; }
-  .lb-aura{ position:absolute; z-index:-1; top:50%; left:50%; width:100vw; height:min(560px, 70vh); transform:translate(-50%,-50%) scaleY(.35);
+  .lb-aura{ position:absolute; z-index:-1; top:50%; left:var(--aura-l, 0px); width:var(--aura-w, 100%); height:min(560px, 70vh); overflow:hidden; transform:translateY(-50%) scaleY(.35);
     pointer-events:none; opacity:0; transition:opacity 1.6s ease, transform 1.8s cubic-bezier(.32,.72,0,1); }
   .lb-aura i{ position:absolute; inset:0; filter:blur(48px) saturate(1.2);
     background:
@@ -165,7 +164,7 @@
       radial-gradient(60% 9% at 50% 50%, color-mix(in srgb, var(--lb2) 55%, transparent), transparent 100%);
     animation:lbDrift 22s ease-in-out infinite alternate;
     transform:scale(calc(1 + var(--amp, 0) * .12)); transition:transform .25s ease; }
-  body.listening:not(:has(#case-view.active)) .lb-aura{ opacity:calc(.75 + var(--amp, 0) * .25); transform:translate(-50%,-50%) scaleY(1); }
+  body.listening:not(:has(#case-view.active)) .lb-aura{ opacity:calc(.75 + var(--amp, 0) * .25); transform:translateY(-50%) scaleY(1); }
   @media (prefers-reduced-motion: reduce){ .lb-aura i{ animation:none; } }
   /* the spectrum: bars spread across the whole strip, drawn translucent so the gradient shows through */
   .lb-viz{ position:absolute; left:0; top:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:0; transition:opacity .8s ease; }
@@ -3566,6 +3565,10 @@
       o.connect(g); g.connect(master); o.start(t); o.stop(t + 2.7);
       pluckTimer = setTimeout(pluck, 900 + Math.random() * 1800);
     }
+    // the light spill spans the window edge to edge, wherever the bar sits
+    var wrap = bar.parentNode;
+    function fitAura(){ var r = wrap.getBoundingClientRect(); wrap.style.setProperty('--aura-l', (-r.left) + 'px'); wrap.style.setProperty('--aura-w', document.documentElement.clientWidth + 'px'); }
+    fitAura(); window.addEventListener('resize', fitAura);
     var viz = document.getElementById('lbViz'), vctx = viz.getContext('2d'), levels = [];
     function meter(){
       var buf = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(buf);
@@ -3599,7 +3602,7 @@
       var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
       if(!ac){ ac = new AC(); master = ac.createGain(); analyser = ac.createAnalyser(); analyser.fftSize = 4096; analyser.smoothingTimeConstant = .82; master.connect(analyser); analyser.connect(ac.destination); }
       ac.resume(); master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(.0001, ac.currentTime); master.gain.exponentialRampToValueAtTime(.35, ac.currentTime + 1.5);
-      startPad(); pluckTimer = setTimeout(pluck, 1500); meter();
+      fitAura(); startPad(); pluckTimer = setTimeout(pluck, 1500); meter();
       playing = true; bar.classList.add('playing'); bar.setAttribute('aria-pressed', 'true'); document.body.classList.add('listening'); ctrlT.textContent = 'Pause';
     }
     function stop(){
