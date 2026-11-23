@@ -138,6 +138,24 @@
   /* the music lifts the light: --amp (0 to 1) comes from the sound */
   .live-bar.playing .lb-flow{ filter:blur(10px) saturate(1.3) brightness(calc(1 + var(--amp, 0) * .6)); transform:scaleY(calc(1 + var(--amp, 0) * .25)); }
   .live-bar:hover .lb-mid, .live-bar:hover .lb-right{ opacity:.9; }
+  /* controls show on hover: the time fades and a play / pause control takes its place */
+  .lb-left .lb-play{ display:none; }
+  .lb-ctrl{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(.92); z-index:2; display:flex; align-items:center; gap:9px;
+    padding:7px 14px; border-radius:999px; background:rgba(0,0,0,.28); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    opacity:0; pointer-events:none; white-space:nowrap; transition:opacity .25s ease, transform .3s cubic-bezier(.32,.72,0,1); }
+  .live-bar:hover .lb-ctrl, .live-bar:focus-visible .lb-ctrl{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+  .live-bar:hover .lb-mid, .live-bar:focus-visible .lb-mid{ opacity:0; }
+  /* touch screens have no hover: keep a small play icon by NYC instead */
+  @media (hover: none){ .lb-ctrl{ display:none; } .lb-left .lb-play{ display:block; } }
+  /* while the music plays the page dims under a wash of the bar's colors; the bar stays lit above it */
+  .listen-dim{ position:fixed; inset:0; z-index:45; pointer-events:none; opacity:0; transition:opacity 1.6s ease;
+    background:
+      radial-gradient(90% 55% at 50% -5%, color-mix(in srgb, var(--lb2) 38%, transparent), transparent 70%),
+      radial-gradient(70% 60% at -5% 105%, color-mix(in srgb, var(--lb1) 34%, transparent), transparent 70%),
+      radial-gradient(70% 60% at 105% 100%, color-mix(in srgb, var(--lb3) 30%, transparent), transparent 70%),
+      rgba(6,7,14,.62); }
+  body.listening .listen-dim{ opacity:calc(.92 + var(--amp, 0) * .08); }
+  body.listening .live-bar{ z-index:46; box-shadow:0 0 60px color-mix(in srgb, var(--lb2) 45%, transparent); }
   @media (max-width:520px){ .live-bar{ font-size:9.5px; padding:0 12px; } }
   @media (prefers-reduced-motion: reduce){ .live-bar.playing .lb-eq b{ animation:none; height:70%; } }
   /* the mascot as a quiet mark */
@@ -1645,6 +1663,7 @@
   <a href="files/David-Yang-Resume.pdf" target="_blank" rel="noopener" data-close>Resume</a>
 </div>
 
+<div class="listen-dim" aria-hidden="true"></div>
 <main id="home-view">
   <section class="hero">
     <div class="hero-row">
@@ -1660,6 +1679,7 @@
       <span class="lb-all" aria-hidden="true"></span>
       <span class="lb-left"><i class="lb-play" aria-hidden="true"></i><i class="lb-eq" aria-hidden="true"><b></b><b></b><b></b></i><span>NYC</span></span>
       <span class="lb-mid" id="lbMid"></span>
+      <span class="lb-ctrl" aria-hidden="true"><i class="lb-play"></i><span id="lbCtrlT">Play</span></span>
       <span class="lb-right" id="lbRight"></span>
       <span class="lb-prog" aria-hidden="true"><i id="lbProg"></i></span>
     </div>
@@ -3483,7 +3503,7 @@
       return { h:h, m:mm, text:f.format(d) };
     }
     function timePalette(h){ var t = TIMES[TIMES.length - 1]; TIMES.forEach(function(x){ if(h >= x[0]) t = x; }); if(h < 5) t = TIMES[TIMES.length - 1]; return t; }
-    function paint(c){ bar.style.setProperty('--lb1', c[0]); bar.style.setProperty('--lb2', c[1]); bar.style.setProperty('--lb3', c[2]); }
+    function paint(c){ [bar, document.documentElement].forEach(function(el){ el.style.setProperty('--lb1', c[0]); el.style.setProperty('--lb2', c[1]); el.style.setProperty('--lb3', c[2]); }); }
     var hovering = null, period = 'night';
     function rest(){
       if(hovering) return;
@@ -3507,6 +3527,7 @@
     var CHORDS = { 'dawn':[48,52,55,62], 'day':[53,57,60,64], 'golden hour':[50,54,57,61], 'dusk':[45,48,52,59], 'night':[39,43,46,50] };
     var SCALES = { 'dawn':[60,62,64,67,69,72], 'day':[65,67,69,72,74,76], 'golden hour':[62,64,66,69,71,74], 'dusk':[57,60,62,64,67,69], 'night':[58,62,63,65,67,70] };
     var ac = null, master = null, analyser = null, voices = [], pluckTimer = null, meterRaf = 0, playing = false;
+    var ctrlT = document.getElementById('lbCtrlT');
     var hz = function(n){ return 440 * Math.pow(2, (n - 69) / 12); };
     function startPad(){
       var notes = CHORDS[period] || CHORDS.night;
@@ -3531,7 +3552,7 @@
     function meter(){
       var buf = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(buf);
       var sum = 0; for(var i = 0; i < buf.length; i++){ var v = (buf[i] - 128) / 128; sum += v * v; }
-      bar.style.setProperty('--amp', Math.min(1, Math.sqrt(sum / buf.length) * 6).toFixed(3));
+      var amp = Math.min(1, Math.sqrt(sum / buf.length) * 6).toFixed(3); bar.style.setProperty('--amp', amp); document.documentElement.style.setProperty('--amp', amp);
       meterRaf = requestAnimationFrame(meter);
     }
     function play(){
@@ -3539,14 +3560,14 @@
       if(!ac){ ac = new AC(); master = ac.createGain(); analyser = ac.createAnalyser(); analyser.fftSize = 512; master.connect(analyser); analyser.connect(ac.destination); }
       ac.resume(); master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(.0001, ac.currentTime); master.gain.exponentialRampToValueAtTime(.35, ac.currentTime + 1.5);
       startPad(); pluckTimer = setTimeout(pluck, 1500); meter();
-      playing = true; bar.classList.add('playing'); bar.setAttribute('aria-pressed', 'true');
+      playing = true; bar.classList.add('playing'); bar.setAttribute('aria-pressed', 'true'); document.body.classList.add('listening'); ctrlT.textContent = 'Pause';
     }
     function stop(){
       if(!ac) return;
       var t = ac.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.exponentialRampToValueAtTime(.0001, t + 1.2);
       var old = voices; voices = []; setTimeout(function(){ old.forEach(function(v){ try{ v.o.stop(); v.lfo.stop(); }catch(e){} }); }, 1300);
-      clearTimeout(pluckTimer); cancelAnimationFrame(meterRaf); bar.style.setProperty('--amp', 0);
-      playing = false; bar.classList.remove('playing'); bar.setAttribute('aria-pressed', 'false');
+      clearTimeout(pluckTimer); cancelAnimationFrame(meterRaf); bar.style.setProperty('--amp', 0); document.documentElement.style.setProperty('--amp', 0);
+      playing = false; bar.classList.remove('playing'); bar.setAttribute('aria-pressed', 'false'); document.body.classList.remove('listening'); ctrlT.textContent = 'Play';
     }
     function toggle(){ playing ? stop() : play(); }
     bar.addEventListener('click', toggle);
