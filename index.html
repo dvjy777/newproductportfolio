@@ -505,6 +505,9 @@
   .thumb-logo{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
   /* Netflix: Watch Together cover — Netflix black, Netflix red, heavy condensed title, profile squares on a red progress bar */
   .nf-cover{ display:flex; flex-direction:column; align-items:flex-start; gap:clamp(8px,1.4vw,14px); width:62%; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; color:#fff; }
+  .thumb-logo svg.nf-n, .hero-logo svg.nf-n{ width:clamp(22px,2.6vw,34px); max-width:none; height:auto; filter:drop-shadow(0 6px 16px rgba(229,9,20,.45)); }
+  .card:hover .thumb-logo svg.nf-n{ transform:none; }
+  .case-hero .hero-logo svg.nf-n{ width:clamp(34px,4vw,54px); }
   .nf-kicker{ font-size:clamp(9px,1vw,11px); font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#E50914; }
   .nf-title{ font-size:clamp(30px,4.4vw,56px); line-height:.9; font-weight:900; letter-spacing:-.02em; text-transform:uppercase; font-stretch:condensed; text-shadow:0 6px 30px rgba(0,0,0,.6); }
   .nf-bar{ position:relative; width:100%; height:4px; margin-top:clamp(6px,1vw,10px); border-radius:2px; background:rgba(255,255,255,.22); }
@@ -2154,7 +2157,8 @@
       // Netflix's own palette: #141414 background, #E50914 red, a red glow rising from the bottom like the title screens
       coverBg:'radial-gradient(ellipse 75% 65% at 50% 118%, rgba(229,9,20,.55), rgba(229,9,20,0) 70%), radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,255,255,.05), rgba(255,255,255,0) 70%), #141414',
       logo:'<div class="nf-cover" aria-hidden="true">' +
-          '<span class="nf-kicker">A Netflix concept</span>' +
+          '<svg class="nf-n" viewBox="0 0 110 200" role="img" aria-label="Netflix"><defs><linearGradient id="nfShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient></defs>' +
+            '<path d="M0 0h38v200l-38 -4z" fill="#B1060F"/><path d="M72 0h38v196l-38 4z" fill="#B1060F"/><path d="M0 0h38l72 200h-38z" fill="#E50914"/><path d="M0 0h38v200l-38 -4z" fill="url(#nfShade)" opacity=".6"/></svg>' +
           '<span class="nf-title">Watch<br>Together</span>' +
           '<span class="nf-bar"><i class="nf-fill"></i><b class="nf-p a"></b><b class="nf-p b"></b></span>' +
         '</div>',
