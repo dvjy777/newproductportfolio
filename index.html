@@ -149,7 +149,8 @@
   @media (hover: none){ .lb-ctrl{ display:none; } .lb-left .lb-play{ display:block; } }
   /* while the music plays the site switches to a dark theme, and eases back when it stops */
   body{ transition:background-color .9s ease, color .9s ease; }
-  body.listening{ --bg:#0b0c10; --surface:#14161c; --text:#e6e9ee; --text-muted:#8b95a3; --border:#252a33; --accent:#7fa4ff; --accent-soft:#1a2340; }
+  /* home page only: the case studies' light panels were designed for a white page, so they stay light (the music keeps playing) */
+  body.listening:not(:has(#case-view.active)){ --bg:#0b0c10; --surface:#14161c; --text:#e6e9ee; --text-muted:#8b95a3; --border:#252a33; --accent:#7fa4ff; --accent-soft:#1a2340; }
   body.listening .label, body.listening .side-nav a, body.listening hr{ transition:color .9s ease, border-color .9s ease; }
   /* the spectrum: bars spread across the whole strip, drawn translucent so the gradient shows through */
   .lb-viz{ position:absolute; left:0; top:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:0; transition:opacity .8s ease; }
