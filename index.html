@@ -102,12 +102,12 @@
     66%{ --lbx1:28%; --lbx2:58%; --lbx3:80%; }
     100%{ --lbx1:40%; --lbx2:52%; --lbx3:70%; }
   }
-  .lb-label{ position:absolute; left:14px; top:50%; transform:translateY(-50%); z-index:1; font-family:'Geist Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  .lb-label{ position:absolute; left:14px; top:50%; transform:translateY(-50%); z-index:1; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
     color:rgba(255,255,255,.72); white-space:nowrap; pointer-events:none; transition:opacity .3s ease; }
   /* project links: hidden until the bar is hovered, focused or tapped open */
   .lb-nav{ position:absolute; inset:0; z-index:2; display:flex; opacity:0; pointer-events:none; transition:opacity .35s ease; }
   .lb-nav a{ flex:1 1 0; min-width:0; display:flex; align-items:center; justify-content:center; padding:0 6px; text-decoration:none;
-    font-family:'Geist Mono',monospace; font-size:clamp(9px,1vw,11px); letter-spacing:.08em; text-transform:uppercase; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:clamp(9px,1vw,11.5px); letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     background:linear-gradient(180deg, color-mix(in srgb, var(--seg) 92%, #fff 8%), color-mix(in srgb, var(--seg) 80%, #000 20%));
     transition:flex-grow .45s cubic-bezier(.32,.72,0,1), filter .25s ease; }
   .lb-nav a + a{ box-shadow:inset 1px 0 0 rgba(0,0,0,.35); }
