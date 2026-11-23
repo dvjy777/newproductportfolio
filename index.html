@@ -2481,7 +2481,7 @@
       p.cardDemo ? '<div class="proto-screen card-demo"><iframe src="'+p.cardDemo+'" title="" aria-hidden="true" tabindex="-1" loading="lazy"></iframe></div>' : heroDevicesHtml(p);
     var bg = devices ? heroBackground(p) : (p.coverBg || p.gradient);
     a.innerHTML =
-      '<div class="thumb has-lens'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+(p.coverLight ? ' light' : '')+'" style="background:'+bg+'">'+
+      '<div class="thumb'+(devices ? ' has-devices' : '')+(heroGlow(p) ? ' has-glow' : '')+(p.cover ? ' has-cover' : '')+(p.coverDark ? ' dark' : '')+(p.coverLight ? ' light' : '')+'" style="background:'+bg+'">'+
         '<div class="lens"'+(bg ? ' style="background:'+bg+'"' : '')+'>'+
         (devices && p.cardFloat ? '<div class="thumb-stage">'+devices+'</div>' : '')+
         (p.cover && !devices ? '<img class="thumb-img" src="'+p.cover+'" alt="" loading="lazy">' : '')+
