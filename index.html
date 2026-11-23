@@ -79,44 +79,50 @@
      Wide screens: a 12-column grid with 24px outer margins and 16px gutters. The nav sits in
      columns 1-2, the content spans columns 3-10, and 11-12 mirror the left margin. */
   #home-view, #case-view{ max-width:920px; margin-inline:auto; }
-  /* live bar: the bar motif from the branding site. Three soft lights drift inside a black strip; their colors
-     come from the time in New York, or from the project you are pointing at. Hover or tap opens project links. */
+  /* live bar: the bar motif from the branding site. Soft lights fill the whole strip (no black edges top or bottom)
+     and fade out only at the two ends. Their colors follow the time in New York, or the project card you point at;
+     pointing at the bar itself plays all the project colors. */
   @property --lb1{ syntax:'<color>'; inherits:true; initial-value:#1d2b8f; }
   @property --lb2{ syntax:'<color>'; inherits:true; initial-value:#5a3cff; }
   @property --lb3{ syntax:'<color>'; inherits:true; initial-value:#0fb5c8; }
   @property --lbx1{ syntax:'<percentage>'; inherits:false; initial-value:30%; }
   @property --lbx2{ syntax:'<percentage>'; inherits:false; initial-value:50%; }
   @property --lbx3{ syntax:'<percentage>'; inherits:false; initial-value:70%; }
-  .live-bar{ position:relative; height:clamp(36px,4.6vw,58px); margin-top:clamp(28px,4vw,44px); background:#000; overflow:hidden;
+  .live-bar{ position:relative; height:clamp(36px,4.6vw,58px); margin-top:clamp(28px,4vw,44px); overflow:hidden; background:#000;
     transition:--lb1 1.4s ease, --lb2 1.4s ease, --lb3 1.4s ease; }
-  .lb-flow{ position:absolute; inset:0 10%;
+  .lb-flow, .lb-all{ position:absolute; inset:-40% -2%;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%); mask-image:linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%); }
+  .lb-flow{
     background:
-      radial-gradient(28% 160% at var(--lbx1) 50%, var(--lb1), transparent 72%),
-      radial-gradient(26% 150% at var(--lbx2) 50%, var(--lb2), transparent 72%),
-      radial-gradient(30% 170% at var(--lbx3) 50%, var(--lb3), transparent 72%);
-    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image:linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
-    filter:blur(6px) saturate(1.15); animation:lbDrift 22s ease-in-out infinite alternate; transition:opacity .4s ease; }
+      radial-gradient(22% 120% at var(--lbx1) 50%, color-mix(in srgb, var(--lb1) 70%, #fff 30%), transparent 70%),
+      radial-gradient(24% 120% at var(--lbx2) 50%, color-mix(in srgb, var(--lb2) 75%, #fff 25%), transparent 70%),
+      radial-gradient(26% 120% at var(--lbx3) 50%, color-mix(in srgb, var(--lb3) 70%, #fff 30%), transparent 70%),
+      linear-gradient(90deg, var(--lb1) 10%, var(--lb2) 50%, var(--lb3) 90%);
+    filter:blur(10px) saturate(1.2); animation:lbDrift 22s ease-in-out infinite alternate; transition:opacity .6s ease; }
   @keyframes lbDrift{
     0%{ --lbx1:22%; --lbx2:48%; --lbx3:74%; }
     33%{ --lbx1:34%; --lbx2:40%; --lbx3:66%; }
     66%{ --lbx1:28%; --lbx2:58%; --lbx3:80%; }
     100%{ --lbx1:40%; --lbx2:52%; --lbx3:70%; }
   }
-  .lb-label{ position:absolute; left:14px; top:50%; transform:translateY(-50%); z-index:1; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
-    color:rgba(255,255,255,.72); white-space:nowrap; pointer-events:none; transition:opacity .3s ease; }
-  /* project links: hidden until the bar is hovered, focused or tapped open */
-  .lb-nav{ position:absolute; inset:0; z-index:2; display:flex; opacity:0; pointer-events:none; transition:opacity .35s ease; }
-  .lb-nav a{ flex:1 1 0; min-width:0; display:flex; align-items:center; justify-content:center; padding:0 6px; text-decoration:none;
-    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:clamp(9px,1vw,11.5px); letter-spacing:.05em; text-transform:uppercase; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    background:linear-gradient(180deg, color-mix(in srgb, var(--seg) 92%, #fff 8%), color-mix(in srgb, var(--seg) 80%, #000 20%));
-    transition:flex-grow .45s cubic-bezier(.32,.72,0,1), filter .25s ease; }
-  .lb-nav a + a{ box-shadow:inset 1px 0 0 rgba(0,0,0,.35); }
-  @media (max-width:520px){ .lb-nav a{ padding:0 2px; font-size:8px; letter-spacing:0; } .lb-label{ font-size:9.5px; } }
-  .lb-nav a:hover, .lb-nav a:focus-visible{ flex-grow:2.2; filter:brightness(1.12); outline:none; }
-  .live-bar:hover .lb-nav, .live-bar:focus-within .lb-nav, .live-bar.open .lb-nav{ opacity:1; pointer-events:auto; }
-  .live-bar:hover .lb-label, .live-bar:focus-within .lb-label, .live-bar.open .lb-label,
-  .live-bar:hover .lb-flow, .live-bar:focus-within .lb-flow, .live-bar.open .lb-flow{ opacity:0; }
-  @media (prefers-reduced-motion: reduce){ .lb-flow{ animation:none; } .live-bar, .lb-nav a{ transition:none; } }
+  /* on hover: every project's color flowing past */
+  .lb-all{ opacity:0; transition:opacity .6s ease; filter:blur(8px) saturate(1.15);
+    background:linear-gradient(90deg, #d97757, #1d5fff, #e50914, #8a2a45, #c9a23a, #2a9d9a, #d97757, #1d5fff, #e50914, #8a2a45, #c9a23a, #2a9d9a, #d97757);
+    background-size:200% 100%; animation:lbAll 16s linear infinite; }
+  @keyframes lbAll{ from{ background-position:0% 50%; } to{ background-position:-200% 50%; } }
+  .live-bar:hover .lb-all{ opacity:1; }
+  .live-bar:hover .lb-flow{ opacity:0; }
+  /* fine grain, so it reads as light rather than a flat digital gradient */
+  .live-bar::after{ content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .lb-label{ position:absolute; left:14px; top:50%; transform:translateY(-50%); z-index:1; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:11px; letter-spacing:.06em;
+    text-transform:uppercase; color:rgba(255,255,255,.8); white-space:nowrap; pointer-events:none; transition:opacity .3s ease; }
+  .live-bar:hover .lb-label{ opacity:0; }
+  @media (max-width:520px){ .lb-label{ font-size:9.5px; } }
+  /* the mascot as a quiet mark */
+  .menu-btn.quiet{ cursor:default; }
+  .hold-hint[hidden]{ display:none !important; }
+  @media (prefers-reduced-motion: reduce){ .lb-flow, .lb-all{ animation:none; } .live-bar{ transition:none; } }
   .side-nav{ display:flex; gap:22px; max-width:920px; margin:4px auto 0; }
   .side-nav a{
     position:relative; font-size:15px; line-height:1; text-decoration:none;
@@ -125,7 +131,7 @@
   .side-nav a:hover{ color:var(--text); }
   .side-nav a.on{ color:var(--accent); }
   /* phones: the mascot's hint bubble hangs below the header, so the nav row starts under it */
-  @media (max-width:640px){ .side-nav{ margin-top:52px; } }
+  @media (max-width:640px){ .side-nav{ margin-top:8px; } }
   @media (min-width:1024px){
     body{ padding-inline:24px; }
     /* one grid column = (page width - 11 gutters) / 12; percentages here are of the page width */
@@ -1594,8 +1600,8 @@
     <div class="role">PRODUCT DESIGNER + PROTOTYPER</div>
   </a>
   <div class="menu-wrap">
-    <p class="hold-hint" id="holdHint"><span class="hh-text"><span class="hh-idle"><span class="hh-verb">Click</span> and hold the mascot <br>for my design and branding work</span><span class="hh-busy">Keep holding…</span></span><span class="hh-arrow" aria-hidden="true">→</span></p>
-    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-describedby="holdHint"><span class="dot"><span class="eye eye-l"></span><span class="eye eye-r"></span></span></button>
+    <p class="hold-hint" id="holdHint" hidden><span class="hh-text"><span class="hh-idle"><span class="hh-verb">Click</span></span><span class="hh-busy"></span></span><span class="hh-arrow" aria-hidden="true"></span></p>
+    <button class="menu-btn quiet" id="menuBtn" aria-hidden="true" tabindex="-1"><span class="dot"><span class="eye eye-l"></span><span class="eye eye-r"></span></span></button>
   </div>
 </header>
 
@@ -1621,15 +1627,14 @@
       <img class="hero-photo" src="images/headshot.jpg" alt="David Yang" width="112" height="112">
       <div class="hero-text">
         <h1 class="serif" id="heroTitle">I'm David, a product designer who <em>builds</em> AI and spatial experiences.</h1>
-        <p class="hero-sub">Based in New York City <span class="clock"><span class="live"></span><span id="nycTime">NYC</span></span></p>
       </div>
     </div>
     <!-- the bar motif from the branding site: its colors follow the time in New York, shift to a project when you
          hover its card, and open into a strip of links to every project when you hover or tap it -->
-    <div class="live-bar" id="liveBar">
+    <div class="live-bar" id="liveBar" aria-hidden="true">
       <span class="lb-flow" aria-hidden="true"></span>
+      <span class="lb-all" aria-hidden="true"></span>
       <span class="lb-label" id="lbLabel" aria-hidden="true"></span>
-      <nav class="lb-nav" id="lbNav" aria-label="Projects"></nav>
     </div>
   </section>
 
@@ -3433,7 +3438,7 @@
 
   // Live bar: palette by the hour in New York, a project's colors while its card is hovered, and links to every project.
   (function(){
-    var bar = document.getElementById('liveBar'), nav = document.getElementById('lbNav'), label = document.getElementById('lbLabel');
+    var bar = document.getElementById('liveBar'), label = document.getElementById('lbLabel');
     if(!bar) return;
     var COLORS = { 'claude':['#d97757','#f2b89c','#a9472b'], 'chance-ai':['#1d5fff','#7fa4ff','#5a3cff'], 'netflix':['#e50914','#ff5a4f','#7a0610'],
                    'inyun':['#8a2a45','#c4566f','#4a1424'], 'ekpyrosis':['#c9a23a','#f0d27a','#6b5313'], 'animi':['#2a9d9a','#8fe3e0','#145a58'] };
@@ -3457,12 +3462,6 @@
       var n = nyNow(), t = timePalette(n.h);
       paint(t[2]); label.textContent = 'NYC · ' + n.text + ' · ' + t[1];
     }
-    // links, in the order of the work grid
-    projects.filter(function(p){ return !p.comingSoon; }).forEach(function(p){
-      var a = document.createElement('a'); a.href = '#work/' + p.slug; a.textContent = p.company.replace(' x AStudio', '');
-      a.style.setProperty('--seg', (COLORS[p.slug] || ['#444'])[0]);
-      nav.appendChild(a);
-    });
     // preview: a project's card tints the bar while hovered (mouse only; touch screens never send the leave event)
     if(window.matchMedia && matchMedia('(hover: hover)').matches) document.querySelectorAll('.work-grid .card').forEach(function(card){
       var slug = (card.getAttribute('href') || '').replace('#work/', ''), p = projects.filter(function(x){ return x.slug === slug; })[0];
@@ -3471,9 +3470,6 @@
       card.addEventListener('mouseenter', on); card.addEventListener('mouseleave', off);
       card.addEventListener('focus', on); card.addEventListener('blur', off);
     });
-    // touch: tap the bar to open the links, tap outside to close
-    bar.addEventListener('click', function(e){ if(!e.target.closest('a')){ bar.classList.toggle('open'); } });
-    document.addEventListener('click', function(e){ if(!bar.contains(e.target)) bar.classList.remove('open'); });
     rest(); setInterval(rest, 30000);
   })();
 
@@ -3747,9 +3743,8 @@
   // Local time in New York, kept current while the page is open.
   var nycTime = document.getElementById('nycTime');
   var nycFormat = new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', hour:'numeric', minute:'2-digit' });
-  function tickClock(){ nycTime.textContent = nycFormat.format(new Date()) + ' ET'; }
-  tickClock();
-  setInterval(tickClock, 15000);
+  function tickClock(){ if(nycTime) nycTime.textContent = nycFormat.format(new Date()) + ' ET'; }
+  if(nycTime){ tickClock(); setInterval(tickClock, 15000); }
 
   // Intro sentence: split into words (for the arrival animation) and letters
   // (which lift gently toward the cursor as it passes over them).
@@ -3782,74 +3777,6 @@
     })(heroTitle);
     heroTitle.classList.add('split');
 
-    // Only the two words the sentence is about move.
-    var kwAI = null, kwSp = null;
-    heroTitle.querySelectorAll('.w').forEach(function(w){
-      if(w.textContent === 'AI') kwAI = w;
-      if(w.textContent === 'spatial') kwSp = w;
-    });
-
-    // "AI" resolves out of noise, like a model settling on its answer.
-    var NOISE = '01<>/{}[]#*+=~';
-    function resolveAI(){
-      if(!kwAI || kwAI.classList.contains('thinking')) return;
-      kwAI.classList.add('thinking');
-      var chs = kwAI.querySelectorAll('.ch');
-      chs.forEach(function(ch){ if(!ch.style.width) ch.style.width = ch.getBoundingClientRect().width + 'px'; });
-      var start = performance.now();
-      (function step(now){
-        var done = 0;
-        chs.forEach(function(ch, i){
-          var settle = 520 + i * 260;
-          if(now - start >= settle){ ch.textContent = ch.dataset.c; done++; }
-          else ch.textContent = NOISE[Math.floor(Math.random() * NOISE.length)];
-        });
-        if(done < chs.length) setTimeout(function(){ requestAnimationFrame(step); }, 55);
-        else kwAI.classList.remove('thinking');
-      })(start);
-    }
-    if(kwAI){
-      kwAI.classList.add('kw-ai');
-      kwAI.querySelectorAll('.ch').forEach(function(ch){ ch.dataset.c = ch.textContent; });
-      setTimeout(resolveAI, 150 + 70 * +kwAI.style.getPropertyValue('--i'));
-      kwAI.addEventListener('mouseenter', resolveAI);
-    }
-
-    // "spatial" is a small 3D object: its letters sit at different depths and
-    // the word turns toward the cursor, or sways on its own on touch screens.
-    if(kwSp){
-      kwSp.classList.add('kw-sp');
-      var spChs = kwSp.querySelectorAll('.ch');
-      spChs.forEach(function(ch, i){
-        var d = Math.sin((i / (spChs.length - 1)) * Math.PI) * 7;
-        ch.style.transform = 'translateZ(' + d.toFixed(1) + 'px)';
-      });
-      kwSp.addEventListener('animationend', function(){ kwSp.style.animation = 'none'; });
-      var tgt = { x:0, y:0 }, cur = { x:0, y:0 }, lastMove = -1e9, heroOn = true;
-      document.addEventListener('mousemove', function(e){
-        var r = kwSp.getBoundingClientRect();
-        var dx = (e.clientX - (r.left + r.width/2)) / window.innerWidth;
-        var dy = (e.clientY - (r.top + r.height/2)) / window.innerHeight;
-        tgt.x = Math.max(-1, Math.min(1, dx * 2.2));
-        tgt.y = Math.max(-1, Math.min(1, dy * 2.2));
-        lastMove = performance.now();
-      });
-      if('IntersectionObserver' in window){
-        new IntersectionObserver(function(es){ heroOn = es[0].isIntersecting; if(heroOn) requestAnimationFrame(tick); }).observe(heroTitle);
-      }
-      function tick(now){
-        if(now - lastMove > 2500){             // no cursor: a slow idle sway
-          tgt.x = Math.sin(now / 1900) * .7;
-          tgt.y = Math.sin(now / 2600) * .35;
-        }
-        cur.x += (tgt.x - cur.x) * .07;
-        cur.y += (tgt.y - cur.y) * .07;
-        kwSp.style.setProperty('--ry', (cur.x * 16).toFixed(2) + 'deg');
-        kwSp.style.setProperty('--rx', (-cur.y * 12).toFixed(2) + 'deg');
-        if(heroOn) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }
   }
 
   var workHint = document.createElement('a');
@@ -3897,6 +3824,7 @@
   }, { passive:true });
 
   function startHold(e){
+    if(menuBtn.classList.contains('quiet')) return;   // the mascot is just a mark now
     if(e.button !== 0) return;
     heldLong = false;
     holdHint.classList.add('holding');
@@ -3925,6 +3853,7 @@
   });
 
   menuBtn.addEventListener('click', function(e){
+    if(menuBtn.classList.contains('quiet')){ e.preventDefault(); return; }
     if(heldLong){ e.preventDefault(); return; }
     if(menuMotionOk){
       menuDot.classList.remove('squish');
