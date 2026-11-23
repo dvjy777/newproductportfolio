@@ -79,27 +79,24 @@
      Wide screens: a 12-column grid with 24px outer margins and 16px gutters. The nav sits in
      columns 1-2, the content spans columns 3-10, and 11-12 mirror the left margin. */
   #home-view, #case-view{ max-width:920px; margin-inline:auto; }
-  /* the bar motif from the branding site: a black strip with a thermal-camera core
-     (hot red-orange, cool blue-violet spots) that drifts slowly, fading to black at both ends */
+  /* the bar motif from the branding site, with its own gradient: the colors of the work
+     (Claude terracotta, Chance blue, Netflix red, INYUN burgundy, Ekpyrosis gold, ANIMI teal) flow slowly through a black strip */
   .heat-bar{ position:relative; height:clamp(34px,4.6vw,58px); margin-top:clamp(28px,4vw,44px); background:#000; overflow:hidden; }
-  .heat-core{ position:absolute; top:0; bottom:0; left:18%; right:18%;
-    background:linear-gradient(90deg, rgba(150,10,6,0) 0%, #a5160b 9%, #ef2f1c 24%, #ff4a25 50%, #ef2f1c 76%, #a5160b 91%, rgba(150,10,6,0) 100%);
-    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); mask-image:linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
-    filter:saturate(1.15) contrast(1.05); }
-  .heat-spots{ position:absolute; inset:-30% -10%;
+  .heat-core{ position:absolute; top:0; bottom:0; left:14%; right:14%;
+    background:linear-gradient(90deg, #d97757, #1d5fff, #e50914, #6e1a2e, #c9a23a, #2a9d9a, #d97757, #1d5fff, #e50914, #6e1a2e, #c9a23a, #2a9d9a, #d97757);
+    background-size:200% 100%; animation:workFlow 36s linear infinite;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%); mask-image:linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+    filter:saturate(1.2); }
+  /* soft light spots drifting the other way, so the colors seem to move through depth */
+  .heat-spots{ position:absolute; inset:-40% -10%;
     background:
-      radial-gradient(8% 40% at 18% 50%, rgba(178,190,255,1), rgba(110,118,235,.75) 42%, rgba(90,80,200,0) 76%),
-      radial-gradient(7% 34% at 37% 54%, rgba(170,184,255,1), rgba(100,112,230,.7) 42%, rgba(90,80,200,0) 76%),
-      radial-gradient(8% 38% at 61% 47%, rgba(175,186,255,1), rgba(104,114,232,.72) 42%, rgba(90,80,200,0) 76%),
-      radial-gradient(5% 70% at 84% 50%, rgba(190,198,255,.9), rgba(120,128,240,.5) 42%, rgba(120,128,240,0) 76%),
-      radial-gradient(4% 60% at 6% 50%, rgba(185,195,255,.75), rgba(185,195,255,0) 76%);
-    filter:blur(2.5px); animation:heatDrift 14s ease-in-out infinite alternate; }
-  @keyframes heatDrift{
-    0%{ transform:translateX(-3%) scaleY(.96); }
-    50%{ transform:translateX(1.5%) scaleY(1.04); }
-    100%{ transform:translateX(3.5%) scaleY(.98); }
-  }
-  @media (prefers-reduced-motion: reduce){ .heat-spots{ animation:none; } }
+      radial-gradient(7% 45% at 20% 50%, rgba(255,255,255,.55), rgba(255,255,255,0) 75%),
+      radial-gradient(5% 38% at 46% 55%, rgba(255,255,255,.4), rgba(255,255,255,0) 75%),
+      radial-gradient(8% 42% at 72% 46%, rgba(255,255,255,.5), rgba(255,255,255,0) 75%);
+    filter:blur(6px); mix-blend-mode:soft-light; animation:workGlint 18s ease-in-out infinite alternate; }
+  @keyframes workFlow{ from{ background-position:0% 50%; } to{ background-position:-200% 50%; } }
+  @keyframes workGlint{ from{ transform:translateX(6%); } to{ transform:translateX(-6%); } }
+  @media (prefers-reduced-motion: reduce){ .heat-core, .heat-spots{ animation:none; } }
   .side-nav{ display:flex; gap:22px; max-width:920px; margin:4px auto 0; }
   .side-nav a{
     position:relative; font-size:15px; line-height:1; text-decoration:none;
@@ -1607,7 +1604,7 @@
         <p class="hero-sub">Based in New York City <span class="clock"><span class="live"></span><span id="nycTime">NYC</span></span></p>
       </div>
     </div>
-    <!-- the bar motif from the branding site: a strip of thermal image on black -->
+    <!-- the bar motif from the branding site: a black strip with the colors of the work flowing through it -->
     <div class="heat-bar" aria-hidden="true"><span class="heat-core"><i class="heat-spots"></i></span></div>
   </section>
 
