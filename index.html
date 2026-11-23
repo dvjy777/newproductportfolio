@@ -115,10 +115,31 @@
   /* fine grain, so it reads as light rather than a flat digital gradient */
   .live-bar::after{ content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  .lb-label{ position:absolute; left:14px; top:50%; transform:translateY(-50%); z-index:1; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:11px; letter-spacing:.06em;
-    text-transform:uppercase; color:rgba(255,255,255,.8); white-space:nowrap; pointer-events:none; transition:opacity .3s ease; }
-  .live-bar:hover .lb-label{ opacity:0; }
-  @media (max-width:520px){ .lb-label{ font-size:9.5px; } }
+  /* the player: NYC on the left, the time in the middle, the part of the day on the right,
+     the day's progress along the bottom like a song's */
+  .live-bar{ cursor:pointer; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:0 16px;
+    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight:500; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#fff; }
+  .live-bar:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  .lb-left, .lb-mid, .lb-right{ position:relative; z-index:1; white-space:nowrap; text-shadow:0 1px 8px rgba(0,0,0,.35); transition:opacity .3s ease; }
+  .lb-left{ display:flex; align-items:center; gap:9px; justify-self:start; }
+  .lb-mid{ justify-self:center; font-variant-numeric:tabular-nums; }
+  .lb-right{ justify-self:end; }
+  .lb-play{ width:0; height:0; border-style:solid; border-width:5px 0 5px 8px; border-color:transparent transparent transparent #fff; }
+  .live-bar.playing .lb-play{ width:8px; height:10px; border:0; border-left:3px solid #fff; border-right:3px solid #fff; }
+  .lb-eq{ display:none; align-items:flex-end; gap:2px; height:11px; }
+  .lb-eq b{ width:2px; height:30%; background:#fff; border-radius:1px; }
+  .live-bar.playing .lb-eq{ display:inline-flex; }
+  .live-bar.playing .lb-eq b:nth-child(1){ animation:lbEq .9s ease-in-out infinite; }
+  .live-bar.playing .lb-eq b:nth-child(2){ animation:lbEq .7s ease-in-out .15s infinite; }
+  .live-bar.playing .lb-eq b:nth-child(3){ animation:lbEq 1.1s ease-in-out .3s infinite; }
+  @keyframes lbEq{ 0%,100%{ height:25%; } 50%{ height:100%; } }
+  .lb-prog{ position:absolute; left:0; right:0; bottom:0; height:2px; background:rgba(255,255,255,.18); z-index:1; }
+  .lb-prog i{ position:absolute; left:0; top:0; bottom:0; width:0; background:rgba(255,255,255,.85); }
+  /* the music lifts the light: --amp (0 to 1) comes from the sound */
+  .live-bar.playing .lb-flow{ filter:blur(10px) saturate(1.3) brightness(calc(1 + var(--amp, 0) * .6)); transform:scaleY(calc(1 + var(--amp, 0) * .25)); }
+  .live-bar:hover .lb-mid, .live-bar:hover .lb-right{ opacity:.9; }
+  @media (max-width:520px){ .live-bar{ font-size:9.5px; padding:0 12px; } }
+  @media (prefers-reduced-motion: reduce){ .live-bar.playing .lb-eq b{ animation:none; height:70%; } }
   /* the mascot as a quiet mark */
   /* the mascot: no ring around it (no pulsing outline, no halo on hover); press and hold still opens the branding site */
   .menu-btn.quiet::after{ display:none; }
@@ -1634,10 +1655,13 @@
     </div>
     <!-- the bar motif from the branding site: its colors follow the time in New York, shift to a project when you
          hover its card, and open into a strip of links to every project when you hover or tap it -->
-    <div class="live-bar" id="liveBar" aria-hidden="true">
+    <div class="live-bar" id="liveBar" role="button" tabindex="0" aria-pressed="false" aria-label="Play an ambient soundtrack for this time of day in New York">
       <span class="lb-flow" aria-hidden="true"></span>
       <span class="lb-all" aria-hidden="true"></span>
-      <span class="lb-label" id="lbLabel" aria-hidden="true"></span>
+      <span class="lb-left"><i class="lb-play" aria-hidden="true"></i><i class="lb-eq" aria-hidden="true"><b></b><b></b><b></b></i><span>NYC</span></span>
+      <span class="lb-mid" id="lbMid"></span>
+      <span class="lb-right" id="lbRight"></span>
+      <span class="lb-prog" aria-hidden="true"><i id="lbProg"></i></span>
     </div>
   </section>
 
@@ -3441,7 +3465,7 @@
 
   // Live bar: palette by the hour in New York, a project's colors while its card is hovered, and links to every project.
   (function(){
-    var bar = document.getElementById('liveBar'), label = document.getElementById('lbLabel');
+    var bar = document.getElementById('liveBar'), mid = document.getElementById('lbMid'), right = document.getElementById('lbRight'), prog = document.getElementById('lbProg');
     if(!bar) return;
     var COLORS = { 'claude':['#d97757','#f2b89c','#a9472b'], 'chance-ai':['#1d5fff','#7fa4ff','#5a3cff'], 'netflix':['#e50914','#ff5a4f','#7a0610'],
                    'inyun':['#8a2a45','#c4566f','#4a1424'], 'ekpyrosis':['#c9a23a','#f0d27a','#6b5313'], 'animi':['#2a9d9a','#8fe3e0','#145a58'] };
@@ -3455,25 +3479,79 @@
     function nyNow(){
       var d = new Date(), f = new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', hour:'numeric', minute:'2-digit', hour12:true });
       var h = +new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', hour:'numeric', hourCycle:'h23' }).format(d);
-      return { h:h, text:f.format(d) };
+      var mm = +new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', minute:'2-digit' }).format(d);
+      return { h:h, m:mm, text:f.format(d) };
     }
     function timePalette(h){ var t = TIMES[TIMES.length - 1]; TIMES.forEach(function(x){ if(h >= x[0]) t = x; }); if(h < 5) t = TIMES[TIMES.length - 1]; return t; }
     function paint(c){ bar.style.setProperty('--lb1', c[0]); bar.style.setProperty('--lb2', c[1]); bar.style.setProperty('--lb3', c[2]); }
-    var hovering = null;
+    var hovering = null, period = 'night';
     function rest(){
       if(hovering) return;
       var n = nyNow(), t = timePalette(n.h);
-      paint(t[2]); label.textContent = 'NYC · ' + n.text + ' · ' + t[1];
+      paint(t[2]); mid.textContent = n.text; right.textContent = t[1];
+      prog.style.width = ((n.h * 60 + n.m) / 1440 * 100).toFixed(2) + '%';   // how far through the day, like a song
+      period = t[1];
     }
     // preview: a project's card tints the bar while hovered (mouse only; touch screens never send the leave event)
     if(window.matchMedia && matchMedia('(hover: hover)').matches) document.querySelectorAll('.work-grid .card').forEach(function(card){
       var slug = (card.getAttribute('href') || '').replace('#work/', ''), p = projects.filter(function(x){ return x.slug === slug; })[0];
-      function on(){ if(!COLORS[slug]) return; hovering = slug; paint(COLORS[slug]); label.textContent = (p ? p.company.replace(' x AStudio', '') + ' · ' + p.title : slug); }
+      function on(){ if(!COLORS[slug]) return; hovering = slug; paint(COLORS[slug]); mid.textContent = (p ? p.company.replace(' x AStudio', '') + ' · ' + p.title : slug); }
       function off(){ hovering = null; rest(); }
       card.addEventListener('mouseenter', on); card.addEventListener('mouseleave', off);
       card.addEventListener('focus', on); card.addEventListener('blur', off);
     });
     rest(); setInterval(rest, 30000);
+
+    // The soundtrack: a soft ambient pad generated in the browser (no recording), with a few slow plucked notes on top.
+    // Its chord follows the part of the day. Nothing plays until the bar is clicked.
+    var CHORDS = { 'dawn':[48,52,55,62], 'day':[53,57,60,64], 'golden hour':[50,54,57,61], 'dusk':[45,48,52,59], 'night':[39,43,46,50] };
+    var SCALES = { 'dawn':[60,62,64,67,69,72], 'day':[65,67,69,72,74,76], 'golden hour':[62,64,66,69,71,74], 'dusk':[57,60,62,64,67,69], 'night':[58,62,63,65,67,70] };
+    var ac = null, master = null, analyser = null, voices = [], pluckTimer = null, meterRaf = 0, playing = false;
+    var hz = function(n){ return 440 * Math.pow(2, (n - 69) / 12); };
+    function startPad(){
+      var notes = CHORDS[period] || CHORDS.night;
+      voices = notes.map(function(n, i){
+        var o = ac.createOscillator(), g = ac.createGain(), f = ac.createBiquadFilter(), lfo = ac.createOscillator(), lg = ac.createGain();
+        o.type = i % 2 ? 'triangle' : 'sine'; o.frequency.value = hz(n); o.detune.value = (i - 1.5) * 4;
+        f.type = 'lowpass'; f.frequency.value = 900; f.Q.value = .4;
+        lfo.frequency.value = .05 + i * .02; lg.gain.value = 380; lfo.connect(lg); lg.connect(f.frequency);
+        g.gain.value = .0001; g.gain.exponentialRampToValueAtTime(.16, ac.currentTime + 3 + i * .4);
+        o.connect(f); f.connect(g); g.connect(master); o.start(); lfo.start();
+        return { o:o, g:g, lfo:lfo };
+      });
+    }
+    function pluck(){
+      var sc = SCALES[period] || SCALES.night, n = sc[Math.floor(Math.random() * sc.length)];
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+      o.type = 'sine'; o.frequency.value = hz(n);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.09, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + 2.6);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + 2.7);
+      pluckTimer = setTimeout(pluck, 900 + Math.random() * 1800);
+    }
+    function meter(){
+      var buf = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(buf);
+      var sum = 0; for(var i = 0; i < buf.length; i++){ var v = (buf[i] - 128) / 128; sum += v * v; }
+      bar.style.setProperty('--amp', Math.min(1, Math.sqrt(sum / buf.length) * 6).toFixed(3));
+      meterRaf = requestAnimationFrame(meter);
+    }
+    function play(){
+      var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+      if(!ac){ ac = new AC(); master = ac.createGain(); analyser = ac.createAnalyser(); analyser.fftSize = 512; master.connect(analyser); analyser.connect(ac.destination); }
+      ac.resume(); master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(.0001, ac.currentTime); master.gain.exponentialRampToValueAtTime(.35, ac.currentTime + 1.5);
+      startPad(); pluckTimer = setTimeout(pluck, 1500); meter();
+      playing = true; bar.classList.add('playing'); bar.setAttribute('aria-pressed', 'true');
+    }
+    function stop(){
+      if(!ac) return;
+      var t = ac.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.exponentialRampToValueAtTime(.0001, t + 1.2);
+      var old = voices; voices = []; setTimeout(function(){ old.forEach(function(v){ try{ v.o.stop(); v.lfo.stop(); }catch(e){} }); }, 1300);
+      clearTimeout(pluckTimer); cancelAnimationFrame(meterRaf); bar.style.setProperty('--amp', 0);
+      playing = false; bar.classList.remove('playing'); bar.setAttribute('aria-pressed', 'false');
+    }
+    function toggle(){ playing ? stop() : play(); }
+    bar.addEventListener('click', toggle);
+    bar.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+    document.addEventListener('visibilitychange', function(){ if(document.hidden && playing) stop(); });
   })();
 
   // Home cards as glass squircles. The outline is a superellipse (|x/a|^4 + |y/b|^4 = 1), and the artwork is
