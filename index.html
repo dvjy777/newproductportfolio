@@ -147,15 +147,13 @@
   .live-bar:hover .lb-mid, .live-bar:focus-visible .lb-mid{ opacity:0; }
   /* touch screens have no hover: keep a small play icon by NYC instead */
   @media (hover: none){ .lb-ctrl{ display:none; } .lb-left .lb-play{ display:block; } }
-  /* while the music plays the page dims under a wash of the bar's colors; the bar stays lit above it */
-  .listen-dim{ position:fixed; inset:0; z-index:45; pointer-events:none; opacity:0; transition:opacity 1.6s ease;
-    background:
-      radial-gradient(90% 55% at 50% -5%, color-mix(in srgb, var(--lb2) 38%, transparent), transparent 70%),
-      radial-gradient(70% 60% at -5% 105%, color-mix(in srgb, var(--lb1) 34%, transparent), transparent 70%),
-      radial-gradient(70% 60% at 105% 100%, color-mix(in srgb, var(--lb3) 30%, transparent), transparent 70%),
-      rgba(6,7,14,.62); }
-  body.listening .listen-dim{ opacity:calc(.92 + var(--amp, 0) * .08); }
-  body.listening .live-bar{ z-index:46; box-shadow:0 0 60px color-mix(in srgb, var(--lb2) 45%, transparent); }
+  /* while the music plays the site switches to a dark theme, and eases back when it stops */
+  body{ transition:background-color .9s ease, color .9s ease; }
+  body.listening{ --bg:#0b0c10; --surface:#14161c; --text:#e6e9ee; --text-muted:#8b95a3; --border:#252a33; --accent:#7fa4ff; --accent-soft:#1a2340; }
+  body.listening .label, body.listening .side-nav a, body.listening hr{ transition:color .9s ease, border-color .9s ease; }
+  /* the spectrum: bars spread across the whole strip, drawn translucent so the gradient shows through */
+  .lb-viz{ position:absolute; left:0; top:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:0; transition:opacity .8s ease; }
+  .live-bar.playing .lb-viz{ opacity:1; }
   @media (max-width:520px){ .live-bar{ font-size:9.5px; padding:0 12px; } }
   @media (prefers-reduced-motion: reduce){ .live-bar.playing .lb-eq b{ animation:none; height:70%; } }
   /* the mascot as a quiet mark */
@@ -1663,7 +1661,6 @@
   <a href="files/David-Yang-Resume.pdf" target="_blank" rel="noopener" data-close>Resume</a>
 </div>
 
-<div class="listen-dim" aria-hidden="true"></div>
 <main id="home-view">
   <section class="hero">
     <div class="hero-row">
@@ -1677,6 +1674,7 @@
     <div class="live-bar" id="liveBar" role="button" tabindex="0" aria-pressed="false" aria-label="Play an ambient soundtrack for this time of day in New York">
       <span class="lb-flow" aria-hidden="true"></span>
       <span class="lb-all" aria-hidden="true"></span>
+      <canvas class="lb-viz" id="lbViz" aria-hidden="true"></canvas>
       <span class="lb-left"><i class="lb-play" aria-hidden="true"></i><i class="lb-eq" aria-hidden="true"><b></b><b></b><b></b></i><span>NYC</span></span>
       <span class="lb-mid" id="lbMid"></span>
       <span class="lb-ctrl" aria-hidden="true"><i class="lb-play"></i><span id="lbCtrlT">Play</span></span>
@@ -3549,15 +3547,38 @@
       o.connect(g); g.connect(master); o.start(t); o.stop(t + 2.7);
       pluckTimer = setTimeout(pluck, 900 + Math.random() * 1800);
     }
+    var viz = document.getElementById('lbViz'), vctx = viz.getContext('2d'), levels = [];
     function meter(){
       var buf = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(buf);
       var sum = 0; for(var i = 0; i < buf.length; i++){ var v = (buf[i] - 128) / 128; sum += v * v; }
-      var amp = Math.min(1, Math.sqrt(sum / buf.length) * 6).toFixed(3); bar.style.setProperty('--amp', amp); document.documentElement.style.setProperty('--amp', amp);
+      var amp = Math.min(1, Math.sqrt(sum / buf.length) * 6).toFixed(3); bar.style.setProperty('--amp', amp);
+      drawViz();
       meterRaf = requestAnimationFrame(meter);
+    }
+    // frequency bars from 80 Hz to 1.3 kHz (where this music lives) on a log scale, so the pad's low notes and the plucks spread across the full width
+    function drawViz(){
+      var dpr = Math.min(2, window.devicePixelRatio || 1), w = viz.clientWidth, h = viz.clientHeight;
+      if(viz.width !== Math.round(w * dpr) || viz.height !== Math.round(h * dpr)){ viz.width = Math.round(w * dpr); viz.height = Math.round(h * dpr); }
+      var freq = new Uint8Array(analyser.frequencyBinCount); analyser.getByteFrequencyData(freq);
+      var binHz = ac.sampleRate / analyser.fftSize, n = Math.max(24, Math.floor(w / 6)), gap = 2, bw = w / n - gap;
+      vctx.setTransform(dpr, 0, 0, dpr, 0, 0); vctx.clearRect(0, 0, w, h); var raw = [];
+      for(var k = 0; k < n; k++){
+        var f0 = 80 * Math.pow(16, k / n), f1 = 80 * Math.pow(16, (k + 1) / n);
+        var i0 = Math.floor(f0 / binHz), i1 = Math.max(i0 + 1, Math.ceil(f1 / binHz)), peak = 0;
+        for(var j = i0; j < i1; j++) peak = Math.max(peak, freq[j] || 0);
+        raw[k] = Math.pow(peak / 255, 1.3);
+      }
+      for(k = 0; k < n; k++){
+        var target = ((raw[k-2]||0) + (raw[k-1]||0) * 2 + raw[k] * 3 + (raw[k+1]||0) * 2 + (raw[k+2]||0)) / 9, lv = levels[k] || 0;
+        lv += (target - lv) * (target > lv ? .5 : .12); levels[k] = lv;
+        var bh = Math.max(2, Math.min(1, lv * 1.5) * h * .92);
+        vctx.fillStyle = 'rgba(255,255,255,' + (.22 + Math.min(1, lv * 1.5) * .3).toFixed(3) + ')';
+        vctx.fillRect(k * (bw + gap) + gap / 2, h - bh, bw, bh);
+      }
     }
     function play(){
       var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
-      if(!ac){ ac = new AC(); master = ac.createGain(); analyser = ac.createAnalyser(); analyser.fftSize = 512; master.connect(analyser); analyser.connect(ac.destination); }
+      if(!ac){ ac = new AC(); master = ac.createGain(); analyser = ac.createAnalyser(); analyser.fftSize = 4096; analyser.smoothingTimeConstant = .82; master.connect(analyser); analyser.connect(ac.destination); }
       ac.resume(); master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(.0001, ac.currentTime); master.gain.exponentialRampToValueAtTime(.35, ac.currentTime + 1.5);
       startPad(); pluckTimer = setTimeout(pluck, 1500); meter();
       playing = true; bar.classList.add('playing'); bar.setAttribute('aria-pressed', 'true'); document.body.classList.add('listening'); ctrlT.textContent = 'Pause';
@@ -3566,7 +3587,7 @@
       if(!ac) return;
       var t = ac.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.exponentialRampToValueAtTime(.0001, t + 1.2);
       var old = voices; voices = []; setTimeout(function(){ old.forEach(function(v){ try{ v.o.stop(); v.lfo.stop(); }catch(e){} }); }, 1300);
-      clearTimeout(pluckTimer); cancelAnimationFrame(meterRaf); bar.style.setProperty('--amp', 0); document.documentElement.style.setProperty('--amp', 0);
+      clearTimeout(pluckTimer); cancelAnimationFrame(meterRaf); bar.style.setProperty('--amp', 0); levels = [];
       playing = false; bar.classList.remove('playing'); bar.setAttribute('aria-pressed', 'false'); document.body.classList.remove('listening'); ctrlT.textContent = 'Play';
     }
     function toggle(){ playing ? stop() : play(); }
